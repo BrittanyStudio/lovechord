@@ -1,0 +1,1362 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Угадай автора по фото - LoveChord</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap');
+        
+        :root {
+            --bg-body: #1e1e2f;
+            --bg-game-box: #2a2a3a;
+            --bg-card: #1e1e2f;
+            --text-primary: white;
+            --text-secondary: #aaa;
+            --btn-bg: #f5c4c4;
+            --btn-hover: #e8a0a0;
+            --btn-text: #333;
+            --border-color: #f5c4c4;
+            --accent: #ffcc00;
+            --success: #00aa44;
+            --success-glow: #00ff55;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            text-align: center;
+            background: var(--bg-body);
+            color: var(--text-primary);
+            padding: 20px;
+            transition: background 0.3s, color 0.3s;
+        }
+        
+        body.light-theme {
+            --bg-body: #ffe4e1;
+            --bg-game-box: #ffd6d6;
+            --bg-card: #ffebeb;
+            --text-primary: #333;
+            --text-secondary: #666;
+            --btn-bg: #2a2a3a;
+            --btn-hover: #3a3a4a;
+            --btn-text: #f5c4c4;
+            --border-color: #2a2a3a;
+            --accent: #ff6b6b;
+        }
+        
+        @keyframes achievementUnlock {
+            0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+            50% { transform: scale(1.2) rotate(0deg); }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+        
+        @keyframes confettiFall {
+            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+        
+        @keyframes glowPulse {
+            0% { box-shadow: 0 0 0 0 var(--success-glow); }
+            50% { box-shadow: 0 0 20px 10px var(--success-glow); }
+            100% { box-shadow: 0 0 0 0 var(--success-glow); }
+        }
+        
+        .achievement-notification {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
+            color: #333;
+            padding: 20px 40px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 24px;
+            z-index: 10000;
+            animation: achievementUnlock 0.5s ease-out;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            text-align: center;
+            min-width: 300px;
+        }
+        
+        .achievement-notification .achievement-icon { font-size: 48px; display: block; margin-bottom: 10px; }
+        .achievement-notification .achievement-title { font-size: 20px; margin-bottom: 5px; }
+        .achievement-notification .achievement-desc { font-size: 14px; opacity: 0.9; }
+        
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            position: absolute;
+            z-index: 9999;
+            pointer-events: none;
+            animation: confettiFall 3s ease-in forwards;
+        }
+        
+        .game-box.completed { animation: glowPulse 0.5s ease-out; }
+        
+        .LoveChord-container {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            text-align: center;
+            z-index: 1000;
+        }
+        
+        .LoveChord-btn {
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: none;
+            padding: 10px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: block;
+            text-align: center;
+            text-decoration: none;
+        }
+        
+        .LoveChord-btn:hover { background: var(--btn-hover); transform: scale(1.02); }
+        .LoveChord-main { display: block; font-size: 20px; font-weight: 800; font-family: 'Montserrat', sans-serif; letter-spacing: 2px; font-variant: small-caps; }
+        .about-songs { display: block; font-size: 9px; text-decoration: none; margin-top: 3px; font-weight: normal; font-family: 'Montserrat', sans-serif; }
+
+        /* ИКОНКИ ПОИСКА И УВЕДОМЛЕНИЙ */
+        .search-icon {
+            position: fixed;
+            top: 20px;
+            right: 140px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: 2px solid var(--border-color);
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            z-index: 1000;
+        }
+        .search-icon:hover { transform: scale(1.05); background: var(--btn-hover); }
+        
+        .notification-icon {
+            position: fixed;
+            top: 20px;
+            right: 200px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: 2px solid var(--border-color);
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            z-index: 1000;
+        }
+        .notification-icon:hover { transform: scale(1.05); background: var(--btn-hover); }
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff4444;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .profile-icon {
+            position: fixed;
+            top: 20px;
+            right: 80px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: 2px solid var(--border-color);
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            z-index: 1000;
+            overflow: hidden;
+        }
+        
+        .profile-icon:hover { transform: scale(1.05); background: var(--btn-hover); }
+        .profile-icon img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .daily-task-indicator {
+            position: fixed;
+            top: 20px;
+            right: 260px;
+            background: var(--btn-bg);
+            border-radius: 20px;
+            padding: 5px 12px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--btn-text);
+        }
+        
+        .daily-task-indicator.completed { background: var(--success); color: white; animation: glowPulse 0.5s ease-out; }
+        
+        .theme-toggle-bottom {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 16px;
+            font-weight: 600;
+            z-index: 1000;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .theme-toggle-bottom:hover { background: var(--btn-hover); transform: scale(1.02); }
+        
+        .nav-menu {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 30px;
+            margin-top: 60px;
+            z-index: 1000;
+            position: relative;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+            padding-bottom: 10px;
+            cursor: grab;
+        }
+        
+        .nav-menu:active { cursor: grabbing; }
+        .nav-menu::-webkit-scrollbar { height: 5px; }
+        .nav-menu::-webkit-scrollbar-track { background: var(--bg-game-box); border-radius: 10px; }
+        .nav-menu::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
+        .nav-menu::-webkit-scrollbar-thumb:hover { background: var(--btn-hover); }
+        
+        .nav-btn {
+            background: var(--bg-game-box);
+            border: 2px solid var(--border-color);
+            padding: 10px 20px;
+            font-size: 14px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.2s;
+            color: var(--border-color);
+            font-weight: 600;
+            font-family: 'Montserrat', sans-serif;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        
+        .nav-btn:hover:not(.active) { background: var(--btn-bg); color: var(--btn-text); }
+        .nav-btn.active { background: var(--btn-bg); color: var(--btn-text); cursor: default; opacity: 0.7; }
+        
+        .records-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            max-width: 800px;
+            margin: 0 auto 20px auto;
+        }
+        
+        .record-card {
+            background: var(--bg-game-box);
+            border-radius: 20px;
+            padding: 15px 20px;
+            flex: 1;
+            text-align: center;
+            border: 2px solid var(--border-color);
+        }
+        
+        .record-card h3 { color: var(--border-color); font-size: 18px; margin-bottom: 10px; font-variant: small-caps; letter-spacing: 1px; }
+        .record-score { font-size: 36px; font-weight: bold; color: var(--accent); }
+        .record-date { font-size: 12px; color: var(--text-secondary); margin-top: 8px; }
+        .record-label { font-size: 14px; color: var(--border-color); margin-top: 5px; }
+        
+        .game-box {
+            background: var(--bg-game-box);
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+            transition: all 0.3s;
+        }
+        
+        h1 {
+            color: var(--border-color);
+            font-family: 'Montserrat', sans-serif;
+            font-variant: small-caps;
+            font-weight: 800;
+            letter-spacing: 2px;
+            font-size: 26px;
+        }
+        
+        .photo-frame {
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid var(--border-color);
+            background: var(--bg-body);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .photo-frame img { width: 100%; height: 100%; object-fit: cover; }
+        .placeholder-photo { font-size: 80px; line-height: 200px; color: var(--border-color); }
+        
+        button {
+            background: var(--btn-bg);
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            margin: 10px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: 0.2s;
+            color: var(--btn-text);
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        button:hover { background: var(--btn-hover); transform: scale(1.02); }
+        
+        .result {
+            font-size: 18px;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 15px;
+        }
+        
+        .correct { background: #00aa44; color: white; }
+        .wrong { background: #aa0044; color: white; }
+        
+        .score {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: var(--accent);
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .question-text { font-size: 16px; margin: 10px; color: var(--accent); }
+        
+        .next-btn {
+            background: var(--btn-bg);
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            margin: 10px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: 0.2s;
+            color: var(--btn-text);
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .next-btn:hover { background: var(--btn-hover); transform: scale(1.02); }
+        
+        .reset-btn {
+            background: #888;
+            border: none;
+            padding: 12px 25px;
+            font-size: 14px;
+            margin: 10px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: 0.2s;
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .reset-btn:hover { background: #666; }
+        
+        #answerButtons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        /* МОДАЛЬНЫЕ ОКНА */
+        .search-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--bg-game-box);
+            border: 2px solid var(--border-color);
+            border-radius: 20px;
+            padding: 30px;
+            z-index: 2000;
+            width: 90%;
+            max-width: 500px;
+        }
+        .search-modal.show { display: block; }
+        .search-input { width: 100%; padding: 12px; border-radius: 30px; border: 2px solid var(--border-color); background: var(--bg-body); color: var(--text-primary); font-family: 'Montserrat', sans-serif; font-size: 16px; margin-bottom: 20px; }
+        .search-results { max-height: 300px; overflow-y: auto; }
+        .search-result-item { padding: 10px; margin: 5px 0; background: var(--bg-card); border-radius: 15px; cursor: pointer; transition: 0.2s; }
+        .search-result-item:hover { background: var(--bg-game-box); transform: scale(1.02); }
+        .close-modal { background: var(--btn-bg); border: none; padding: 10px 20px; border-radius: 30px; cursor: pointer; margin-top: 15px; }
+        
+        .notification-panel {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            width: 300px;
+            background: var(--bg-game-box);
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            z-index: 2000;
+            display: none;
+        }
+        .notification-panel.show { display: block; }
+        .notification-item {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+        .notification-item:hover { background: var(--bg-card); }
+        .notification-actions { display: flex; gap: 10px; margin-top: 8px; }
+        .notif-accept, .notif-reject { padding: 5px 12px; border-radius: 20px; border: none; cursor: pointer; font-size: 12px; }
+        .notif-accept { background: #00aa44; color: white; }
+        .notif-reject { background: #aa0044; color: white; }
+        
+        .chat-modal {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 350px;
+            height: 450px;
+            background: var(--bg-game-box);
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            z-index: 2000;
+            flex-direction: column;
+        }
+        .chat-modal.show { display: flex; }
+        .chat-header {
+            padding: 12px;
+            background: var(--bg-card);
+            border-radius: 13px 13px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chat-messages {
+            flex: 1;
+            padding: 12px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .message {
+            max-width: 80%;
+            padding: 8px 12px;
+            border-radius: 15px;
+        }
+        .message.sent { background: var(--accent); color: #333; align-self: flex-end; }
+        .message.received { background: var(--bg-card); align-self: flex-start; }
+        .chat-input-area { display: flex; padding: 12px; gap: 8px; border-top: 1px solid var(--border-color); }
+        .chat-input { flex: 1; padding: 8px; border-radius: 20px; border: 1px solid var(--border-color); background: var(--bg-body); color: var(--text-primary); }
+        .chat-send { background: var(--btn-bg); border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; }
+        
+        .notification { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #00aa44; border-radius: 20px; padding: 15px 30px; z-index: 2000; text-align: center; animation: fadeInOut 2.5s ease-in-out; color: white; font-weight: bold; white-space: nowrap; }
+        .notification.error { background: #aa0044; }
+        @keyframes fadeInOut { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); } 15% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 85% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); } }
+    </style>
+</head>
+<body>
+
+    <div class="LoveChord-container">
+        <div class="LoveChord-btn" onclick="window.location.href='index.html'">
+            <span class="LoveChord-main">LoveChord</span>
+            <span class="about-songs">все о песнях*</span>
+        </div>
+    </div>
+
+    <!-- ИКОНКИ ПОИСКА И УВЕДОМЛЕНИЙ -->
+    <div class="search-icon" onclick="openSearchModal()">🔍</div>
+    <div class="notification-icon" id="notificationIcon" onclick="toggleNotifications()">
+        🔔
+        <span id="notificationBadge" class="notification-badge" style="display: none;">0</span>
+    </div>
+
+    <div class="daily-task-indicator" id="dailyTaskIndicator" onclick="window.location.href='profile-dashboard.html'">
+        <span>📅</span>
+        <span id="taskStatus">Задание дня</span>
+    </div>
+
+    <div class="profile-icon" id="profileIcon" onclick="window.location.href='profile-dashboard.html'">
+        👤
+    </div>
+
+    <div class="nav-menu">
+        <button class="nav-btn" onclick="window.location.href='game.html'">🎤 Угадай автора музыки</button>
+        <button class="nav-btn active" onclick="window.location.href='photo-game.html'">📸 Угадай автора по фото</button>
+        <button class="nav-btn" onclick="window.location.href='popular-game.html'">📊 Какая песня популярней</button>
+        <button class="nav-btn" onclick="window.location.href='favorite-game.html'">❤️ Выбери любимую песню</button>
+        <button class="nav-btn" onclick="window.location.href='year-game.html'">📅 Угадай год</button>
+        <button class="nav-btn" onclick="window.location.href='who-wrote-game.html'">✍️ Кто написал...</button>
+        <button class="nav-btn" onclick="window.location.href='emoji-game.html'">😊 Угадай по эмодзи</button>
+        <button class="nav-btn" onclick="window.location.href='lyrics-game.html'">📝 Угадай по тексту</button>
+    </div>
+
+    <div class="records-container">
+        <div class="record-card">
+            <h3>🏆 Лучший личный счёт</h3>
+            <div class="record-score" id="personalBestScore">0</div>
+            <div class="record-date" id="personalBestDate">—</div>
+            <div class="record-label">ваш рекорд</div>
+        </div>
+        <div class="record-card">
+            <h3>🌍 Лучший счёт среди всех</h3>
+            <div class="record-score" id="globalBestScore">0</div>
+            <div class="record-date" id="globalBestDate">—</div>
+            <div class="record-label">рекорд сайта</div>
+        </div>
+    </div>
+
+    <div class="game-box" id="gameBox">
+        <h1>📸 Угадай автора по фото 🎤</h1>
+        <p>Кто изображён на фото?</p>
+
+        <div class="score">
+            🏆 Текущий счёт: <span id="scoreValue">0</span>
+        </div>
+
+        <div class="photo-frame" id="photoFrame">
+            <div class="placeholder-photo" id="photoPlaceholder">🎭</div>
+            <img id="artistPhoto" style="display: none;" alt="Фото исполнителя">
+        </div>
+
+        <div id="questionText" class="question-text">Кто этот исполнитель?</div>
+
+        <div id="answerButtons"></div>
+
+        <div id="message" class="result"></div>
+        
+        <button class="next-btn" id="nextBtn" style="display: none;" onclick="nextQuestion()">➡ Следующий вопрос</button>
+        <button class="reset-btn" onclick="resetGame()">🔄 Начать заново</button>
+    </div>
+
+    <!-- МОДАЛЬНЫЕ ОКНА -->
+    <div id="searchModal" class="search-modal">
+        <h3>🔍 Поиск игроков</h3>
+        <input type="text" id="searchInput" class="search-input" placeholder="Введите никнейм..." onkeyup="searchUsers()">
+        <div id="searchResults" class="search-results"></div>
+        <button class="close-modal" onclick="closeSearchModal()">Закрыть</button>
+    </div>
+
+    <div id="notificationPanel" class="notification-panel">
+        <h4 style="padding: 12px;">Уведомления</h4>
+        <div id="notificationsList"></div>
+    </div>
+
+    <div id="chatModal" class="chat-modal">
+        <div class="chat-header">
+            <span id="chatFriendName">Чат</span>
+            <button onclick="closeChat()" style="background:none; border:none; color:var(--text-primary); cursor:pointer;">✕</button>
+        </div>
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-input-area">
+            <input type="text" id="chatInput" class="chat-input" placeholder="Сообщение...">
+            <button class="chat-send" onclick="sendMessage()">📤</button>
+        </div>
+    </div>
+
+    <button class="theme-toggle-bottom" onclick="toggleTheme()">🌓 Тема</button>
+
+    <script>
+        const artists = [
+            { name: "Britney Spears", photoUrl: "https://i.pinimg.com/736x/f8/56/dd/f856dde08e196dca824cfe83c4542838.jpg" },
+            { name: "Lady Gaga", photoUrl: "https://avatars.mds.yandex.net/i?id=f06832032aabe20812aa137f90228575_l-9095341-images-thumbs&n=13" },
+            { name: "Taylor Swift", photoUrl: "https://avatars.mds.yandex.net/i?id=7d21a58c20b615bff4b3d30470d0b56d_l-3322605-images-thumbs&n=13" },
+            { name: "Adele", photoUrl: "https://avatars.mds.yandex.net/i?id=211b72b1d8eb9385475d173ba8a74f0e_l-5361661-images-thumbs&n=13" },
+            { name: "Rihanna", photoUrl: "https://avatars.mds.yandex.net/i?id=4e929730a2c68642f3b1f84be65703a2_l-3696823-images-thumbs&n=13" },
+            { name: "Ed Sheeran", photoUrl: "https://i.pinimg.com/474x/ec/f8/35/ecf8350f263c7d7935073329062487bc.jpg?nii=t" },
+            { name: "The Weeknd", photoUrl: "https://avatars.mds.yandex.net/i?id=0d065a7ffb6cb258a7e72852d69293e5_l-10328327-images-thumbs&n=13" },
+            { name: "Billie Eilish", photoUrl: "https://avatars.mds.yandex.net/i?id=b5a92f4a9040ba5132a7359f04ed21ec_l-4438863-images-thumbs&n=13" },
+            { name: "Dua Lipa", photoUrl: "https://avatars.mds.yandex.net/i?id=e4742f3c65055030f65736e61e08f701_l-16478218-images-thumbs&n=13" },
+            { name: "Ariana Grande", photoUrl: "https://avatars.mds.yandex.net/i?id=81e88d8d11d100382b1a0881f72bcfd9_sr-4884912-images-thumbs&n=13" },
+            { name: "Bruno Mars", photoUrl: "https://avatars.mds.yandex.net/i?id=82791c91d5fad99c9fb433e8d99e847a_l-7663003-images-thumbs&n=13" },
+            { name: "Harry Styles", photoUrl: "https://avatars.mds.yandex.net/i?id=0e34687952ac810197a34bf337e56c33_l-11044949-images-thumbs&n=13" },
+            { name: "Post Malone", photoUrl: "https://avatars.mds.yandex.net/i?id=81ce065ae417335da13a9cd9735450dd_l-5342121-images-thumbs&n=13" },
+            { name: "Eminem", photoUrl: "https://i.pinimg.com/originals/95/af/9d/95af9d8eec98f22ffa750824e17d6770.jpg" },
+            { name: "Beyoncé", photoUrl: "https://i.pinimg.com/474x/02/b0/54/02b054c10e47f47f63901783adeb0561.jpg?nii=t" },
+            { name: "Drake", photoUrl: "https://www.billboard.com/wp-content/uploads/2025/02/drake-ovo-2025-billboard-1548.jpg?w=1024" },
+            { name: "Justin Bieber", photoUrl: "https://avatars.mds.yandex.net/i?id=52c846c3d83777cc8c10a7b1dd4a0fdd_l-5299553-images-thumbs&n=13" },
+            { name: "Katy Perry", photoUrl: "https://avatars.mds.yandex.net/i?id=afd8bc1de8f26ed1af1139c0c6d9c144_l-5710384-images-thumbs&n=13" },
+            { name: "Michael Jackson", photoUrl: "https://i.pinimg.com/474x/5b/bc/0c/5bbc0cab3ecc84460edc80bf72e01785.jpg?nii=t" },
+            { name: "Queen", photoUrl: "https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/58975fd2-13a6-47c7-9f2c-35cd0e5efee5/1920x" },
+            { name: "Madonna", photoUrl: "https://avatars.mds.yandex.net/i?id=53c415b1a09f60f05a1e7f54774193a3_l-4571989-images-thumbs&n=13" },
+            { name: "Coldplay", photoUrl: "https://i.pinimg.com/474x/6d/0b/93/6d0b93f1ce49e70c8c01c3d3cdd5d419.jpg?nii=t" },
+            { name: "Imagine Dragons", photoUrl: "https://avatars.mds.yandex.net/i?id=c89b7a894b72eb621753afde1351d36b_l-4219643-images-thumbs&n=13" },
+            { name: "Melanie Martinez", photoUrl: "https://i.pinimg.com/736x/f3/a7/ca/f3a7caac33366c3d9666e42c73216048.jpg" },
+            { name: "Halsey", photoUrl: "https://avatars.mds.yandex.net/i?id=0c20feb8eee7b155fb392d2b047db224_l-6946905-images-thumbs&n=13" },
+            { name: "Shakira", photoUrl: "https://i.pinimg.com/originals/8c/e5/50/8ce550fbd2a3047064e18b7f21b53b59.jpg" },
+            { name: "Miley Cyrus", photoUrl: "https://i.pinimg.com/474x/3a/7f/e7/3a7fe74dfff7e628e60b44b23ceac850.jpg" },
+            { name: "Doja Cat", photoUrl: "https://i.pinimg.com/originals/44/f3/42/44f34201eef60e7a6723ab2d712075ae.jpg?nii=t" },
+            { name: "Sia", photoUrl: "https://i.pinimg.com/736x/9c/1c/dd/9c1cdd563c03a05bd3f2447ab8995e9c.jpg" },
+            { name: "Alan Walker", photoUrl: "https://i.pinimg.com/originals/47/cb/10/47cb107bdb47800f5971b7d31c54971b.jpg" }
+        ];
+
+        let questions = [];
+        let currentIndex = 0;
+        let currentQuestion = null;
+        let canAnswer = true;
+        let gameActive = true;
+        let gameCompleted = false;
+        let currentScore = 0;
+        let correctAnswersCount = 0;
+
+        let personalBest = { score: 0, date: null };
+        let globalBest = { score: 0, date: null };
+
+        const photoImg = document.getElementById("artistPhoto");
+        const photoPlaceholder = document.getElementById("photoPlaceholder");
+        const answerDiv = document.getElementById("answerButtons");
+        const messageDiv = document.getElementById("message");
+        const scoreSpan = document.getElementById("scoreValue");
+        const nextBtn = document.getElementById("nextBtn");
+        const gameBox = document.getElementById("gameBox");
+        const taskStatusSpan = document.getElementById("taskStatus");
+
+        const allArtistNames = artists.map(a => a.name);
+        
+        // Глобальные переменные для поиска и уведомлений
+        let currentUserGlobal = null;
+        let userDataGlobal = null;
+        let currentChatWithGlobal = null;
+
+        // ===== ФУНКЦИИ ДЛЯ ПОИСКА, ДРУЗЕЙ И ЧАТА =====
+        function showNotificationGlobal(msg, isError) {
+            let n = document.createElement('div');
+            n.className = 'notification' + (isError ? ' error' : '');
+            n.textContent = msg;
+            document.body.appendChild(n);
+            setTimeout(() => n.remove(), 2500);
+        }
+
+        function loadGlobalUserData() {
+            currentUserGlobal = localStorage.getItem('lovechord_current_user');
+            let users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+            if (currentUserGlobal && users[currentUserGlobal]) {
+                userDataGlobal = users[currentUserGlobal];
+                if (!userDataGlobal.friends) userDataGlobal.friends = [];
+                if (!userDataGlobal.friendRequests) userDataGlobal.friendRequests = [];
+                if (!userDataGlobal.notifications) userDataGlobal.notifications = [];
+                if (!userDataGlobal.chats) userDataGlobal.chats = {};
+                updateNotificationBadgeGlobal();
+            }
+        }
+
+        function saveGlobalUserData() {
+            let users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+            users[currentUserGlobal] = userDataGlobal;
+            localStorage.setItem('lovechord_users', JSON.stringify(users));
+        }
+
+        function updateNotificationBadgeGlobal() {
+            let count = (userDataGlobal.friendRequests ? userDataGlobal.friendRequests.length : 0) + (userDataGlobal.notifications ? userDataGlobal.notifications.length : 0);
+            let badge = document.getElementById('notificationBadge');
+            if (badge) {
+                if (count > 0) { badge.textContent = count; badge.style.display = 'flex'; }
+                else badge.style.display = 'none';
+            }
+        }
+
+        function openSearchModal() {
+            let modal = document.getElementById('searchModal');
+            if (modal) modal.classList.add('show');
+            let input = document.getElementById('searchInput');
+            if (input) { input.value = ''; }
+            let results = document.getElementById('searchResults');
+            if (results) results.innerHTML = '';
+        }
+
+        function closeSearchModal() {
+            let modal = document.getElementById('searchModal');
+            if (modal) modal.classList.remove('show');
+        }
+
+        function searchUsers() {
+            let query = document.getElementById('searchInput').value.toLowerCase().trim();
+            let resultsDiv = document.getElementById('searchResults');
+            if (!query) { resultsDiv.innerHTML = ''; return; }
+            let users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+            let results = [];
+            for (let name in users) {
+                if (name.toLowerCase().includes(query) && name !== currentUserGlobal) results.push(name);
+            }
+            let html = '';
+            for (let res of results.slice(0, 10)) {
+                html += `<div class="search-result-item" onclick="viewProfileGlobal('${res}')">🔍 ${res}</div>`;
+            }
+            if (html === '') html = '<div>Ничего не найдено</div>';
+            resultsDiv.innerHTML = html;
+        }
+
+        function viewProfileGlobal(username) {
+            closeSearchModal();
+            window.location.href = 'profile-dashboard.html?view=' + encodeURIComponent(username);
+        }
+
+        function sendFriendRequestGlobal(toUser) {
+            if (toUser === currentUserGlobal) { showNotificationGlobal('Нельзя добавить самого себя!', true); return; }
+            let users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+            if (!users[toUser]) { showNotificationGlobal('Пользователь не найден!', true); return; }
+            if (userDataGlobal.friends && userDataGlobal.friends.includes(toUser)) { showNotificationGlobal('Этот пользователь уже в друзьях!', true); return; }
+            
+            if (!users[toUser].friendRequests) users[toUser].friendRequests = [];
+            if (users[toUser].friendRequests.includes(currentUserGlobal)) { showNotificationGlobal('Запрос уже отправлен!', true); return; }
+            
+            users[toUser].friendRequests.push(currentUserGlobal);
+            localStorage.setItem('lovechord_users', JSON.stringify(users));
+            showNotificationGlobal('Запрос в друзья отправлен!', false);
+        }
+
+        function acceptFriendRequestGlobal(fromUser) {
+            let users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+            if (!userDataGlobal.friends) userDataGlobal.friends = [];
+            if (!userDataGlobal.friends.includes(fromUser)) userDataGlobal.friends.push(fromUser);
+            if (!users[fromUser].friends) users[fromUser].friends = [];
+            if (!users[fromUser].friends.includes(currentUserGlobal)) users[fromUser].friends.push(currentUserGlobal);
+            
+            let index = userDataGlobal.friendRequests.indexOf(fromUser);
+            if (index !== -1) userDataGlobal.friendRequests.splice(index, 1);
+            
+            if (!userDataGlobal.chats) userDataGlobal.chats = {};
+            if (!userDataGlobal.chats[fromUser]) userDataGlobal.chats[fromUser] = [];
+            
+            localStorage.setItem('lovechord_users', JSON.stringify(users));
+            saveGlobalUserData();
+            showNotificationGlobal('Вы приняли запрос в друзья!', false);
+            updateNotificationBadgeGlobal();
+            if (document.getElementById('notificationsList')) toggleNotificationsGlobal();
+        }
+
+        function rejectFriendRequestGlobal(fromUser) {
+            let users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+            let index = userDataGlobal.friendRequests.indexOf(fromUser);
+            if (index !== -1) userDataGlobal.friendRequests.splice(index, 1);
+            saveGlobalUserData();
+            
+            if (users[fromUser]) {
+                if (!users[fromUser].notifications) users[fromUser].notifications = [];
+                users[fromUser].notifications.push({ type: 'rejected', from: currentUserGlobal });
+                localStorage.setItem('lovechord_users', JSON.stringify(users));
+            }
+            showNotificationGlobal('Запрос отклонен', false);
+            updateNotificationBadgeGlobal();
+        }
+
+        function toggleNotificationsGlobal() {
+            let panel = document.getElementById('notificationPanel');
+            if (!panel) return;
+            if (panel.classList.contains('show')) panel.classList.remove('show');
+            else {
+                let list = document.getElementById('notificationsList');
+                if (list) {
+                    list.innerHTML = '';
+                    if (userDataGlobal.friendRequests && userDataGlobal.friendRequests.length > 0) {
+                        for (let req of userDataGlobal.friendRequests) {
+                            let div = document.createElement('div');
+                            div.className = 'notification-item';
+                            div.innerHTML = `<div><strong>${req}</strong> хочет добавить вас в друзья</div>
+                                <div class="notification-actions">
+                                    <button class="notif-accept" onclick="acceptFriendRequestGlobal('${req}')">Принять</button>
+                                    <button class="notif-reject" onclick="rejectFriendRequestGlobal('${req}')">Отклонить</button>
+                                </div>`;
+                            list.appendChild(div);
+                        }
+                    }
+                    if (userDataGlobal.notifications && userDataGlobal.notifications.length > 0) {
+                        for (let notif of userDataGlobal.notifications) {
+                            let div = document.createElement('div');
+                            div.className = 'notification-item';
+                            if (notif.type === 'rejected') {
+                                div.innerHTML = `<div><strong>${notif.from}</strong> отклонил ваш запрос в друзья</div>`;
+                            }
+                            list.appendChild(div);
+                        }
+                    }
+                    if (list.children.length === 0) {
+                        list.innerHTML = '<div style="padding:12px;">Нет уведомлений</div>';
+                    }
+                }
+                panel.classList.add('show');
+            }
+        }
+
+        function openChatWithGlobal(friendName) {
+            currentChatWithGlobal = friendName;
+            let modal = document.getElementById('chatModal');
+            if (modal) {
+                document.getElementById('chatFriendName').textContent = friendName;
+                modal.classList.add('show');
+                loadChatMessagesGlobal();
+            }
+        }
+
+        function closeChatGlobal() {
+            let modal = document.getElementById('chatModal');
+            if (modal) modal.classList.remove('show');
+            currentChatWithGlobal = null;
+        }
+
+        function sendMessageGlobal() {
+            let input = document.getElementById('chatInput');
+            let text = input.value.trim();
+            if (!text || !currentChatWithGlobal) return;
+            
+            if (!userDataGlobal.chats) userDataGlobal.chats = {};
+            if (!userDataGlobal.chats[currentChatWithGlobal]) userDataGlobal.chats[currentChatWithGlobal] = [];
+            userDataGlobal.chats[currentChatWithGlobal].push({ from: currentUserGlobal, text: text, time: Date.now() });
+            saveGlobalUserData();
+            
+            let users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+            if (users[currentChatWithGlobal]) {
+                if (!users[currentChatWithGlobal].chats) users[currentChatWithGlobal].chats = {};
+                if (!users[currentChatWithGlobal].chats[currentUserGlobal]) users[currentChatWithGlobal].chats[currentUserGlobal] = [];
+                users[currentChatWithGlobal].chats[currentUserGlobal].push({ from: currentUserGlobal, text: text, time: Date.now() });
+                localStorage.setItem('lovechord_users', JSON.stringify(users));
+            }
+            
+            input.value = '';
+            loadChatMessagesGlobal();
+        }
+
+        function loadChatMessagesGlobal() {
+            let container = document.getElementById('chatMessages');
+            if (!container || !currentChatWithGlobal) return;
+            let messages = (userDataGlobal.chats && userDataGlobal.chats[currentChatWithGlobal]) ? userDataGlobal.chats[currentChatWithGlobal] : [];
+            container.innerHTML = '';
+            for (let msg of messages) {
+                let div = document.createElement('div');
+                div.className = 'message ' + (msg.from === currentUserGlobal ? 'sent' : 'received');
+                div.textContent = msg.text;
+                container.appendChild(div);
+            }
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function createConfetti() {
+            const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ffaa00', '#ff6600'];
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * window.innerWidth + 'px';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.width = Math.random() * 10 + 5 + 'px';
+                confetti.style.height = Math.random() * 10 + 5 + 'px';
+                confetti.style.animationDuration = Math.random() * 2 + 2 + 's';
+                confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 3000);
+            }
+        }
+
+        function showAchievementNotification(title, desc, icon = '🏆') {
+            const notification = document.createElement('div');
+            notification.className = 'achievement-notification';
+            notification.innerHTML = `<div class="achievement-icon">${icon}</div><div class="achievement-title">${title}</div><div class="achievement-desc">${desc}</div>`;
+            document.body.appendChild(notification);
+            gameBox.classList.add('completed');
+            setTimeout(() => gameBox.classList.remove('completed'), 500);
+            createConfetti();
+            setTimeout(() => {
+                notification.style.animation = 'achievementUnlock 0.3s reverse';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // ПРОВЕРКА ПОСТОЯННЫХ ЗАДАНИЙ
+        function checkPermanentTasks(user) {
+            const permanentTasks = [
+                { id: 'first_photo', name: 'Поиграть впервые в "📸 Угадай автора по фото"', reward: '30', rewardType: 'tokens' },
+                { id: 'totalGames30', name: 'Сыграть в общем 30 игр', reward: 'color_pink', rewardType: 'colors', rewardData: ['#ffb7c5', '#ffc0cb', '#ffd1dc', '#ffe4e1'] },
+                { id: 'totalGames50', name: 'Сыграть в общем 50 игр', reward: 'banner_Britney0.1', rewardType: 'banner', rewardData: 'Britney0.1' },
+                { id: 'totalGames100', name: 'Сыграть в общем 100 игр', reward: '50', rewardType: 'tokens' },
+                { id: 'totalGames150', name: 'Сыграть в общем 150 игр', reward: '60', rewardType: 'tokens' },
+                { id: 'wins30', name: 'Набрать в общем 30 побед', reward: '30', rewardType: 'tokens' },
+                { id: 'wins50', name: 'Набрать в общем 50 побед', reward: 'color_green', rewardType: 'colors', rewardData: ['#90ee90', '#98fb98', '#7cfc00', '#32cd32'] },
+                { id: 'wins100', name: 'Набрать в общем 100 побед', reward: '30', rewardType: 'tokens' },
+                { id: 'wins150', name: 'Набрать в общем 150 побед', reward: '50', rewardType: 'tokens' },
+                { id: 'streak5', name: 'Набрать серию побед 5', reward: 'color_blue', rewardType: 'colors', rewardData: ['#87ceeb', '#87cefa', '#00bfff', '#1e90ff'] },
+                { id: 'streak10', name: 'Набрать серию побед 10', reward: 'banner_Marshmello0.2', rewardType: 'banner', rewardData: 'Marshmello0.2' },
+                { id: 'streak15', name: 'Набрать серию побед 15', reward: '50', rewardType: 'tokens' },
+                { id: 'streak20', name: 'Набрать серию побед 20', reward: '150', rewardType: 'tokens' },
+                { id: 'dailyTasks10', name: 'Выполнить 10 ежедневных заданий', reward: 'banner_Christina0.2', rewardType: 'banner', rewardData: 'Christina0.2' },
+                { id: 'dailyTasks15', name: 'Выполнить 15 ежедневных заданий', reward: '70', rewardType: 'tokens' },
+                { id: 'dailyTasks20', name: 'Выполнить 20 ежедневных заданий', reward: '150', rewardType: 'tokens' }
+            ];
+            
+            if (!user.completedTasks) user.completedTasks = [];
+            
+            for (const task of permanentTasks) {
+                if (user.completedTasks.includes(task.id)) continue;
+                
+                let completed = false;
+                
+                if (task.id === 'first_photo' && user.stats.totalGamesPlayed >= 1) completed = true;
+                if (task.id === 'totalGames30' && user.stats.totalGamesPlayed >= 30) completed = true;
+                if (task.id === 'totalGames50' && user.stats.totalGamesPlayed >= 50) completed = true;
+                if (task.id === 'totalGames100' && user.stats.totalGamesPlayed >= 100) completed = true;
+                if (task.id === 'totalGames150' && user.stats.totalGamesPlayed >= 150) completed = true;
+                if (task.id === 'wins30' && user.stats.wins >= 30) completed = true;
+                if (task.id === 'wins50' && user.stats.wins >= 50) completed = true;
+                if (task.id === 'wins100' && user.stats.wins >= 100) completed = true;
+                if (task.id === 'wins150' && user.stats.wins >= 150) completed = true;
+                if (task.id === 'streak5' && user.streak >= 5) completed = true;
+                if (task.id === 'streak10' && user.streak >= 10) completed = true;
+                if (task.id === 'streak15' && user.streak >= 15) completed = true;
+                if (task.id === 'streak20' && user.streak >= 20) completed = true;
+                if (task.id === 'dailyTasks10' && user.dailyTasksCompletedCount >= 10) completed = true;
+                if (task.id === 'dailyTasks15' && user.dailyTasksCompletedCount >= 15) completed = true;
+                if (task.id === 'dailyTasks20' && user.dailyTasksCompletedCount >= 20) completed = true;
+                
+                if (completed) {
+                    user.completedTasks.push(task.id);
+                    
+                    if (task.rewardType === 'tokens') {
+                        user.tokens += parseInt(task.reward);
+                        showAchievementNotification(`🎉 ЗАДАНИЕ ВЫПОЛНЕНО!`, `${task.name} +${task.reward} жетонов`, '🏆');
+                    } else if (task.rewardType === 'colors') {
+                        if (!user.unlockedUsernameColors) user.unlockedUsernameColors = [];
+                        for (const color of task.rewardData) {
+                            if (!user.unlockedUsernameColors.includes(color)) {
+                                user.unlockedUsernameColors.push(color);
+                            }
+                        }
+                        showAchievementNotification(`🎉 ЗАДАНИЕ ВЫПОЛНЕНО!`, `${task.name} - открыты новые цвета!`, '🎨');
+                    } else if (task.rewardType === 'banner') {
+                        if (!user.unlockedBannerImages) user.unlockedBannerImages = [];
+                        if (!user.unlockedBannerImages.includes(task.rewardData)) {
+                            user.unlockedBannerImages.push(task.rewardData);
+                            showAchievementNotification(`🎉 ЗАДАНИЕ ВЫПОЛНЕНО!`, `${task.name} - открыт баннер!`, '🖼️');
+                        }
+                    }
+                }
+            }
+        }
+
+        // ПРОВЕРКА ЕЖЕДНЕВНЫХ ЗАДАНИЙ
+        function checkDailyTasks(user, today, newCorrectCount) {
+            if (!user.dailyTasks) return false;
+            
+            let anyTaskCompleted = false;
+            
+            for (const task of user.dailyTasks) {
+                if (user.dailyTasksCompleted.includes(task.id)) continue;
+                
+                let isCompleted = false;
+                
+                if (task.id === 'photo_3' && newCorrectCount >= 3) isCompleted = true;
+                else if (task.id === 'photo_5' && newCorrectCount >= 5) isCompleted = true;
+                else if (task.id === 'photo_7' && newCorrectCount >= 7) isCompleted = true;
+                else if (task.id === 'photo_10' && newCorrectCount >= 10) isCompleted = true;
+                
+                if (isCompleted) {
+                    user.dailyTasksCompleted.push(task.id);
+                    user.tokens = (user.tokens || 100) + task.reward;
+                    anyTaskCompleted = true;
+                    showAchievementNotification(`✨ ЗАДАНИЕ ВЫПОЛНЕНО! ✨`, `${task.name}! +${task.reward} жетонов`, '📅');
+                }
+            }
+            
+            if (anyTaskCompleted) {
+                user.dailyTasksCompletedCount = (user.dailyTasksCompletedCount || 0) + 1;
+                checkPermanentTasks(user);
+            }
+            
+            return anyTaskCompleted;
+        }
+
+        function updateUserStats(isCorrect, isWin, gameName, category) {
+            const currentUser = localStorage.getItem('lovechord_current_user');
+            if (!currentUser) return;
+            
+            const users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+            const user = users[currentUser];
+            if (!user) return;
+            
+            if (!user.stats) {
+                user.stats = { totalGamesPlayed: 0, totalCorrectAnswers: 0, totalWrongAnswers: 0, wins: 0 };
+            }
+            if (!user.tokens) user.tokens = 100;
+            if (!user.unlockedUsernameColors) user.unlockedUsernameColors = ['#ffffff', '#f5c4c4', '#e8a0a0'];
+            if (!user.unlockedBannerColors) user.unlockedBannerColors = ['#1e1e2f', '#2a2a3a', '#f5c4c4', '#e8a0a0'];
+            if (!user.unlockedBannerImages) user.unlockedBannerImages = ['Britney0.4'];
+            
+            user.stats.totalGamesPlayed++;
+            if (isCorrect) {
+                user.stats.totalCorrectAnswers++;
+                correctAnswersCount++;
+            } else {
+                user.stats.totalWrongAnswers++;
+            }
+            
+            if (isWin) {
+                user.stats.wins++;
+                user.streak = (user.streak || 0) + 1;
+                showAchievementNotification('🎉 ПОБЕДА! 🎉', `Вы завершили игру!`, '🏆');
+            } else if (isCorrect) {
+                user.streak = 0;
+            } else {
+                user.streak = 0;
+            }
+            
+            const today = new Date().toDateString();
+            if (!user.dailyProgress) user.dailyProgress = {};
+            if (!user.dailyProgress[today]) user.dailyProgress[today] = {};
+            
+            if (gameName === 'photo') {
+                user.dailyProgress[today].photo_correct = correctAnswersCount;
+            }
+            
+            checkPermanentTasks(user);
+            checkDailyTasks(user, today, correctAnswersCount);
+            
+            users[currentUser] = user;
+            localStorage.setItem('lovechord_users', JSON.stringify(users));
+            updateDailyTaskIndicator();
+        }
+
+        function updateDailyTaskIndicator() {
+            const currentUser = localStorage.getItem('lovechord_current_user');
+            if (!currentUser) {
+                taskStatusSpan.textContent = 'Войти в профиль';
+                return;
+            }
+            
+            const users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+            const user = users[currentUser];
+            if (!user) {
+                taskStatusSpan.textContent = 'Войти в профиль';
+                return;
+            }
+            
+            const today = new Date().toDateString();
+            const currentCorrect = user.dailyProgress?.[today]?.photo_correct || 0;
+            
+            let activeTask = null;
+            let activeTarget = null;
+            
+            if (user.dailyTasks) {
+                const targets = [3, 5, 7, 10];
+                for (const target of targets) {
+                    const taskId = `photo_${target}`;
+                    const taskExists = user.dailyTasks.some(t => t.id === taskId);
+                    const taskCompleted = user.dailyTasksCompleted?.includes(taskId) || false;
+                    
+                    if (taskExists && !taskCompleted) {
+                        activeTarget = target;
+                        activeTask = taskId;
+                        break;
+                    }
+                }
+            }
+            
+            const indicator = document.getElementById('dailyTaskIndicator');
+            
+            if (!activeTask) {
+                taskStatusSpan.innerHTML = '✅ Задания выполнены!';
+                indicator.classList.add('completed');
+            } else {
+                taskStatusSpan.innerHTML = `📅 Угадай автора ${activeTarget} раз: ${currentCorrect}/${activeTarget}`;
+                indicator.classList.remove('completed');
+            }
+        }
+
+        function loadRecords() {
+            const savedPersonal = localStorage.getItem('sonchiks_photo_personal_best');
+            if (savedPersonal) {
+                personalBest = JSON.parse(savedPersonal);
+                document.getElementById('personalBestScore').textContent = personalBest.score;
+                if (personalBest.date) {
+                    document.getElementById('personalBestDate').textContent = formatTimeAgo(personalBest.date);
+                }
+            }
+            
+            const savedGlobal = localStorage.getItem('sonchiks_photo_global_best');
+            if (savedGlobal) {
+                globalBest = JSON.parse(savedGlobal);
+                document.getElementById('globalBestScore').textContent = globalBest.score;
+                if (globalBest.date) {
+                    document.getElementById('globalBestDate').textContent = formatTimeAgo(globalBest.date);
+                }
+            }
+        }
+
+        function formatTimeAgo(timestamp) {
+            const now = Date.now();
+            const diff = now - timestamp;
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+            
+            if (days > 0) return `${days} ${days === 1 ? 'день' : days < 5 ? 'дня' : 'дней'} назад`;
+            if (hours > 0) return `${hours} ${hours === 1 ? 'час' : hours < 5 ? 'часа' : 'часов'} назад`;
+            if (minutes > 0) return `${minutes} ${minutes === 1 ? 'минуту' : minutes < 5 ? 'минуты' : 'минут'} назад`;
+            return "только что";
+        }
+
+        function checkAndUpdateRecords(scoreToCheck) {
+            let updated = false;
+            let recordMessage = "";
+            
+            if (scoreToCheck > personalBest.score) {
+                personalBest.score = scoreToCheck;
+                personalBest.date = Date.now();
+                localStorage.setItem('sonchiks_photo_personal_best', JSON.stringify(personalBest));
+                document.getElementById('personalBestScore').textContent = personalBest.score;
+                document.getElementById('personalBestDate').textContent = formatTimeAgo(personalBest.date);
+                updated = true;
+                recordMessage = "🎉 НОВЫЙ ЛИЧНЫЙ РЕКОРД! 🎉";
+                showAchievementNotification('ЛИЧНЫЙ РЕКОРД!', `Вы набрали ${scoreToCheck} очков!`, '🏆');
+            }
+            
+            if (scoreToCheck > globalBest.score) {
+                globalBest.score = scoreToCheck;
+                globalBest.date = Date.now();
+                localStorage.setItem('sonchiks_photo_global_best', JSON.stringify(globalBest));
+                document.getElementById('globalBestScore').textContent = globalBest.score;
+                document.getElementById('globalBestDate').textContent = formatTimeAgo(globalBest.date);
+                updated = true;
+                showAchievementNotification('МИРОВОЙ РЕКОРД!', `Непобедимый чемпион! ${scoreToCheck} очков!`, '🌍');
+            }
+            
+            return recordMessage;
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                let j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function prepareQuestions() {
+            return artists.map(artist => ({
+                correctArtist: artist.name,
+                photoUrl: artist.photoUrl
+            }));
+        }
+
+        function showPhoto(photoUrl) {
+            if (photoUrl && photoUrl !== "") {
+                photoImg.src = photoUrl;
+                photoImg.style.display = "block";
+                photoPlaceholder.style.display = "none";
+            } else {
+                photoImg.style.display = "none";
+                photoPlaceholder.style.display = "block";
+            }
+        }
+
+        function generateAnswerButtons(correct) {
+            let otherArtists = allArtistNames.filter(name => name !== correct);
+            for (let i = otherArtists.length - 1; i > 0; i--) {
+                let j = Math.floor(Math.random() * (i + 1));
+                [otherArtists[i], otherArtists[j]] = [otherArtists[j], otherArtists[i]];
+            }
+            let randomTwo = otherArtists.slice(0, 2);
+            let options = [correct, ...randomTwo];
+            for (let i = options.length - 1; i > 0; i--) {
+                let j = Math.floor(Math.random() * (i + 1));
+                [options[i], options[j]] = [options[j], options[i]];
+            }
+            answerDiv.innerHTML = "";
+            options.forEach(artist => {
+                let btn = document.createElement("button");
+                btn.textContent = artist;
+                btn.onclick = () => checkAnswer(artist);
+                answerDiv.appendChild(btn);
+            });
+        }
+
+        function loadQuestion() {
+            if (!gameActive) return;
+            
+            canAnswer = true;
+            messageDiv.innerHTML = "";
+            messageDiv.className = "result";
+            nextBtn.style.display = "none";
+            
+            if (!questions.length || currentIndex >= questions.length) {
+                questions = prepareQuestions();
+                shuffleArray(questions);
+                currentIndex = 0;
+            }
+            
+            currentQuestion = questions[currentIndex];
+            showPhoto(currentQuestion.photoUrl);
+            document.getElementById("questionText").innerHTML = "📸 Кто этот исполнитель?";
+            generateAnswerButtons(currentQuestion.correctArtist);
+        }
+        
+        function checkAnswer(selectedArtist) {
+            if (!canAnswer || !gameActive) return;
+            canAnswer = false;
+            const isCorrect = (selectedArtist === currentQuestion.correctArtist);
+            
+            const allButtons = answerDiv.querySelectorAll('button');
+            allButtons.forEach(btn => btn.disabled = true);
+            
+            if (isCorrect) {
+                currentScore++;
+                scoreSpan.textContent = currentScore;
+                updateUserStats(true, false, 'photo', null);
+                messageDiv.innerHTML = "✅ ПРАВИЛЬНО! +1 очко ✅";
+                messageDiv.className = "result correct";
+                currentIndex++;
+                nextBtn.style.display = "block";
+                
+                if (currentIndex >= questions.length) {
+                    updateUserStats(true, true, 'photo', null);
+                    checkAndUpdateRecords(currentScore);
+                    messageDiv.innerHTML = `🎉 ИГРА ОКОНЧЕНА! 🎉<br><br>Твой счёт: ${currentScore} из ${questions.length}<br><br>🔄 Нажми "Начать заново", чтобы сыграть снова!`;
+                    nextBtn.style.display = "none";
+                    gameActive = false;
+                    gameCompleted = true;
+                }
+            } else {
+                updateUserStats(false, false, 'photo', null);
+                const recordMessage = checkAndUpdateRecords(currentScore);
+                messageDiv.innerHTML = `❌ НЕПРАВИЛЬНО! Правильный ответ: ${currentQuestion.correctArtist} ❌<br><br>${recordMessage ? recordMessage + "<br><br>" : ""}Игра начинается заново!`;
+                messageDiv.className = "result wrong";
+                currentScore = 0;
+                correctAnswersCount = 0;
+                scoreSpan.textContent = currentScore;
+                gameActive = false;
+                
+                setTimeout(() => {
+                    resetGameState();
+                    gameActive = true;
+                    loadQuestion();
+                }, 2000);
+            }
+        }
+
+        function nextQuestion() {
+            if (currentIndex >= questions.length) {
+                resetGame();
+                return;
+            }
+            loadQuestion();
+        }
+
+        function resetGameState() {
+            questions = prepareQuestions();
+            shuffleArray(questions);
+            currentIndex = 0;
+            currentScore = 0;
+            correctAnswersCount = 0;
+            scoreSpan.textContent = currentScore;
+            canAnswer = true;
+            gameActive = true;
+            gameCompleted = false;
+        }
+
+        function resetGame() {
+            if (!gameCompleted && currentScore > 0) {
+                checkAndUpdateRecords(currentScore);
+            }
+            resetGameState();
+            gameActive = true;
+            loadQuestion();
+        }
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('sonchiks_theme');
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-theme');
+            } else {
+                document.body.classList.remove('light-theme');
+            }
+        }
+
+        function toggleTheme() {
+            if (document.body.classList.contains('light-theme')) {
+                document.body.classList.remove('light-theme');
+                localStorage.setItem('sonchiks_theme', 'dark');
+            } else {
+                document.body.classList.add('light-theme');
+                localStorage.setItem('sonchiks_theme', 'light');
+            }
+        }
+
+        function loadProfileIcon() {
+            const currentUser = localStorage.getItem('lovechord_current_user');
+            const users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+            
+            if (currentUser && users[currentUser]) {
+                const icon = document.getElementById('profileIcon');
+                if (users[currentUser].avatar) {
+                    icon.innerHTML = `<img src="${users[currentUser].avatar}" alt="avatar">`;
+                } else {
+                    icon.innerHTML = users[currentUser].username.charAt(0).toUpperCase();
+                    icon.style.fontSize = '24px';
+                    icon.style.fontWeight = 'bold';
+                }
+            }
+        }
+
+        // Экспорт функций в глобальную область
+        window.openSearchModal = openSearchModal;
+        window.closeSearchModal = closeSearchModal;
+        window.searchUsers = searchUsers;
+        window.viewProfileGlobal = viewProfileGlobal;
+        window.toggleNotifications = toggleNotificationsGlobal;
+        window.closeChat = closeChatGlobal;
+        window.sendMessage = sendMessageGlobal;
+        window.toggleTheme = toggleTheme;
+        
+        loadProfileIcon();
+        loadTheme();
+        loadRecords();
+        loadGlobalUserData();
+        updateDailyTaskIndicator();
+        resetGameState();
+        loadQuestion();
+        
+        // Обновление чата каждую секунду
+        setInterval(() => { if (currentChatWithGlobal) loadChatMessagesGlobal(); }, 1000);
+    </script>
+</body>
+</html>

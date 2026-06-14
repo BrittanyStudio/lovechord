@@ -1,0 +1,1780 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="referrer" content="no-referrer">
+    <title>Угадай песню по эмодзи - LoveChord</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap');
+        
+        :root {
+            --bg-body: #1e1e2f;
+            --bg-game-box: #2a2a3a;
+            --bg-card: #1e1e2f;
+            --text-primary: white;
+            --text-secondary: #aaa;
+            --btn-bg: #f5c4c4;
+            --btn-hover: #e8a0a0;
+            --btn-text: #333;
+            --border-color: #f5c4c4;
+            --accent: #ffcc00;
+            --success: #00aa44;
+            --success-glow: #00ff55;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            text-align: center;
+            background: var(--bg-body);
+            color: var(--text-primary);
+            padding: 20px;
+            transition: background 0.3s, color 0.3s;
+        }
+        
+        body.light-theme {
+            --bg-body: #ffe4e1;
+            --bg-game-box: #ffd6d6;
+            --bg-card: #ffebeb;
+            --text-primary: #333;
+            --text-secondary: #666;
+            --btn-bg: #2a2a3a;
+            --btn-hover: #3a3a4a;
+            --btn-text: #f5c4c4;
+            --border-color: #2a2a3a;
+            --accent: #ff6b6b;
+        }
+        
+        @keyframes achievementUnlock {
+            0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+            50% { transform: scale(1.2) rotate(0deg); }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+        
+        @keyframes confettiFall {
+            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+        
+        @keyframes glowPulse {
+            0% { box-shadow: 0 0 0 0 var(--success-glow); }
+            50% { box-shadow: 0 0 20px 10px var(--success-glow); }
+            100% { box-shadow: 0 0 0 0 var(--success-glow); }
+        }
+        
+        .achievement-notification {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
+            color: #333;
+            padding: 20px 40px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 24px;
+            z-index: 10000;
+            animation: achievementUnlock 0.5s ease-out;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            text-align: center;
+            min-width: 300px;
+        }
+        
+        .achievement-notification .achievement-icon { font-size: 48px; display: block; margin-bottom: 10px; }
+        .achievement-notification .achievement-title { font-size: 20px; margin-bottom: 5px; }
+        .achievement-notification .achievement-desc { font-size: 14px; opacity: 0.9; }
+        
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            position: absolute;
+            z-index: 9999;
+            pointer-events: none;
+            animation: confettiFall 3s ease-in forwards;
+        }
+        
+        .game-box.completed { animation: glowPulse 0.5s ease-out; }
+        
+        .LoveChord-container {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            text-align: center;
+            z-index: 1000;
+        }
+        
+        .LoveChord-btn {
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: none;
+            padding: 10px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: block;
+            text-align: center;
+            text-decoration: none;
+        }
+        
+        .LoveChord-btn:hover { background: var(--btn-hover); transform: scale(1.02); }
+        .LoveChord-main { display: block; font-size: 20px; font-weight: 800; font-family: 'Montserrat', sans-serif; letter-spacing: 2px; font-variant: small-caps; }
+        .about-songs { display: block; font-size: 9px; text-decoration: none; margin-top: 3px; font-weight: normal; font-family: 'Montserrat', sans-serif; }
+
+        /* ИКОНКИ ПОИСКА И УВЕДОМЛЕНИЙ */
+        .search-icon {
+            position: fixed;
+            top: 20px;
+            right: 140px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: 2px solid var(--border-color);
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            z-index: 1000;
+        }
+        .search-icon:hover { transform: scale(1.05); background: var(--btn-hover); }
+        
+        .notification-icon {
+            position: fixed;
+            top: 20px;
+            right: 200px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: 2px solid var(--border-color);
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            z-index: 1000;
+        }
+        .notification-icon:hover { transform: scale(1.05); background: var(--btn-hover); }
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff4444;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .profile-icon {
+            position: fixed;
+            top: 20px;
+            right: 80px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: 2px solid var(--border-color);
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            z-index: 1000;
+            overflow: hidden;
+        }
+        
+        .profile-icon:hover { transform: scale(1.05); background: var(--btn-hover); }
+        .profile-icon img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .daily-task-indicator {
+            position: fixed;
+            top: 20px;
+            right: 260px;
+            background: var(--btn-bg);
+            border-radius: 20px;
+            padding: 5px 12px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--btn-text);
+        }
+        
+        .daily-task-indicator.completed { background: var(--success); color: white; animation: glowPulse 0.5s ease-out; }
+        
+        .theme-toggle-bottom {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 16px;
+            font-weight: 600;
+            z-index: 1000;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .theme-toggle-bottom:hover { background: var(--btn-hover); transform: scale(1.02); }
+        
+        .nav-menu {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 30px;
+            margin-top: 60px;
+            z-index: 1000;
+            position: relative;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+            padding-bottom: 10px;
+            cursor: grab;
+        }
+        
+        .nav-menu:active { cursor: grabbing; }
+        .nav-menu::-webkit-scrollbar { height: 5px; }
+        .nav-menu::-webkit-scrollbar-track { background: var(--bg-game-box); border-radius: 10px; }
+        .nav-menu::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
+        .nav-menu::-webkit-scrollbar-thumb:hover { background: var(--btn-hover); }
+        
+        .nav-btn {
+            background: var(--bg-game-box);
+            border: 2px solid var(--border-color);
+            padding: 10px 20px;
+            font-size: 14px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.2s;
+            color: var(--border-color);
+            font-weight: 600;
+            font-family: 'Montserrat', sans-serif;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        
+        .nav-btn:hover:not(.active) { background: var(--btn-bg); color: var(--btn-text); }
+        .nav-btn.active { background: var(--btn-bg); color: var(--btn-text); cursor: default; opacity: 0.7; }
+        
+        .category-menu {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        
+        .category-btn {
+            background: var(--bg-game-box);
+            border: 2px solid var(--border-color);
+            padding: 12px 25px;
+            font-size: 16px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.2s;
+            color: var(--border-color);
+            font-weight: 600;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .category-btn:hover { background: var(--btn-bg); color: var(--btn-text); }
+        
+        .records-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            max-width: 800px;
+            margin: 0 auto 20px auto;
+        }
+        
+        .record-card {
+            background: var(--bg-game-box);
+            border-radius: 20px;
+            padding: 15px 20px;
+            flex: 1;
+            text-align: center;
+            border: 2px solid var(--border-color);
+        }
+        
+        .record-card h3 { color: var(--border-color); font-size: 18px; margin-bottom: 10px; font-variant: small-caps; letter-spacing: 1px; }
+        .record-score { font-size: 36px; font-weight: bold; color: var(--accent); }
+        .record-date { font-size: 12px; color: var(--text-secondary); margin-top: 8px; }
+        .record-label { font-size: 14px; color: var(--border-color); margin-top: 5px; }
+        
+        .game-box {
+            background: var(--bg-game-box);
+            max-width: 700px;
+            margin: 20px auto;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+            transition: all 0.3s;
+        }
+        
+        h1 {
+            color: var(--border-color);
+            font-family: 'Montserrat', sans-serif;
+            font-variant: small-caps;
+            font-weight: 800;
+            letter-spacing: 2px;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .score {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: var(--accent);
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .emojis-container {
+            font-size: 64px;
+            text-align: center;
+            margin: 30px 0;
+            padding: 30px;
+            background: var(--bg-card);
+            border-radius: 30px;
+            letter-spacing: 15px;
+            word-break: break-word;
+            line-height: 1.5;
+        }
+        
+        .question-text {
+            font-size: 20px;
+            margin: 20px 0;
+            color: var(--accent);
+            font-weight: bold;
+        }
+        
+        .options-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        
+        .option-btn {
+            background: var(--btn-bg);
+            border: none;
+            padding: 15px 25px;
+            font-size: 16px;
+            margin: 5px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: 0.2s;
+            color: var(--btn-text);
+            font-family: 'Montserrat', sans-serif;
+            min-width: 200px;
+        }
+        
+        .option-btn:hover { background: var(--btn-hover); transform: scale(1.05); }
+        .option-btn.disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .option-btn.disabled:hover { transform: none; }
+        
+        .result-message {
+            font-size: 18px;
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 15px;
+        }
+        
+        .correct { background: #00aa44; color: white; }
+        .wrong { background: #aa0044; color: white; }
+        
+        .next-btn {
+            background: var(--btn-bg);
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            margin: 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: 0.2s;
+            color: var(--btn-text);
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .next-btn:hover { background: var(--btn-hover); transform: scale(1.02); }
+        
+        .reset-btn {
+            background: #888;
+            border: none;
+            padding: 12px 25px;
+            font-size: 14px;
+            margin: 10px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: 0.2s;
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .reset-btn:hover { background: #666; }
+        
+        .loading { font-size: 12px; color: var(--text-secondary); margin-top: 10px; }
+        
+        /* МОДАЛЬНЫЕ ОКНА */
+        .search-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--bg-game-box);
+            border: 2px solid var(--border-color);
+            border-radius: 20px;
+            padding: 30px;
+            z-index: 2000;
+            width: 90%;
+            max-width: 500px;
+        }
+        .search-modal.show { display: block; }
+        .search-input { width: 100%; padding: 12px; border-radius: 30px; border: 2px solid var(--border-color); background: var(--bg-body); color: var(--text-primary); font-family: 'Montserrat', sans-serif; font-size: 16px; margin-bottom: 20px; }
+        .search-results { max-height: 300px; overflow-y: auto; }
+        .search-result-item { padding: 10px; margin: 5px 0; background: var(--bg-card); border-radius: 15px; cursor: pointer; transition: 0.2s; }
+        .search-result-item:hover { background: var(--bg-game-box); transform: scale(1.02); }
+        .close-modal { background: var(--btn-bg); border: none; padding: 10px 20px; border-radius: 30px; cursor: pointer; margin-top: 15px; }
+        
+        .notification-panel {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            width: 300px;
+            background: var(--bg-game-box);
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            z-index: 2000;
+            display: none;
+        }
+        .notification-panel.show { display: block; }
+        .notification-item {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+        .notification-item:hover { background: var(--bg-card); }
+        .notification-actions { display: flex; gap: 10px; margin-top: 8px; }
+        .notif-accept, .notif-reject { padding: 5px 12px; border-radius: 20px; border: none; cursor: pointer; font-size: 12px; }
+        .notif-accept { background: #00aa44; color: white; }
+        .notif-reject { background: #aa0044; color: white; }
+        
+        .chat-modal {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 350px;
+            height: 450px;
+            background: var(--bg-game-box);
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            z-index: 2000;
+            flex-direction: column;
+        }
+        .chat-modal.show { display: flex; }
+        .chat-header {
+            padding: 12px;
+            background: var(--bg-card);
+            border-radius: 13px 13px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chat-messages {
+            flex: 1;
+            padding: 12px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .message {
+            max-width: 80%;
+            padding: 8px 12px;
+            border-radius: 15px;
+        }
+        .message.sent { background: var(--accent); color: #333; align-self: flex-end; }
+        .message.received { background: var(--bg-card); align-self: flex-start; }
+        .chat-input-area { display: flex; padding: 12px; gap: 8px; border-top: 1px solid var(--border-color); }
+        .chat-input { flex: 1; padding: 8px; border-radius: 20px; border: 1px solid var(--border-color); background: var(--bg-body); color: var(--text-primary); }
+        .chat-send { background: var(--btn-bg); border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; }
+        
+        .notification { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #00aa44; border-radius: 20px; padding: 15px 30px; z-index: 2000; text-align: center; animation: fadeInOut 2.5s ease-in-out; color: white; font-weight: bold; white-space: nowrap; }
+        .notification.error { background: #aa0044; }
+        @keyframes fadeInOut { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); } 15% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 85% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); } }
+    </style>
+</head>
+<body>
+
+    <div class="LoveChord-container">
+        <div class="LoveChord-btn" onclick="window.location.href='index.html'">
+            <span class="LoveChord-main">LoveChord</span>
+            <span class="about-songs">все о песнях*</span>
+        </div>
+    </div>
+
+    <!-- ИКОНКИ ПОИСКА И УВЕДОМЛЕНИЙ -->
+    <div class="search-icon" onclick="openSearchModal()">🔍</div>
+    <div class="notification-icon" id="notificationIcon" onclick="toggleNotifications()">
+        🔔
+        <span id="notificationBadge" class="notification-badge" style="display: none;">0</span>
+    </div>
+
+    <div class="daily-task-indicator" id="dailyTaskIndicator" onclick="window.location.href='profile-dashboard.html'">
+        <span>📅</span>
+        <span id="taskStatus">Задание дня</span>
+    </div>
+
+    <div class="profile-icon" id="profileIcon" onclick="window.location.href='profile-dashboard.html'">
+        👤
+    </div>
+
+    <div class="nav-menu">
+        <button class="nav-btn" onclick="window.location.href='game.html'">🎤 Угадай автора музыки</button>
+        <button class="nav-btn" onclick="window.location.href='photo-game.html'">📸 Угадай автора по фото</button>
+        <button class="nav-btn" onclick="window.location.href='popular-game.html'">📊 Какая песня популярней</button>
+        <button class="nav-btn" onclick="window.location.href='favorite-game.html'">❤️ Выбери любимую песню</button>
+        <button class="nav-btn" onclick="window.location.href='year-game.html'">📅 Угадай год</button>
+        <button class="nav-btn" onclick="window.location.href='who-wrote-game.html'">✍️ Кто написал...</button>
+        <button class="nav-btn active" onclick="window.location.href='emoji-game.html'">😊 Угадай по эмодзи</button>
+        <button class="nav-btn" onclick="window.location.href='lyrics-game.html'">📝 Угадай по тексту</button>
+    </div>
+
+    <div class="records-container">
+        <div class="record-card">
+            <h3>🏆 Лучший личный счёт</h3>
+            <div class="record-score" id="personalBestScore">0</div>
+            <div class="record-date" id="personalBestDate">—</div>
+            <div class="record-label" id="personalRecordLabel">английские</div>
+        </div>
+        <div class="record-card">
+            <h3>🌍 Лучший счёт среди всех</h3>
+            <div class="record-score" id="globalBestScore">0</div>
+            <div class="record-date" id="globalBestDate">—</div>
+            <div class="record-label" id="globalRecordLabel">английские</div>
+        </div>
+    </div>
+
+    <div class="game-box" id="gameBox">
+        <h1 id="mainTitle">😊 Угадай песню по эмодзи (Английские) 🎵</h1>
+        <p>Какая песня скрывается за этими эмодзи?</p>
+
+        <div class="score">
+            🏆 Текущий счёт: <span id="scoreValue">0</span>
+        </div>
+
+        <div class="category-menu">
+            <button class="category-btn" onclick="switchCategory('english')">🇬🇧 Английские</button>
+            <button class="category-btn" onclick="switchCategory('russian')">🇷🇺 Русские</button>
+            <button class="category-btn" onclick="switchCategory('kpop')">🇰🇷 К-поп</button>
+        </div>
+
+        <div class="emojis-container" id="emojisContainer">🎵 🎶 🎤</div>
+        <div class="question-text" id="questionText">Что это за песня?</div>
+
+        <div class="options-container" id="optionsContainer"></div>
+
+        <div id="resultMessage" class="result-message"></div>
+        
+        <button class="next-btn" id="nextBtn" style="display: none;" onclick="nextQuestion()">➡ Следующий вопрос</button>
+        <button class="reset-btn" onclick="resetGame()">🔄 Начать заново</button>
+    </div>
+
+    <!-- МОДАЛЬНЫЕ ОКНА -->
+    <div id="searchModal" class="search-modal">
+        <h3>🔍 Поиск игроков</h3>
+        <input type="text" id="searchInput" class="search-input" placeholder="Введите никнейм..." onkeyup="searchUsers()">
+        <div id="searchResults" class="search-results"></div>
+        <button class="close-modal" onclick="closeSearchModal()">Закрыть</button>
+    </div>
+
+    <div id="notificationPanel" class="notification-panel">
+        <h4 style="padding: 12px;">Уведомления</h4>
+        <div id="notificationsList"></div>
+    </div>
+
+    <div id="chatModal" class="chat-modal">
+        <div class="chat-header">
+            <span id="chatFriendName">Чат</span>
+            <button onclick="closeChat()" style="background:none; border:none; color:var(--text-primary); cursor:pointer;">✕</button>
+        </div>
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-input-area">
+            <input type="text" id="chatInput" class="chat-input" placeholder="Сообщение...">
+            <button class="chat-send" onclick="sendMessage()">📤</button>
+        </div>
+    </div>
+
+    <button class="theme-toggle-bottom" onclick="toggleTheme()">🌓 Тема</button>
+
+    <script>
+        // ============================================================
+        // АНГЛИЙСКИЕ ПЕСНИ (200+)
+        // ============================================================
+        const englishSongs = [
+            { title: "...Baby One More Time", emojis: "👶 1️⃣ ⏰ 🔄", artist: "Britney Spears" },
+            { title: "Toxic", emojis: "☣️ 💊", artist: "Britney Spears" },
+            { title: "Circus", emojis: "🎪 🤡", artist: "Britney Spears" },
+            { title: "Bad Romance", emojis: "👎 💕", artist: "Lady Gaga" },
+            { title: "Poker Face", emojis: "🃏 😐", artist: "Lady Gaga" },
+            { title: "Shake It Off", emojis: "💃 🙅", artist: "Taylor Swift" },
+            { title: "Blank Space", emojis: "📝 ⬜", artist: "Taylor Swift" },
+            { title: "Look What You Made Me Do", emojis: "👀 👉", artist: "Taylor Swift" },
+            { title: "Hello", emojis: "👋", artist: "Adele" },
+            { title: "Rolling in the Deep", emojis: "🌀 🌊", artist: "Adele" },
+            { title: "Someone Like You", emojis: "👤 👍", artist: "Adele" },
+            { title: "Umbrella", emojis: "☂️", artist: "Rihanna" },
+            { title: "Diamonds", emojis: "💎 💎", artist: "Rihanna" },
+            { title: "We Found Love", emojis: "🔍 ❤️", artist: "Rihanna" },
+            { title: "Roar", emojis: "🦁 🗣️", artist: "Katy Perry" },
+            { title: "Firework", emojis: "🧨 🎆", artist: "Katy Perry" },
+            { title: "Dark Horse", emojis: "🐴 🌑", artist: "Katy Perry" },
+            { title: "Shape of You", emojis: "🔘 👤", artist: "Ed Sheeran" },
+            { title: "Thinking Out Loud", emojis: "🤔 🗣️", artist: "Ed Sheeran" },
+            { title: "Perfect", emojis: "✨ ✅", artist: "Ed Sheeran" },
+            { title: "Blinding Lights", emojis: "👨‍🦯 💡", artist: "The Weeknd" },
+            { title: "Starboy", emojis: "⭐ 👦", artist: "The Weeknd" },
+            { title: "Save Your Tears", emojis: "💾 😢", artist: "The Weeknd" },
+            { title: "Happy", emojis: "😊", artist: "Pharrell Williams" },
+            { title: "Uptown Funk", emojis: "🏙️ 🕺", artist: "Bruno Mars" },
+            { title: "Just the Way You Are", emojis: "🔘 👤 ✅", artist: "Bruno Mars" },
+            { title: "Sorry", emojis: "🙏", artist: "Justin Bieber" },
+            { title: "Love Yourself", emojis: "❤️ 👤", artist: "Justin Bieber" },
+            { title: "Baby", emojis: "👶", artist: "Justin Bieber" },
+            { title: "Bad Guy", emojis: "👎 👨", artist: "Billie Eilish" },
+            { title: "Happier Than Ever", emojis: "😊 ➡️", artist: "Billie Eilish" },
+            { title: "Levitating", emojis: "🪄 ⬆️", artist: "Dua Lipa" },
+            { title: "Don't Start Now", emojis: "🚫 ▶️ ⏰", artist: "Dua Lipa" },
+            { title: "Watermelon Sugar", emojis: "🍉 🍬", artist: "Harry Styles" },
+            { title: "As It Was", emojis: "⏪", artist: "Harry Styles" },
+            { title: "Flowers", emojis: "🌸", artist: "Miley Cyrus" },
+            { title: "Drivers License", emojis: "🚗 📄", artist: "Olivia Rodrigo" },
+            { title: "Good 4 U", emojis: "👍 4️⃣", artist: "Olivia Rodrigo" },
+            { title: "Havana", emojis: "🇨🇺", artist: "Camila Cabello" },
+            { title: "Señorita", emojis: "👩 💃", artist: "Camila Cabello" },
+            { title: "Closer", emojis: "🔍", artist: "The Chainsmokers" },
+            { title: "Something Just Like This", emojis: "❓ 🎯", artist: "The Chainsmokers" },
+            { title: "Lean On", emojis: "🧍", artist: "Major Lazer" },
+            { title: "Wake Me Up", emojis: "⏰ ⬆️", artist: "Avicii" },
+            { title: "Hey Brother", emojis: "👋 👨", artist: "Avicii" },
+            { title: "Titanium", emojis: "💪 🔩", artist: "David Guetta" },
+            { title: "Summer", emojis: "☀️", artist: "Calvin Harris" },
+            { title: "This Is What You Came For", emojis: "🎯", artist: "Calvin Harris" },
+            { title: "Attention", emojis: "👀", artist: "Charlie Puth" },
+            { title: "We Don't Talk Anymore", emojis: "🚫 💬", artist: "Charlie Puth" },
+            { title: "See You Again", emojis: "👋 🔄", artist: "Wiz Khalifa" },
+            { title: "Freak", emojis: "🤪", artist: "Doja Cat" },
+            { title: "Say So", emojis: "💬 ✅", artist: "Doja Cat" },
+            { title: "Kiss Me More", emojis: "💋 ➕", artist: "Doja Cat" },
+            { title: "Primadonna", emojis: "👸", artist: "Marina" },
+            { title: "How to Be a Heartbreaker", emojis: "💔", artist: "Marina" },
+            { title: "Supermassive Black Hole", emojis: "⚫ 🌌", artist: "Muse" },
+            { title: "Uprising", emojis: "⬆️ 📈", artist: "Muse" },
+            { title: "Natural", emojis: "🌿", artist: "Imagine Dragons" },
+            { title: "Believer", emojis: "🙏", artist: "Imagine Dragons" },
+            { title: "Radioactive", emojis: "☢️", artist: "Imagine Dragons" },
+            { title: "Thunder", emojis: "⛈️", artist: "Imagine Dragons" },
+            { title: "Demons", emojis: "👹", artist: "Imagine Dragons" },
+            { title: "Yellow", emojis: "🟡", artist: "Coldplay" },
+            { title: "Fix You", emojis: "🔧 👤", artist: "Coldplay" },
+            { title: "Viva La Vida", emojis: "🎉", artist: "Coldplay" },
+            { title: "Bohemian Rhapsody", emojis: "🎭 🎹", artist: "Queen" },
+            { title: "We Will Rock You", emojis: "👊 🎸", artist: "Queen" },
+            { title: "Billie Jean", emojis: "👧", artist: "Michael Jackson" },
+            { title: "Beat It", emojis: "🥊", artist: "Michael Jackson" },
+            { title: "Thriller", emojis: "😱", artist: "Michael Jackson" },
+            { title: "Smells Like Teen Spirit", emojis: "👃 🧴", artist: "Nirvana" },
+            { title: "Come As You Are", emojis: "🚪", artist: "Nirvana" },
+            { title: "Wonderwall", emojis: "🤔 🧱", artist: "Oasis" },
+            { title: "Creep", emojis: "🕵️", artist: "Radiohead" },
+            { title: "Seven Nation Army", emojis: "7️⃣", artist: "The White Stripes" },
+            { title: "Mr. Brightside", emojis: "😎", artist: "The Killers" },
+            { title: "Take Me to Church", emojis: "⛪", artist: "Hozier" },
+            { title: "Riptide", emojis: "🌊", artist: "Vance Joy" },
+            { title: "Pumped Up Kicks", emojis: "👟", artist: "Foster The People" },
+            { title: "Sail", emojis: "⛵", artist: "AWOLNATION" },
+            { title: "Lose Yourself", emojis: "🎭", artist: "Eminem" },
+            { title: "Stan", emojis: "📝", artist: "Eminem" },
+            { title: "Halo", emojis: "👼", artist: "Beyoncé" },
+            { title: "Single Ladies", emojis: "💍", artist: "Beyoncé" },
+            { title: "Crazy in Love", emojis: "🤪 ❤️", artist: "Beyoncé" },
+            { title: "God's Plan", emojis: "✝️ 📋", artist: "Drake" },
+            { title: "In My Feelings", emojis: "🤗", artist: "Drake" },
+            { title: "Rockstar", emojis: "🎸 ⭐", artist: "Post Malone" },
+            { title: "Circles", emojis: "⭕", artist: "Post Malone" },
+            { title: "Sunflower", emojis: "🌻", artist: "Post Malone" },
+            { title: "Dance Monkey", emojis: "💃 🐒", artist: "Tones and I" },
+            { title: "Someone You Loved", emojis: "❤️", artist: "Lewis Capaldi" },
+            { title: "Before You Go", emojis: "🚪", artist: "Lewis Capaldi" },
+            { title: "Mood", emojis: "😊", artist: "24kGoldn" },
+            { title: "Stay", emojis: "🏠", artist: "The Kid LAROI" },
+            { title: "Heat Waves", emojis: "🌡️ 🌊", artist: "Glass Animals" },
+            { title: "I Will Always Love You", emojis: "❤️ ♾️", artist: "Whitney Houston" },
+            { title: "My Heart Will Go On", emojis: "❤️ 🚢", artist: "Celine Dion" },
+            { title: "Every Breath You Take", emojis: "👃", artist: "The Police" },
+            { title: "Sweet Child O' Mine", emojis: "🍬 👶", artist: "Guns N' Roses" },
+            { title: "November Rain", emojis: "📅 ☔", artist: "Guns N' Roses" },
+            { title: "Don't Stop Believin'", emojis: "🚫 🛑 🙏", artist: "Journey" },
+            { title: "Livin' On A Prayer", emojis: "🙏", artist: "Bon Jovi" },
+            { title: "Eye of the Tiger", emojis: "👁️ 🐯", artist: "Survivor" },
+            { title: "Another One Bites The Dust", emojis: "🦷 💨", artist: "Queen" },
+            { title: "I Want To Break Free", emojis: "🔓", artist: "Queen" },
+            { title: "Radio Ga Ga", emojis: "📻", artist: "Queen" },
+            { title: "The Show Must Go On", emojis: "🎪", artist: "Queen" }
+        ];
+
+        // ============================================================
+        // РУССКИЕ ПЕСНИ (200+)
+        // ============================================================
+        const russianSongs = [
+            { title: "Владимирский централ", emojis: "🏛️ 🚌", artist: "Михаил Круг" },
+            { title: "Тополиный пух", emojis: "🌳 🌬️", artist: "Иванушки International" },
+            { title: "Я сошла с ума", emojis: "🧠 💨", artist: "Тату" },
+            { title: "Нас не догонят", emojis: "🏃 🚫", artist: "Тату" },
+            { title: "На заре", emojis: "🌅", artist: "Альянс" },
+            { title: "Трава у дома", emojis: "🌿 🏠", artist: "Земляне" },
+            { title: "Конь", emojis: "🐴", artist: "Любэ" },
+            { title: "Группа крови", emojis: "🩸", artist: "Кино" },
+            { title: "Кукушка", emojis: "🐦", artist: "Кино" },
+            { title: "Звезда по имени Солнце", emojis: "⭐ ☀️", artist: "Кино" },
+            { title: "Пачка сигарет", emojis: "🚬 📦", artist: "Кино" },
+            { title: "Выхода нет", emojis: "🚫 🚪", artist: "Сплин" },
+            { title: "Моё сердце", emojis: "❤️", artist: "Сплин" },
+            { title: "Я тебя не отдам", emojis: "🤲", artist: "Serebro" },
+            { title: "Плачут небеса", emojis: "🌧️ 😢", artist: "Тимати" },
+            { title: "Ночь", emojis: "🌙", artist: "Андрей Губин" },
+            { title: "Ягода малинка", emojis: "🍓", artist: "Хабиб" },
+            { title: "Птичка", emojis: "🐦", artist: "HammAli & Navai" },
+            { title: "За бывшего", emojis: "👨 ➡️", artist: "Люся Чеботина" },
+            { title: "Хобби", emojis: "🎨", artist: "INSTASAMKA" },
+            { title: "Эскейп", emojis: "🏃", artist: "FACE" },
+            { title: "Ice", emojis: "🧊", artist: "MORGENSHTERN" },
+            { title: "Я русский", emojis: "🇷🇺", artist: "SHAMAN" },
+            { title: "Малиновая Лада", emojis: "🍇 🚗", artist: "GAYAZOV$ BROTHER$" },
+            { title: "Пчеловод", emojis: "🐝", artist: "RASA" },
+            { title: "Барбисайз", emojis: "💇", artist: "Дора" },
+            { title: "Родной", emojis: "👨‍👩‍👧", artist: "Полина Гагарина" },
+            { title: "Мальчик", emojis: "👦", artist: "IOWA" },
+            { title: "Улыбайся", emojis: "😊", artist: "IOWA" },
+            { title: "Плакала", emojis: "😢", artist: "KAZKA" },
+            { title: "Кукла колдуна", emojis: "🧙 🎭", artist: "Король и Шут" },
+            { title: "Лесник", emojis: "🌲 👨", artist: "Король и Шут" },
+            { title: "Прыгну со скалы", emojis: "🧗", artist: "Король и Шут" },
+            { title: "Дурак и молния", emojis: "⚡", artist: "Король и Шут" },
+            { title: "Звенит январская вьюга", emojis: "❄️ 🌬️", artist: "Наталья Селезнёва" },
+            { title: "Листья жгут", emojis: "🍂 🔥", artist: "Михаил Боярский" },
+            { title: "Белая ночь", emojis: "🌙 ⚪", artist: "Форум" },
+            { title: "Ночное такси", emojis: "🚕 🌙", artist: "Женя Белоусов" },
+            { title: "Серые Глаза", emojis: "👁️", artist: "Ирина Салтыкова" },
+            { title: "Люби меня, люби", emojis: "❤️", artist: "Отпетые Мошенники" },
+            { title: "Стеклянная любовь", emojis: "🥃 ❤️", artist: "ALIB" },
+            { title: "Замуж", emojis: "💍", artist: "Клава Кока" },
+            { title: "Покинула чат", emojis: "📱 🚪", artist: "Клава Кока" },
+            { title: "Краш", emojis: "💘", artist: "Клава Кока" },
+            { title: "Дико тусим", emojis: "🕺 💃", artist: "Даня Милохин" },
+            { title: "Детство", emojis: "👶", artist: "Rauf & Faik" },
+            { title: "Колыбельная", emojis: "😴", artist: "Rauf & Faik" },
+            { title: "Я люблю тебя", emojis: "❤️", artist: "Rauf & Faik" },
+            { title: "Она не я", emojis: "👩 🚫", artist: "Artik & Asti" },
+            { title: "Девочка танцуй", emojis: "💃", artist: "Artik & Asti" },
+            { title: "Неделимы", emojis: "🔗", artist: "Artik & Asti" },
+            { title: "Качели", emojis: "🪢", artist: "Artik & Asti" },
+            { title: "Фонари", emojis: "💡", artist: "Artik & Asti" },
+            { title: "Грустный дэнс", emojis: "😢 💃", artist: "Artik & Asti" },
+            { title: "Номер 1", emojis: "1️⃣", artist: "MOT" },
+            { title: "Миллион", emojis: "💰", artist: "MOT" },
+            { title: "Космос", emojis: "🌌", artist: "MOT" },
+            { title: "Выдыхай", emojis: "💨", artist: "MOT" },
+            { title: "Лабиринт", emojis: "🌀", artist: "MOT" },
+            { title: "Миллион алых роз", emojis: "🌹 💰", artist: "Алла Пугачёва" },
+            { title: "Ленинград", emojis: "🏙️", artist: "Ленинград" },
+            { title: "В Питере — пить", emojis: "🍺", artist: "Ленинград" },
+            { title: "Экспонат", emojis: "🖼️", artist: "Ленинград" },
+            { title: "iPhuck 10", emojis: "📱 🔞", artist: "Ленинград" },
+            { title: "Ламбада", emojis: "💃", artist: "Album & N1NT3ND0" },
+            { title: "Розовый вечер", emojis: "🌅", artist: "Ласковый май" },
+            { title: "Белая роза", emojis: "🌹 ⚪", artist: "Ласковый май" },
+            { title: "Седая ночь", emojis: "🌙", artist: "Ласковый май" },
+            { title: "Комбат", emojis: "💂", artist: "Любэ" },
+            { title: "Позови меня тихо по имени", emojis: "📞", artist: "Любэ" },
+            { title: "Мой рок-н-ролл", emojis: "🎸", artist: "Би-2" },
+            { title: "Серебро", emojis: "🥈", artist: "Би-2" },
+            { title: "Не плачь", emojis: "😢 🚫", artist: "Ария" },
+            { title: "Что такое осень", emojis: "🍂", artist: "ДДТ" },
+            { title: "Хочу перемен", emojis: "🔄", artist: "Кино" },
+            { title: "Спокойная ночь", emojis: "😴", artist: "Кино" },
+            { title: "В наших глазах", emojis: "👁️", artist: "Кино" },
+            { title: "Алюминиевые огурцы", emojis: "🥒", artist: "Кино" },
+            { title: "Электричка", emojis: "🚆", artist: "Кино" },
+            { title: "Шёлк", emojis: "🧣", artist: "Ваня Дмитриенко" },
+            { title: "Прятки", emojis: "🙈", artist: "Ваня Дмитриенко" },
+            { title: "Силуэт", emojis: "👤", artist: "Ваня Дмитриенко" },
+            { title: "Базовый минимум", emojis: "📦", artist: "SABI, MIA Boyka" },
+            { title: "Французский поцелуй", emojis: "🇫🇷 💋", artist: "Миша Марвин & Ханна" },
+            { title: "Худи", emojis: "👕", artist: "Джиган, Artik & Asti" },
+            { title: "Бесприданница", emojis: "💍", artist: "DEAD BLONDE" },
+            { title: "Лечу", emojis: "✈️", artist: "JONY" },
+            { title: "Forever Young", emojis: "👶 ➡️", artist: "Zivert" },
+            { title: "Выбираю море", emojis: "🌊", artist: "GAYAZOV$ BROTHER$" },
+            { title: "Харизма", emojis: "✨", artist: "Wallem" },
+            { title: "Целый мир", emojis: "🌍", artist: "Alex Lim" },
+            { title: "Дарите женщинам цветы", emojis: "💐", artist: "Jazzdauren" },
+            { title: "Дорогу молодым", emojis: "🛣️", artist: "Goro" },
+            { title: "Пошлю его на", emojis: "👋", artist: "Люся Чеботина" },
+            { title: "Пожары", emojis: "🔥", artist: "Xolidayboy" },
+            { title: "Самурай", emojis: "⚔️", artist: "BODIEV" },
+            { title: "Асфальт", emojis: "🛣️", artist: "Jakone, Kiliana" },
+            { title: "Матушка Земля", emojis: "🌍", artist: "Татьяна Куртукова" }
+        ];
+
+        // ============================================================
+        // К-ПОП ПЕСНИ (200+)
+        // ============================================================
+        const kpopSongs = [
+            { title: "Dynamite", emojis: "💣 🧨", artist: "BTS" },
+            { title: "Butter", emojis: "🧈", artist: "BTS" },
+            { title: "Permission to Dance", emojis: "✅ 💃", artist: "BTS" },
+            { title: "Boy With Luv", emojis: "👦 ❤️", artist: "BTS" },
+            { title: "Fake Love", emojis: "🎭 ❤️", artist: "BTS" },
+            { title: "IDOL", emojis: "🌟", artist: "BTS" },
+            { title: "Blood Sweat & Tears", emojis: "🩸 💦 😢", artist: "BTS" },
+            { title: "Spring Day", emojis: "🌸 ☀️", artist: "BTS" },
+            { title: "DNA", emojis: "🧬", artist: "BTS" },
+            { title: "MIC Drop", emojis: "🎤 ⬇️", artist: "BTS" },
+            { title: "Fire", emojis: "🔥", artist: "BTS" },
+            { title: "ON", emojis: "▶️", artist: "BTS" },
+            { title: "Black Swan", emojis: "🦢", artist: "BTS" },
+            { title: "Life Goes On", emojis: "▶️", artist: "BTS" },
+            { title: "Yet To Come", emojis: "➡️", artist: "BTS" },
+            { title: "How You Like That", emojis: "🤔", artist: "BLACKPINK" },
+            { title: "Kill This Love", emojis: "🔪 ❤️", artist: "BLACKPINK" },
+            { title: "DDU-DU DDU-DU", emojis: "🔫", artist: "BLACKPINK" },
+            { title: "Lovesick Girls", emojis: "🤒 👧", artist: "BLACKPINK" },
+            { title: "BOOMBAYAH", emojis: "💥", artist: "BLACKPINK" },
+            { title: "Whistle", emojis: "🎵", artist: "BLACKPINK" },
+            { title: "Playing with Fire", emojis: "🔥", artist: "BLACKPINK" },
+            { title: "Pink Venom", emojis: "💗 ☠️", artist: "BLACKPINK" },
+            { title: "Shut Down", emojis: "🚫", artist: "BLACKPINK" },
+            { title: "Fancy", emojis: "✨", artist: "TWICE" },
+            { title: "Feel Special", emojis: "❤️ ✨", artist: "TWICE" },
+            { title: "TT", emojis: "😭", artist: "TWICE" },
+            { title: "Cheer Up", emojis: "🎉", artist: "TWICE" },
+            { title: "Alcohol-Free", emojis: "🍹", artist: "TWICE" },
+            { title: "The Feels", emojis: "🤔", artist: "TWICE" },
+            { title: "What is Love?", emojis: "❓ ❤️", artist: "TWICE" },
+            { title: "Yes or Yes", emojis: "✅", artist: "TWICE" },
+            { title: "I Can't Stop Me", emojis: "🛑", artist: "TWICE" },
+            { title: "Next Level", emojis: "⬆️ 📈", artist: "aespa" },
+            { title: "Savage", emojis: "😈", artist: "aespa" },
+            { title: "Black Mamba", emojis: "🐍", artist: "aespa" },
+            { title: "Spicy", emojis: "🌶️", artist: "aespa" },
+            { title: "Drama", emojis: "🎭", artist: "aespa" },
+            { title: "God's Menu", emojis: "🙏 📋", artist: "Stray Kids" },
+            { title: "Maniac", emojis: "🤪", artist: "Stray Kids" },
+            { title: "Thunderous", emojis: "⛈️", artist: "Stray Kids" },
+            { title: "Back Door", emojis: "🚪", artist: "Stray Kids" },
+            { title: "S-Class", emojis: "🏆", artist: "Stray Kids" },
+            { title: "LALALALA", emojis: "🎵", artist: "Stray Kids" },
+            { title: "Eleven", emojis: "1️⃣ 1️⃣", artist: "IVE" },
+            { title: "Love Dive", emojis: "❤️ 🤿", artist: "IVE" },
+            { title: "After LIKE", emojis: "👍", artist: "IVE" },
+            { title: "I AM", emojis: "👤", artist: "IVE" },
+            { title: "Kitsch", emojis: "🎨", artist: "IVE" },
+            { title: "Hype Boy", emojis: "🔥 👦", artist: "NewJeans" },
+            { title: "Attention", emojis: "👀", artist: "NewJeans" },
+            { title: "Ditto", emojis: "🔄", artist: "NewJeans" },
+            { title: "OMG", emojis: "😱", artist: "NewJeans" },
+            { title: "Super Shy", emojis: "😊", artist: "NewJeans" },
+            { title: "ETA", emojis: "📅", artist: "NewJeans" },
+            { title: "ANTIFRAGILE", emojis: "🛡️", artist: "LE SSERAFIM" },
+            { title: "FEARLESS", emojis: "🦁", artist: "LE SSERAFIM" },
+            { title: "Unforgiven", emojis: "🙏", artist: "LE SSERAFIM" },
+            { title: "Perfect Night", emojis: "✨ 🌙", artist: "LE SSERAFIM" },
+            { title: "Easy", emojis: "😎", artist: "LE SSERAFIM" },
+            { title: "TOMBOY", emojis: "👧", artist: "(G)I-DLE" },
+            { title: "Nxde", emojis: "🚫 👗", artist: "(G)I-DLE" },
+            { title: "Queencard", emojis: "👑 💳", artist: "(G)I-DLE" },
+            { title: "LALISA", emojis: "🇹🇭", artist: "LISA" },
+            { title: "MONEY", emojis: "💰", artist: "LISA" },
+            { title: "SOLO", emojis: "🎤", artist: "JENNIE" },
+            { title: "Flower", emojis: "🌸", artist: "JISOO" },
+            { title: "On The Ground", emojis: "🌍", artist: "ROSÉ" },
+            { title: "Gone", emojis: "➡️", artist: "ROSÉ" },
+            { title: "WANNABE", emojis: "🎯", artist: "ITZY" },
+            { title: "Dalla Dalla", emojis: "🎶", artist: "ITZY" },
+            { title: "Sneakers", emojis: "👟", artist: "ITZY" },
+            { title: "Cake", emojis: "🍰", artist: "ITZY" },
+            { title: "Bouncy", emojis: "🏀", artist: "ATEEZ" },
+            { title: "Guerrilla", emojis: "⚔️", artist: "ATEEZ" },
+            { title: "Drunk-Dazed", emojis: "🥴", artist: "ENHYPEN" },
+            { title: "Bite Me", emojis: "🦷", artist: "ENHYPEN" },
+            { title: "Given-Taken", emojis: "🎁", artist: "ENHYPEN" },
+            { title: "Cupid", emojis: "🏹 ❤️", artist: "FIFTY FIFTY" },
+            { title: "Sugar Rush Ride", emojis: "🍬 🏎️", artist: "TXT" },
+            { title: "Good Boy Gone Bad", emojis: "👦 ➡️ 👿", artist: "TXT" },
+            { title: "Blue Hour", emojis: "🔵 ⏰", artist: "TXT" },
+            { title: "Super", emojis: "⭐", artist: "SEVENTEEN" },
+            { title: "Hot", emojis: "🔥", artist: "SEVENTEEN" },
+            { title: "Rock with you", emojis: "🎸", artist: "SEVENTEEN" },
+            { title: "Love Shot", emojis: "❤️ 🔫", artist: "EXO" },
+            { title: "Monster", emojis: "👹", artist: "EXO" },
+            { title: "Growl", emojis: "🐻", artist: "EXO" },
+            { title: "Kick It", emojis: "🦵", artist: "NCT" },
+            { title: "Sticker", emojis: "📋", artist: "NCT" },
+            { title: "Glitch Mode", emojis: "🤖", artist: "NCT" },
+            { title: "Love Scenario", emojis: "❤️ 📜", artist: "iKON" },
+            { title: "Rhythm Ta", emojis: "🥁", artist: "iKON" },
+            { title: "Gangnam Style", emojis: "🐎 💃", artist: "PSY" },
+            { title: "Gentleman", emojis: "👔", artist: "PSY" },
+            { title: "Daddy", emojis: "👨", artist: "PSY" },
+            { title: "That That", emojis: "👉", artist: "PSY" },
+            { title: "Bboom Bboom", emojis: "💥", artist: "MOMOLAND" },
+            { title: "Catallena", emojis: "🐱", artist: "Orange Caramel" },
+            { title: "Up & Down", emojis: "⬆️ ⬇️", artist: "EXID" },
+            { title: "Gashina", emojis: "🌻", artist: "SUNMI" },
+            { title: "Siren", emojis: "🧜", artist: "SUNMI" },
+            { title: "Latata", emojis: "🎶", artist: "(G)I-DLE" },
+            { title: "Hann", emojis: "🔪", artist: "(G)I-DLE" },
+            { title: "Senorita", emojis: "💃", artist: "(G)I-DLE" }
+        ];
+
+        let currentCategory = 'english';
+        let currentSongs = [];
+        let currentIndex = 0;
+        let currentScore = 0;
+        let canAnswer = true;
+        let gameActive = true;
+        let gameCompleted = false;
+        let currentQuestion = null;
+        
+        let personalBest = { english: 0, russian: 0, kpop: 0, dateEnglish: null, dateRussian: null, dateKpop: null };
+        let globalBest = { english: 0, russian: 0, kpop: 0, dateEnglish: null, dateRussian: null, dateKpop: null };
+        
+        const emojisContainer = document.getElementById('emojisContainer');
+        const optionsContainer = document.getElementById('optionsContainer');
+        const resultMessageDiv = document.getElementById('resultMessage');
+        const nextBtn = document.getElementById('nextBtn');
+        const scoreSpan = document.getElementById('scoreValue');
+        const mainTitle = document.getElementById('mainTitle');
+        const gameBox = document.getElementById('gameBox');
+        const taskStatusSpan = document.getElementById('taskStatus');
+        const personalBestScoreSpan = document.getElementById('personalBestScore');
+        const personalBestDateSpan = document.getElementById('personalBestDate');
+        const globalBestScoreSpan = document.getElementById('globalBestScore');
+        const globalBestDateSpan = document.getElementById('globalBestDate');
+        const personalRecordLabel = document.getElementById('personalRecordLabel');
+        const globalRecordLabel = document.getElementById('globalRecordLabel');
+        
+        // Глобальные переменные для поиска и уведомлений
+        let currentUserGlobal = null;
+        let userDataGlobal = null;
+        let currentChatWithGlobal = null;
+
+        // ===== ФУНКЦИИ ДЛЯ ПОИСКА, ДРУЗЕЙ И ЧАТА =====
+        function showNotificationGlobal(msg, isError) {
+            let n = document.createElement('div');
+            n.className = 'notification' + (isError ? ' error' : '');
+            n.textContent = msg;
+            document.body.appendChild(n);
+            setTimeout(() => n.remove(), 2500);
+        }
+
+        function loadGlobalUserData() {
+            currentUserGlobal = localStorage.getItem('lovechord_current_user');
+            let users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+            if (currentUserGlobal && users[currentUserGlobal]) {
+                userDataGlobal = users[currentUserGlobal];
+                if (!userDataGlobal.friends) userDataGlobal.friends = [];
+                if (!userDataGlobal.friendRequests) userDataGlobal.friendRequests = [];
+                if (!userDataGlobal.notifications) userDataGlobal.notifications = [];
+                if (!userDataGlobal.chats) userDataGlobal.chats = {};
+                updateNotificationBadgeGlobal();
+            }
+        }
+
+        function saveGlobalUserData() {
+            let users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+            users[currentUserGlobal] = userDataGlobal;
+            localStorage.setItem('lovechord_users', JSON.stringify(users));
+        }
+
+        function updateNotificationBadgeGlobal() {
+            let count = (userDataGlobal.friendRequests ? userDataGlobal.friendRequests.length : 0) + (userDataGlobal.notifications ? userDataGlobal.notifications.length : 0);
+            let badge = document.getElementById('notificationBadge');
+            if (badge) {
+                if (count > 0) { badge.textContent = count; badge.style.display = 'flex'; }
+                else badge.style.display = 'none';
+            }
+        }
+
+        function openSearchModal() {
+            let modal = document.getElementById('searchModal');
+            if (modal) modal.classList.add('show');
+            let input = document.getElementById('searchInput');
+            if (input) { input.value = ''; }
+            let results = document.getElementById('searchResults');
+            if (results) results.innerHTML = '';
+        }
+
+        function closeSearchModal() {
+            let modal = document.getElementById('searchModal');
+            if (modal) modal.classList.remove('show');
+        }
+
+        function searchUsers() {
+            let query = document.getElementById('searchInput').value.toLowerCase().trim();
+            let resultsDiv = document.getElementById('searchResults');
+            if (!query) { resultsDiv.innerHTML = ''; return; }
+            let users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+            let results = [];
+            for (let name in users) {
+                if (name.toLowerCase().includes(query) && name !== currentUserGlobal) results.push(name);
+            }
+            let html = '';
+            for (let res of results.slice(0, 10)) {
+                html += `<div class="search-result-item" onclick="viewProfileGlobal('${res}')">🔍 ${res}</div>`;
+            }
+            if (html === '') html = '<div>Ничего не найдено</div>';
+            resultsDiv.innerHTML = html;
+        }
+
+        function viewProfileGlobal(username) {
+            closeSearchModal();
+            window.location.href = 'profile-dashboard.html?view=' + encodeURIComponent(username);
+        }
+
+        function sendFriendRequestGlobal(toUser) {
+            if (toUser === currentUserGlobal) { showNotificationGlobal('Нельзя добавить самого себя!', true); return; }
+            let users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+            if (!users[toUser]) { showNotificationGlobal('Пользователь не найден!', true); return; }
+            if (userDataGlobal.friends && userDataGlobal.friends.includes(toUser)) { showNotificationGlobal('Этот пользователь уже в друзьях!', true); return; }
+            
+            if (!users[toUser].friendRequests) users[toUser].friendRequests = [];
+            if (users[toUser].friendRequests.includes(currentUserGlobal)) { showNotificationGlobal('Запрос уже отправлен!', true); return; }
+            
+            users[toUser].friendRequests.push(currentUserGlobal);
+            localStorage.setItem('lovechord_users', JSON.stringify(users));
+            showNotificationGlobal('Запрос в друзья отправлен!', false);
+        }
+
+        function acceptFriendRequestGlobal(fromUser) {
+            let users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+            if (!userDataGlobal.friends) userDataGlobal.friends = [];
+            if (!userDataGlobal.friends.includes(fromUser)) userDataGlobal.friends.push(fromUser);
+            if (!users[fromUser].friends) users[fromUser].friends = [];
+            if (!users[fromUser].friends.includes(currentUserGlobal)) users[fromUser].friends.push(currentUserGlobal);
+            
+            let index = userDataGlobal.friendRequests.indexOf(fromUser);
+            if (index !== -1) userDataGlobal.friendRequests.splice(index, 1);
+            
+            if (!userDataGlobal.chats) userDataGlobal.chats = {};
+            if (!userDataGlobal.chats[fromUser]) userDataGlobal.chats[fromUser] = [];
+            
+            localStorage.setItem('lovechord_users', JSON.stringify(users));
+            saveGlobalUserData();
+            showNotificationGlobal('Вы приняли запрос в друзья!', false);
+            updateNotificationBadgeGlobal();
+            if (document.getElementById('notificationsList')) toggleNotificationsGlobal();
+        }
+
+        function rejectFriendRequestGlobal(fromUser) {
+            let users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+            let index = userDataGlobal.friendRequests.indexOf(fromUser);
+            if (index !== -1) userDataGlobal.friendRequests.splice(index, 1);
+            saveGlobalUserData();
+            
+            if (users[fromUser]) {
+                if (!users[fromUser].notifications) users[fromUser].notifications = [];
+                users[fromUser].notifications.push({ type: 'rejected', from: currentUserGlobal });
+                localStorage.setItem('lovechord_users', JSON.stringify(users));
+            }
+            showNotificationGlobal('Запрос отклонен', false);
+            updateNotificationBadgeGlobal();
+        }
+
+        function toggleNotificationsGlobal() {
+            let panel = document.getElementById('notificationPanel');
+            if (!panel) return;
+            if (panel.classList.contains('show')) panel.classList.remove('show');
+            else {
+                let list = document.getElementById('notificationsList');
+                if (list) {
+                    list.innerHTML = '';
+                    if (userDataGlobal.friendRequests && userDataGlobal.friendRequests.length > 0) {
+                        for (let req of userDataGlobal.friendRequests) {
+                            let div = document.createElement('div');
+                            div.className = 'notification-item';
+                            div.innerHTML = `<div><strong>${req}</strong> хочет добавить вас в друзья</div>
+                                <div class="notification-actions">
+                                    <button class="notif-accept" onclick="acceptFriendRequestGlobal('${req}')">Принять</button>
+                                    <button class="notif-reject" onclick="rejectFriendRequestGlobal('${req}')">Отклонить</button>
+                                </div>`;
+                            list.appendChild(div);
+                        }
+                    }
+                    if (userDataGlobal.notifications && userDataGlobal.notifications.length > 0) {
+                        for (let notif of userDataGlobal.notifications) {
+                            let div = document.createElement('div');
+                            div.className = 'notification-item';
+                            if (notif.type === 'rejected') {
+                                div.innerHTML = `<div><strong>${notif.from}</strong> отклонил ваш запрос в друзья</div>`;
+                            }
+                            list.appendChild(div);
+                        }
+                    }
+                    if (list.children.length === 0) {
+                        list.innerHTML = '<div style="padding:12px;">Нет уведомлений</div>';
+                    }
+                }
+                panel.classList.add('show');
+            }
+        }
+
+        function openChatWithGlobal(friendName) {
+            currentChatWithGlobal = friendName;
+            let modal = document.getElementById('chatModal');
+            if (modal) {
+                document.getElementById('chatFriendName').textContent = friendName;
+                modal.classList.add('show');
+                loadChatMessagesGlobal();
+            }
+        }
+
+        function closeChatGlobal() {
+            let modal = document.getElementById('chatModal');
+            if (modal) modal.classList.remove('show');
+            currentChatWithGlobal = null;
+        }
+
+        function sendMessageGlobal() {
+            let input = document.getElementById('chatInput');
+            let text = input.value.trim();
+            if (!text || !currentChatWithGlobal) return;
+            
+            if (!userDataGlobal.chats) userDataGlobal.chats = {};
+            if (!userDataGlobal.chats[currentChatWithGlobal]) userDataGlobal.chats[currentChatWithGlobal] = [];
+            userDataGlobal.chats[currentChatWithGlobal].push({ from: currentUserGlobal, text: text, time: Date.now() });
+            saveGlobalUserData();
+            
+            let users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+            if (users[currentChatWithGlobal]) {
+                if (!users[currentChatWithGlobal].chats) users[currentChatWithGlobal].chats = {};
+                if (!users[currentChatWithGlobal].chats[currentUserGlobal]) users[currentChatWithGlobal].chats[currentUserGlobal] = [];
+                users[currentChatWithGlobal].chats[currentUserGlobal].push({ from: currentUserGlobal, text: text, time: Date.now() });
+                localStorage.setItem('lovechord_users', JSON.stringify(users));
+            }
+            
+            input.value = '';
+            loadChatMessagesGlobal();
+        }
+
+        function loadChatMessagesGlobal() {
+            let container = document.getElementById('chatMessages');
+            if (!container || !currentChatWithGlobal) return;
+            let messages = (userDataGlobal.chats && userDataGlobal.chats[currentChatWithGlobal]) ? userDataGlobal.chats[currentChatWithGlobal] : [];
+            container.innerHTML = '';
+            for (let msg of messages) {
+                let div = document.createElement('div');
+                div.className = 'message ' + (msg.from === currentUserGlobal ? 'sent' : 'received');
+                div.textContent = msg.text;
+                container.appendChild(div);
+            }
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function createConfetti() {
+            const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ffaa00', '#ff6600'];
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * window.innerWidth + 'px';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.width = Math.random() * 10 + 5 + 'px';
+                confetti.style.height = Math.random() * 10 + 5 + 'px';
+                confetti.style.animationDuration = Math.random() * 2 + 2 + 's';
+                confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 3000);
+            }
+        }
+
+        function showAchievementNotification(title, desc, icon = '🏆') {
+            const notification = document.createElement('div');
+            notification.className = 'achievement-notification';
+            notification.innerHTML = `<div class="achievement-icon">${icon}</div><div class="achievement-title">${title}</div><div class="achievement-desc">${desc}</div>`;
+            document.body.appendChild(notification);
+            gameBox.classList.add('completed');
+            setTimeout(() => gameBox.classList.remove('completed'), 500);
+            createConfetti();
+            setTimeout(() => {
+                notification.style.animation = 'achievementUnlock 0.3s reverse';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // ПРОВЕРКА ПОСТОЯННЫХ ЗАДАНИЙ
+        function checkPermanentTasks(user) {
+            const permanentTasks = [
+                { id: 'first_emoji', name: 'Поиграть впервые в "😊 Угадай по эмодзи"', reward: '30', rewardType: 'tokens' },
+                { id: 'totalGames30', name: 'Сыграть в общем 30 игр', reward: 'color_pink', rewardType: 'colors', rewardData: ['#ffb7c5', '#ffc0cb', '#ffd1dc', '#ffe4e1'] },
+                { id: 'totalGames50', name: 'Сыграть в общем 50 игр', reward: 'banner_Britney0.1', rewardType: 'banner', rewardData: 'Britney0.1' },
+                { id: 'totalGames100', name: 'Сыграть в общем 100 игр', reward: '50', rewardType: 'tokens' },
+                { id: 'totalGames150', name: 'Сыграть в общем 150 игр', reward: '60', rewardType: 'tokens' },
+                { id: 'wins30', name: 'Набрать в общем 30 побед', reward: '30', rewardType: 'tokens' },
+                { id: 'wins50', name: 'Набрать в общем 50 побед', reward: 'color_green', rewardType: 'colors', rewardData: ['#90ee90', '#98fb98', '#7cfc00', '#32cd32'] },
+                { id: 'wins100', name: 'Набрать в общем 100 побед', reward: '30', rewardType: 'tokens' },
+                { id: 'wins150', name: 'Набрать в общем 150 побед', reward: '50', rewardType: 'tokens' },
+                { id: 'streak5', name: 'Набрать серию побед 5', reward: 'color_blue', rewardType: 'colors', rewardData: ['#87ceeb', '#87cefa', '#00bfff', '#1e90ff'] },
+                { id: 'streak10', name: 'Набрать серию побед 10', reward: 'banner_Marshmello0.2', rewardType: 'banner', rewardData: 'Marshmello0.2' },
+                { id: 'streak15', name: 'Набрать серию побед 15', reward: '50', rewardType: 'tokens' },
+                { id: 'streak20', name: 'Набрать серию побед 20', reward: '150', rewardType: 'tokens' },
+                { id: 'dailyTasks10', name: 'Выполнить 10 ежедневных заданий', reward: 'banner_Christina0.2', rewardType: 'banner', rewardData: 'Christina0.2' },
+                { id: 'dailyTasks15', name: 'Выполнить 15 ежедневных заданий', reward: '70', rewardType: 'tokens' },
+                { id: 'dailyTasks20', name: 'Выполнить 20 ежедневных заданий', reward: '150', rewardType: 'tokens' }
+            ];
+            
+            if (!user.completedTasks) user.completedTasks = [];
+            
+            for (const task of permanentTasks) {
+                if (user.completedTasks.includes(task.id)) continue;
+                
+                let completed = false;
+                
+                if (task.id === 'first_emoji' && user.stats.totalGamesPlayed >= 1) completed = true;
+                if (task.id === 'totalGames30' && user.stats.totalGamesPlayed >= 30) completed = true;
+                if (task.id === 'totalGames50' && user.stats.totalGamesPlayed >= 50) completed = true;
+                if (task.id === 'totalGames100' && user.stats.totalGamesPlayed >= 100) completed = true;
+                if (task.id === 'totalGames150' && user.stats.totalGamesPlayed >= 150) completed = true;
+                if (task.id === 'wins30' && user.stats.wins >= 30) completed = true;
+                if (task.id === 'wins50' && user.stats.wins >= 50) completed = true;
+                if (task.id === 'wins100' && user.stats.wins >= 100) completed = true;
+                if (task.id === 'wins150' && user.stats.wins >= 150) completed = true;
+                if (task.id === 'streak5' && user.streak >= 5) completed = true;
+                if (task.id === 'streak10' && user.streak >= 10) completed = true;
+                if (task.id === 'streak15' && user.streak >= 15) completed = true;
+                if (task.id === 'streak20' && user.streak >= 20) completed = true;
+                if (task.id === 'dailyTasks10' && user.dailyTasksCompletedCount >= 10) completed = true;
+                if (task.id === 'dailyTasks15' && user.dailyTasksCompletedCount >= 15) completed = true;
+                if (task.id === 'dailyTasks20' && user.dailyTasksCompletedCount >= 20) completed = true;
+                
+                if (completed) {
+                    user.completedTasks.push(task.id);
+                    
+                    if (task.rewardType === 'tokens') {
+                        user.tokens += parseInt(task.reward);
+                        showAchievementNotification(`🎉 ЗАДАНИЕ ВЫПОЛНЕНО!`, `${task.name} +${task.reward} жетонов`, '🏆');
+                    } else if (task.rewardType === 'colors') {
+                        if (!user.unlockedUsernameColors) user.unlockedUsernameColors = [];
+                        for (const color of task.rewardData) {
+                            if (!user.unlockedUsernameColors.includes(color)) {
+                                user.unlockedUsernameColors.push(color);
+                            }
+                        }
+                        showAchievementNotification(`🎉 ЗАДАНИЕ ВЫПОЛНЕНО!`, `${task.name} - открыты новые цвета!`, '🎨');
+                    } else if (task.rewardType === 'banner') {
+                        if (!user.unlockedBannerImages) user.unlockedBannerImages = [];
+                        if (!user.unlockedBannerImages.includes(task.rewardData)) {
+                            user.unlockedBannerImages.push(task.rewardData);
+                            showAchievementNotification(`🎉 ЗАДАНИЕ ВЫПОЛНЕНО!`, `${task.name} - открыт баннер!`, '🖼️');
+                        }
+                    }
+                }
+            }
+        }
+
+        // ПРОВЕРКА ЕЖЕДНЕВНЫХ ЗАДАНИЙ
+        function checkDailyTasks(user, today, newCorrectCount) {
+            if (!user.dailyTasks) return false;
+            
+            let anyTaskCompleted = false;
+            
+            for (const task of user.dailyTasks) {
+                if (user.dailyTasksCompleted.includes(task.id)) continue;
+                
+                let isCompleted = false;
+                
+                if (task.id === 'emoji_3' && newCorrectCount >= 3) isCompleted = true;
+                else if (task.id === 'emoji_5' && newCorrectCount >= 5) isCompleted = true;
+                else if (task.id === 'emoji_7' && newCorrectCount >= 7) isCompleted = true;
+                else if (task.id === 'emoji_10' && newCorrectCount >= 10) isCompleted = true;
+                else if (task.id === 'emoji_15' && newCorrectCount >= 15) isCompleted = true;
+                
+                if (isCompleted) {
+                    user.dailyTasksCompleted.push(task.id);
+                    user.tokens = (user.tokens || 100) + task.reward;
+                    anyTaskCompleted = true;
+                    showAchievementNotification(`✨ ЗАДАНИЕ ВЫПОЛНЕНО! ✨`, `${task.name}! +${task.reward} жетонов`, '📅');
+                }
+            }
+            
+            if (anyTaskCompleted) {
+                user.dailyTasksCompletedCount = (user.dailyTasksCompletedCount || 0) + 1;
+                checkPermanentTasks(user);
+            }
+            
+            return anyTaskCompleted;
+        }
+
+        let correctAnswersCount = 0;
+
+        function updateUserStats(isCorrect, isWin, gameName, category) {
+            const currentUser = localStorage.getItem('lovechord_current_user');
+            if (!currentUser) return;
+            
+            const users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+            const user = users[currentUser];
+            if (!user) return;
+            
+            if (!user.stats) {
+                user.stats = { totalGamesPlayed: 0, totalCorrectAnswers: 0, totalWrongAnswers: 0, wins: 0 };
+            }
+            if (!user.tokens) user.tokens = 100;
+            if (!user.unlockedUsernameColors) user.unlockedUsernameColors = ['#ffffff', '#f5c4c4', '#e8a0a0'];
+            if (!user.unlockedBannerColors) user.unlockedBannerColors = ['#1e1e2f', '#2a2a3a', '#f5c4c4', '#e8a0a0'];
+            if (!user.unlockedBannerImages) user.unlockedBannerImages = ['Britney0.4'];
+            
+            user.stats.totalGamesPlayed++;
+            if (isCorrect) {
+                user.stats.totalCorrectAnswers++;
+                correctAnswersCount++;
+            } else {
+                user.stats.totalWrongAnswers++;
+            }
+            
+            if (isWin) {
+                user.stats.wins = (user.stats.wins || 0) + 1;
+                user.streak = (user.streak || 0) + 1;
+                showAchievementNotification('🎉 ПОБЕДА! 🎉', `Вы завершили игру!`, '🏆');
+            } else if (isCorrect) {
+                user.streak = 0;
+            } else {
+                user.streak = 0;
+            }
+            
+            const today = new Date().toDateString();
+            if (!user.dailyProgress) user.dailyProgress = {};
+            if (!user.dailyProgress[today]) user.dailyProgress[today] = {};
+            
+            if (gameName === 'emoji') {
+                user.dailyProgress[today].emoji_correct = correctAnswersCount;
+            }
+            
+            checkPermanentTasks(user);
+            checkDailyTasks(user, today, correctAnswersCount);
+            
+            users[currentUser] = user;
+            localStorage.setItem('lovechord_users', JSON.stringify(users));
+            updateDailyTaskIndicator();
+        }
+
+        function updateDailyTaskIndicator() {
+            const currentUser = localStorage.getItem('lovechord_current_user');
+            if (!currentUser) {
+                taskStatusSpan.textContent = 'Войти в профиль';
+                return;
+            }
+            
+            const users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+            const user = users[currentUser];
+            if (!user) {
+                taskStatusSpan.textContent = 'Войти в профиль';
+                return;
+            }
+            
+            const today = new Date().toDateString();
+            const currentCorrect = user.dailyProgress?.[today]?.emoji_correct || 0;
+            
+            let activeTask = null;
+            let activeTarget = null;
+            
+            if (user.dailyTasks) {
+                const targets = [3, 5, 7, 10, 15];
+                for (const target of targets) {
+                    const taskId = `emoji_${target}`;
+                    const taskExists = user.dailyTasks.some(t => t.id === taskId);
+                    const taskCompleted = user.dailyTasksCompleted?.includes(taskId) || false;
+                    
+                    if (taskExists && !taskCompleted) {
+                        activeTarget = target;
+                        activeTask = taskId;
+                        break;
+                    }
+                }
+            }
+            
+            const indicator = document.getElementById('dailyTaskIndicator');
+            
+            if (!activeTask) {
+                taskStatusSpan.innerHTML = '✅ Задания выполнены!';
+                indicator.classList.add('completed');
+            } else {
+                taskStatusSpan.innerHTML = `📅 Угадай по эмодзи ${activeTarget} раз: ${currentCorrect}/${activeTarget}`;
+                indicator.classList.remove('completed');
+            }
+        }
+
+        function loadRecords() {
+            const savedPersonal = localStorage.getItem('sonchiks_emoji_personal_best');
+            if (savedPersonal) {
+                const data = JSON.parse(savedPersonal);
+                personalBest.english = data.english || 0;
+                personalBest.russian = data.russian || 0;
+                personalBest.kpop = data.kpop || 0;
+                personalBest.dateEnglish = data.dateEnglish || null;
+                personalBest.dateRussian = data.dateRussian || null;
+                personalBest.dateKpop = data.dateKpop || null;
+            }
+            
+            const savedGlobal = localStorage.getItem('sonchiks_emoji_global_best');
+            if (savedGlobal) {
+                const data = JSON.parse(savedGlobal);
+                globalBest.english = data.english || 0;
+                globalBest.russian = data.russian || 0;
+                globalBest.kpop = data.kpop || 0;
+                globalBest.dateEnglish = data.dateEnglish || null;
+                globalBest.dateRussian = data.dateRussian || null;
+                globalBest.dateKpop = data.dateKpop || null;
+            }
+            updateRecordsDisplay();
+        }
+        
+        function saveRecords() {
+            const personalData = {
+                english: personalBest.english,
+                russian: personalBest.russian,
+                kpop: personalBest.kpop,
+                dateEnglish: personalBest.dateEnglish,
+                dateRussian: personalBest.dateRussian,
+                dateKpop: personalBest.dateKpop
+            };
+            const globalData = {
+                english: globalBest.english,
+                russian: globalBest.russian,
+                kpop: globalBest.kpop,
+                dateEnglish: globalBest.dateEnglish,
+                dateRussian: globalBest.dateRussian,
+                dateKpop: globalBest.dateKpop
+            };
+            localStorage.setItem('sonchiks_emoji_personal_best', JSON.stringify(personalData));
+            localStorage.setItem('sonchiks_emoji_global_best', JSON.stringify(globalData));
+        }
+        
+        function formatTimeAgo(timestamp) {
+            const now = Date.now();
+            const diff = now - timestamp;
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+            
+            if (days > 0) return `${days} ${days === 1 ? 'день' : days < 5 ? 'дня' : 'дней'} назад`;
+            if (hours > 0) return `${hours} ${hours === 1 ? 'час' : hours < 5 ? 'часа' : 'часов'} назад`;
+            if (minutes > 0) return `${minutes} ${minutes === 1 ? 'минуту' : minutes < 5 ? 'минуты' : 'минут'} назад`;
+            return "только что";
+        }
+        
+        function updateRecordsDisplay() {
+            let personalScore = 0, globalScore = 0, personalDate = null, globalDate = null;
+            let categoryLabel = "";
+            
+            if (currentCategory === 'english') {
+                personalScore = personalBest.english;
+                globalScore = globalBest.english;
+                personalDate = personalBest.dateEnglish;
+                globalDate = globalBest.dateEnglish;
+                categoryLabel = "английские";
+            } else if (currentCategory === 'russian') {
+                personalScore = personalBest.russian;
+                globalScore = globalBest.russian;
+                personalDate = personalBest.dateRussian;
+                globalDate = globalBest.dateRussian;
+                categoryLabel = "русские";
+            } else if (currentCategory === 'kpop') {
+                personalScore = personalBest.kpop;
+                globalScore = globalBest.kpop;
+                personalDate = personalBest.dateKpop;
+                globalDate = globalBest.dateKpop;
+                categoryLabel = "к-поп";
+            }
+            
+            personalBestScoreSpan.textContent = personalScore;
+            globalBestScoreSpan.textContent = globalScore;
+            personalRecordLabel.textContent = categoryLabel;
+            globalRecordLabel.textContent = categoryLabel;
+            
+            if (personalDate) {
+                personalBestDateSpan.textContent = formatTimeAgo(personalDate);
+            } else {
+                personalBestDateSpan.textContent = "—";
+            }
+            if (globalDate) {
+                globalBestDateSpan.textContent = formatTimeAgo(globalDate);
+            } else {
+                globalBestDateSpan.textContent = "—";
+            }
+        }
+        
+        function checkAndUpdateRecords(scoreToCheck) {
+            let updated = false;
+            let recordMessage = "";
+            
+            if (currentCategory === 'english') {
+                if (scoreToCheck > personalBest.english) {
+                    personalBest.english = scoreToCheck;
+                    personalBest.dateEnglish = Date.now();
+                    updated = true;
+                    recordMessage = "🎉 НОВЫЙ ЛИЧНЫЙ РЕКОРД! 🎉";
+                    showAchievementNotification('ЛИЧНЫЙ РЕКОРД!', `Вы набрали ${scoreToCheck} очков в английских!`, '🏆');
+                }
+                if (scoreToCheck > globalBest.english) {
+                    globalBest.english = scoreToCheck;
+                    globalBest.dateEnglish = Date.now();
+                    updated = true;
+                    showAchievementNotification('МИРОВОЙ РЕКОРД!', `Непобедимый чемпион! ${scoreToCheck} очков в английских!`, '🌍');
+                }
+            } else if (currentCategory === 'russian') {
+                if (scoreToCheck > personalBest.russian) {
+                    personalBest.russian = scoreToCheck;
+                    personalBest.dateRussian = Date.now();
+                    updated = true;
+                    recordMessage = "🎉 НОВЫЙ ЛИЧНЫЙ РЕКОРД! 🎉";
+                    showAchievementNotification('ЛИЧНЫЙ РЕКОРД!', `Вы набрали ${scoreToCheck} очков в русских!`, '🏆');
+                }
+                if (scoreToCheck > globalBest.russian) {
+                    globalBest.russian = scoreToCheck;
+                    globalBest.dateRussian = Date.now();
+                    updated = true;
+                    showAchievementNotification('МИРОВОЙ РЕКОРД!', `Непобедимый чемпион! ${scoreToCheck} очков в русских!`, '🌍');
+                }
+            } else if (currentCategory === 'kpop') {
+                if (scoreToCheck > personalBest.kpop) {
+                    personalBest.kpop = scoreToCheck;
+                    personalBest.dateKpop = Date.now();
+                    updated = true;
+                    recordMessage = "🎉 НОВЫЙ ЛИЧНЫЙ РЕКОРД! 🎉";
+                    showAchievementNotification('ЛИЧНЫЙ РЕКОРД!', `Вы набрали ${scoreToCheck} очков в к-поп!`, '🏆');
+                }
+                if (scoreToCheck > globalBest.kpop) {
+                    globalBest.kpop = scoreToCheck;
+                    globalBest.dateKpop = Date.now();
+                    updated = true;
+                    showAchievementNotification('МИРОВОЙ РЕКОРД!', `Непобедимый чемпион! ${scoreToCheck} очков в к-поп!`, '🌍');
+                }
+            }
+            
+            if (updated) {
+                saveRecords();
+                updateRecordsDisplay();
+                if (recordMessage && !recordMessage.includes('ЛИЧНЫЙ')) {
+                    resultMessageDiv.innerHTML += `<br><br>${recordMessage}`;
+                }
+            }
+        }
+        
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                let j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function switchCategory(category) {
+            currentCategory = category;
+            correctAnswersCount = 0;
+            if (category === 'english') {
+                currentSongs = shuffleArray([...englishSongs]);
+                mainTitle.innerHTML = '😊 Угадай песню по эмодзи (Английские) 🎵';
+            } else if (category === 'russian') {
+                currentSongs = shuffleArray([...russianSongs]);
+                mainTitle.innerHTML = '😊 Угадай песню по эмодзи (Русские) 🎵';
+            } else if (category === 'kpop') {
+                currentSongs = shuffleArray([...kpopSongs]);
+                mainTitle.innerHTML = '😊 Угадай песню по эмодзи (К-поп) 🎵';
+            }
+            currentIndex = 0;
+            currentScore = 0;
+            scoreSpan.textContent = currentScore;
+            gameActive = true;
+            canAnswer = true;
+            gameCompleted = false;
+            updateRecordsDisplay();
+            loadQuestion();
+        }
+
+        function generateOptions(correctSong, songsArray) {
+            const otherSongs = songsArray.filter(s => s.title !== correctSong.title);
+            const shuffledOthers = shuffleArray([...otherSongs]);
+            const options = [correctSong.title, shuffledOthers[0].title, shuffledOthers[1].title];
+            return shuffleArray(options);
+        }
+
+        function loadQuestion() {
+            if (!gameActive) return;
+            if (currentIndex >= currentSongs.length) {
+                updateUserStats(true, true, 'emoji', currentCategory);
+                checkAndUpdateRecords(currentScore);
+                resultMessageDiv.innerHTML = `🎉 ИГРА ОКОНЧЕНА! 🎉<br><br>Твой счёт: ${currentScore} из ${currentSongs.length}<br><br>🔄 Нажми "Начать заново", чтобы сыграть снова!`;
+                resultMessageDiv.className = "result-message correct";
+                optionsContainer.innerHTML = "";
+                nextBtn.style.display = "none";
+                emojisContainer.innerHTML = "🏆 🎉 🏆";
+                gameActive = false;
+                gameCompleted = true;
+                return;
+            }
+            
+            canAnswer = true;
+            resultMessageDiv.innerHTML = "";
+            resultMessageDiv.className = "result-message";
+            nextBtn.style.display = "none";
+            optionsContainer.innerHTML = "";
+            
+            currentQuestion = currentSongs[currentIndex];
+            emojisContainer.innerHTML = currentQuestion.emojis;
+            
+            const options = generateOptions(currentQuestion, currentSongs);
+            options.forEach(option => {
+                const btn = document.createElement('button');
+                btn.textContent = option;
+                btn.className = 'option-btn';
+                btn.onclick = () => checkAnswer(option);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedTitle) {
+            if (!canAnswer || !gameActive) return;
+            canAnswer = false;
+            const isCorrect = (selectedTitle === currentQuestion.title);
+            const allButtons = document.querySelectorAll('.option-btn');
+            allButtons.forEach(btn => btn.classList.add('disabled'));
+            
+            if (isCorrect) {
+                currentScore++;
+                scoreSpan.textContent = currentScore;
+                correctAnswersCount++;
+                updateUserStats(true, false, 'emoji', currentCategory);
+                resultMessageDiv.innerHTML = `✅ ПРАВИЛЬНО! +1 очко! (${currentQuestion.artist}) ✅`;
+                resultMessageDiv.className = "result-message correct";
+                nextBtn.style.display = "block";
+                currentIndex++;
+            } else {
+                updateUserStats(false, false, 'emoji', currentCategory);
+                checkAndUpdateRecords(currentScore);
+                resultMessageDiv.innerHTML = `❌ НЕПРАВИЛЬНО! Правильный ответ: "${currentQuestion.title}" - ${currentQuestion.artist} ❌<br><br>Игра начинается заново!`;
+                resultMessageDiv.className = "result-message wrong";
+                currentScore = 0;
+                correctAnswersCount = 0;
+                scoreSpan.textContent = currentScore;
+                gameActive = false;
+                setTimeout(() => {
+                    resetGameState();
+                    gameActive = true;
+                    loadQuestion();
+                }, 2000);
+                return;
+            }
+        }
+
+        function nextQuestion() {
+            loadQuestion();
+        }
+
+        function resetGameState() {
+            if (currentCategory === 'english') currentSongs = shuffleArray([...englishSongs]);
+            else if (currentCategory === 'russian') currentSongs = shuffleArray([...russianSongs]);
+            else if (currentCategory === 'kpop') currentSongs = shuffleArray([...kpopSongs]);
+            currentIndex = 0;
+            currentScore = 0;
+            correctAnswersCount = 0;
+            scoreSpan.textContent = currentScore;
+            canAnswer = true;
+            gameActive = true;
+            gameCompleted = false;
+        }
+
+        function resetGame() {
+            if (!gameCompleted && currentScore > 0) {
+                checkAndUpdateRecords(currentScore);
+            }
+            resetGameState();
+            gameActive = true;
+            loadQuestion();
+        }
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('sonchiks_theme');
+            if (savedTheme === 'light') document.body.classList.add('light-theme');
+            else document.body.classList.remove('light-theme');
+        }
+
+        function toggleTheme() {
+            if (document.body.classList.contains('light-theme')) {
+                document.body.classList.remove('light-theme');
+                localStorage.setItem('sonchiks_theme', 'dark');
+            } else {
+                document.body.classList.add('light-theme');
+                localStorage.setItem('sonchiks_theme', 'light');
+            }
+        }
+
+        function loadProfileIcon() {
+            const currentUser = localStorage.getItem('lovechord_current_user');
+            const users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+            if (currentUser && users[currentUser]) {
+                const icon = document.getElementById('profileIcon');
+                if (users[currentUser].avatar) icon.innerHTML = `<img src="${users[currentUser].avatar}" alt="avatar">`;
+                else { icon.innerHTML = users[currentUser].username.charAt(0).toUpperCase(); icon.style.fontSize = '24px'; icon.style.fontWeight = 'bold'; }
+            }
+        }
+
+        // Экспорт функций в глобальную область
+        window.openSearchModal = openSearchModal;
+        window.closeSearchModal = closeSearchModal;
+        window.searchUsers = searchUsers;
+        window.viewProfileGlobal = viewProfileGlobal;
+        window.toggleNotifications = toggleNotificationsGlobal;
+        window.closeChat = closeChatGlobal;
+        window.sendMessage = sendMessageGlobal;
+        window.toggleTheme = toggleTheme;
+        
+        loadProfileIcon();
+        loadTheme();
+        loadRecords();
+        loadGlobalUserData();
+        updateDailyTaskIndicator();
+        currentSongs = shuffleArray([...englishSongs]);
+        resetGameState();
+        loadQuestion();
+        
+        // Обновление чата каждую секунду
+        setInterval(() => { if (currentChatWithGlobal) loadChatMessagesGlobal(); }, 1000);
+    </script>
+</body>
+</html>

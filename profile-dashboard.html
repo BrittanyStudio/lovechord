@@ -1,0 +1,1558 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Мой профиль - LoveChord</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --bg-body: #1e1e2f;
+            --bg-game-box: #2a2a3a;
+            --bg-card: #1e1e2f;
+            --text-primary: white;
+            --text-secondary: #aaa;
+            --btn-bg: #f5c4c4;
+            --btn-hover: #e8a0a0;
+            --btn-text: #333;
+            --border-color: #f5c4c4;
+            --accent: #ffcc00;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            text-align: center;
+            background: var(--bg-body);
+            color: var(--text-primary);
+            padding: 20px;
+            transition: background 0.3s, color 0.3s;
+        }
+        
+        body.light-theme {
+            --bg-body: #ffe4e1;
+            --bg-game-box: #ffd6d6;
+            --bg-card: #ffebeb;
+            --text-primary: #333;
+            --text-secondary: #666;
+            --btn-bg: #2a2a3a;
+            --btn-hover: #3a3a4a;
+            --btn-text: #f5c4c4;
+            --border-color: #2a2a3a;
+            --accent: #ff6b6b;
+        }
+        
+        /* ===== РАМКИ ДЛЯ АВАТАРА ===== */
+        .frame-neon-red { border: 3px solid #ff0000 !important; box-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000, inset 0 0 5px #ff0000 !important; }
+        .frame-neon-blue { border: 3px solid #0044ff !important; box-shadow: 0 0 10px #0044ff, 0 0 20px #0044ff, inset 0 0 5px #0044ff !important; }
+        .frame-neon-green { border: 3px solid #00ff44 !important; box-shadow: 0 0 10px #00ff44, 0 0 20px #00ff44, inset 0 0 5px #00ff44 !important; }
+        .frame-neon-yellow { border: 3px solid #ffcc00 !important; box-shadow: 0 0 10px #ffcc00, 0 0 20px #ffcc00, inset 0 0 5px #ffcc00 !important; }
+        .frame-neon-purple { border: 3px solid #cc00ff !important; box-shadow: 0 0 10px #cc00ff, 0 0 20px #cc00ff, inset 0 0 5px #cc00ff !important; }
+        .frame-neon-orange { border: 3px solid #ff6600 !important; box-shadow: 0 0 10px #ff6600, 0 0 20px #ff6600, inset 0 0 5px #ff6600 !important; }
+        .frame-neon-pink { border: 3px solid #ff69b4 !important; box-shadow: 0 0 10px #ff69b4, 0 0 20px #ff69b4, inset 0 0 5px #ff69b4 !important; }
+        .frame-neon-cyan { border: 3px solid #00ffff !important; box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, inset 0 0 5px #00ffff !important; }
+        .frame-metal-gold { border: 3px solid #ffd700 !important; box-shadow: 0 0 5px #ffd700, 0 0 15px #ffaa00, inset 0 0 8px #ffd700 !important; }
+        .frame-metal-silver { border: 3px solid #c0c0c0 !important; box-shadow: 0 0 5px #c0c0c0, 0 0 15px #a9a9a9, inset 0 0 8px #e0e0e0 !important; }
+        .frame-metal-bronze { border: 3px solid #cd7f32 !important; box-shadow: 0 0 5px #cd7f32, 0 0 15px #b87333, inset 0 0 8px #e8a060 !important; }
+        .frame-metal-platinum { border: 3px solid #e5e4e2 !important; box-shadow: 0 0 5px #e5e4e2, 0 0 15px #b0c4de, inset 0 0 8px #ffffff !important; }
+        .frame-diamond-blue { border: 3px solid #00bfff !important; box-shadow: 0 0 8px #00bfff, 0 0 25px #1e90ff, inset 0 0 10px #87ceeb !important; animation: diamondShine 1.5s ease-in-out infinite; }
+        .frame-diamond-pink { border: 3px solid #ff69b4 !important; box-shadow: 0 0 8px #ff69b4, 0 0 25px #ff1493, inset 0 0 10px #ffb6c1 !important; animation: diamondShine 1.5s ease-in-out infinite; }
+        .frame-diamond-green { border: 3px solid #00ff7f !important; box-shadow: 0 0 8px #00ff7f, 0 0 25px #00fa9a, inset 0 0 10px #7cfc00 !important; animation: diamondShine 1.5s ease-in-out infinite; }
+        .frame-diamond-rainbow { border: 3px solid transparent !important; box-shadow: 0 0 10px #ff0000, 0 0 20px #ff00ff, 0 0 30px #00ffff, inset 0 0 10px #ffff00 !important; animation: rainbowShine 2s linear infinite; }
+        .frame-holo-silver { border: 3px solid transparent !important; background: linear-gradient(white, white) padding-box, linear-gradient(135deg, #e0e0e0, #ffffff, #c0c0c0, #ffffff, #e0e0e0) border-box !important; animation: holoMove 3s linear infinite; }
+        .frame-holo-rainbow { border: 3px solid transparent !important; background: linear-gradient(white, white) padding-box, linear-gradient(135deg, #ff0000, #ff00ff, #0000ff, #00ffff, #00ff00, #ffff00, #ff0000) border-box !important; animation: holoRainbow 3s linear infinite; }
+        .frame-holo-magenta { border: 3px solid transparent !important; background: linear-gradient(white, white) padding-box, linear-gradient(135deg, #ff00ff, #ff1493, #ff4500, #ff1493, #ff00ff) border-box !important; animation: holoMove 2s linear infinite; }
+        .frame-space-stars { border: 3px solid transparent !important; background: linear-gradient(#1a1a2e, #16213e) padding-box, radial-gradient(circle at 30% 40%, #ffffff 1%, transparent 2%) border-box !important; box-shadow: 0 0 15px #4a00e0 !important; animation: starTwinkle 2s ease-in-out infinite; }
+        .frame-space-nebula { border: 3px solid transparent !important; background: linear-gradient(#0f0c29, #302b63, #24243e) padding-box, repeating-linear-gradient(45deg, #ff00ff, #00ffff, #ff00ff) border-box !important; animation: nebulaPulse 3s ease-in-out infinite; }
+        .frame-magic-fire { border: 3px solid transparent !important; background: linear-gradient(white, white) padding-box, repeating-linear-gradient(0deg, #ff3300, #ff6600, #ff9900, #ffcc00, #ff9900, #ff6600, #ff3300) border-box !important; animation: firePulse 1s linear infinite; }
+        .frame-magic-ice { border: 3px solid transparent !important; background: linear-gradient(white, white) padding-box, repeating-linear-gradient(0deg, #00bfff, #87ceeb, #e0ffff, #f0f8ff, #e0ffff, #87ceeb, #00bfff) border-box !important; animation: icePulse 2s ease-in-out infinite; }
+        
+        @keyframes diamondShine { 0% { filter: brightness(1); } 50% { filter: brightness(1.5) drop-shadow(0 0 5px gold); } 100% { filter: brightness(1); } }
+        @keyframes rainbowShine { 0% { filter: hue-rotate(0deg) brightness(1); } 50% { filter: hue-rotate(180deg) brightness(1.3); } 100% { filter: hue-rotate(360deg) brightness(1); } }
+        @keyframes holoMove { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+        @keyframes holoRainbow { 0% { filter: hue-rotate(0deg); } 100% { filter: hue-rotate(360deg); } }
+        @keyframes starTwinkle { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; box-shadow: 0 0 25px #7b2cbf; } }
+        @keyframes nebulaPulse { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.3) hue-rotate(30deg); } }
+        @keyframes firePulse { 0% { filter: hue-rotate(0deg); } 100% { filter: hue-rotate(360deg); } }
+        @keyframes icePulse { 0%, 100% { box-shadow: 0 0 5px #00bfff, 0 0 10px #87ceeb; } 50% { box-shadow: 0 0 15px #00ffff, 0 0 25px #e0ffff; } }
+        
+        .LoveChord-container { position: fixed; top: 20px; left: 20px; text-align: center; z-index: 1000; }
+        .LoveChord-btn { background: var(--btn-bg); color: var(--btn-text); border: none; padding: 10px 25px; border-radius: 30px; cursor: pointer; transition: 0.2s; display: block; text-align: center; text-decoration: none; }
+        .LoveChord-btn:hover { background: var(--btn-hover); transform: scale(1.02); }
+        .LoveChord-main { display: block; font-size: 20px; font-weight: 800; font-family: 'Montserrat', sans-serif; letter-spacing: 2px; font-variant: small-caps; }
+        .about-songs { display: block; font-size: 9px; text-decoration: none; margin-top: 3px; font-weight: normal; font-family: 'Montserrat', sans-serif; }
+        
+        .search-icon { position: fixed; top: 20px; right: 140px; width: 45px; height: 45px; border-radius: 50%; background: var(--btn-bg); color: var(--btn-text); border: 2px solid var(--border-color); cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; font-size: 22px; z-index: 1000; }
+        .search-icon:hover { transform: scale(1.05); background: var(--btn-hover); }
+        .notification-icon { position: fixed; top: 20px; right: 200px; width: 45px; height: 45px; border-radius: 50%; background: var(--btn-bg); color: var(--btn-text); border: 2px solid var(--border-color); cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; font-size: 22px; z-index: 1000; }
+        .notification-icon:hover { transform: scale(1.05); background: var(--btn-hover); }
+        .notification-badge { position: absolute; top: -5px; right: -5px; background: #ff4444; color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; display: flex; align-items: center; justify-content: center; }
+        .profile-icon { position: fixed; top: 20px; right: 80px; width: 45px; height: 45px; border-radius: 50%; background: var(--btn-bg); color: var(--btn-text); border: 2px solid var(--border-color); cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; font-size: 22px; z-index: 1000; overflow: hidden; }
+        .profile-icon:hover { transform: scale(1.05); background: var(--btn-hover); }
+        .profile-icon img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .theme-toggle-bottom { position: fixed; bottom: 20px; right: 20px; background: var(--btn-bg); color: var(--btn-text); border: none; padding: 10px 15px; border-radius: 30px; cursor: pointer; transition: 0.2s; font-size: 16px; font-weight: 600; z-index: 1000; font-family: 'Montserrat', sans-serif; }
+        .theme-toggle-bottom:hover { background: var(--btn-hover); transform: scale(1.02); }
+        
+        .nav-menu { display: flex; justify-content: flex-start; align-items: center; gap: 12px; margin-bottom: 30px; margin-top: 60px; overflow-x: auto; overflow-y: hidden; white-space: nowrap; padding-bottom: 10px; cursor: grab; }
+        .nav-menu:active { cursor: grabbing; }
+        .nav-menu::-webkit-scrollbar { height: 5px; }
+        .nav-menu::-webkit-scrollbar-track { background: var(--bg-game-box); border-radius: 10px; }
+        .nav-menu::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
+        .nav-btn { background: var(--bg-game-box); border: 2px solid var(--border-color); padding: 10px 20px; font-size: 14px; border-radius: 30px; cursor: pointer; transition: 0.2s; color: var(--border-color); font-weight: 600; font-family: 'Montserrat', sans-serif; white-space: nowrap; flex-shrink: 0; }
+        .nav-btn:hover:not(.active) { background: var(--btn-bg); color: var(--btn-text); }
+        .nav-btn.active { background: var(--btn-bg); color: var(--btn-text); cursor: default; opacity: 0.7; }
+        
+        /* ПРОФИЛЬ - базовые стили */
+        .profile-container { 
+            max-width: 900px; 
+            margin: 100px auto 40px; 
+            border-radius: 20px; 
+            overflow: hidden; 
+            border: 2px solid var(--border-color);
+            transition: all 0.3s;
+            position: relative;
+        }
+        .banner { height: 150px; cursor: pointer; transition: 0.2s; background-size: cover; background-position: center; }
+        .banner:hover { opacity: 0.8; }
+        
+        .avatar-section { position: relative; margin-top: -60px; padding: 0 20px; display: flex; align-items: flex-end; gap: 20px; flex-wrap: wrap; }
+        .avatar { width: 100px; height: 100px; border-radius: 50%; cursor: pointer; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 50px; font-weight: bold; transition: 0.2s; position: relative; background-clip: border-box; }
+        .avatar:hover { transform: scale(1.02); opacity: 0.8; }
+        .avatar img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .username-area { flex: 1; text-align: left; padding-bottom: 15px; }
+        .username { font-size: 28px; font-weight: bold; cursor: pointer; display: inline-block; }
+        .username:hover { text-decoration: underline; }
+        .username-change-info { font-size: 12px; margin-top: 5px; cursor: pointer; }
+        
+        .profile-buttons { display: flex; justify-content: center; gap: 15px; padding: 30px; flex-wrap: wrap; }
+        .profile-btn { border: none; padding: 10px 20px; border-radius: 30px; cursor: pointer; font-weight: 700; font-family: 'Montserrat', sans-serif; font-size: 14px; transition: 0.2s; }
+        .profile-btn:hover { transform: scale(1.02); }
+        .logout-btn { background: #888; color: white; }
+        .promo-btn { background: linear-gradient(135deg, #ffcc00, #ffaa00); color: #333; }
+        .achievements-btn { background: linear-gradient(135deg, #ff6b6b, #c44c4c); color: white; }
+        .friends-btn { background: linear-gradient(135deg, #4ecdc4, #45b7d1); color: white; }
+        
+        .content-panel { padding: 20px; border-top: 1px solid var(--border-color); }
+        .content-panel h3 { margin-bottom: 20px; }
+        
+        .stats-grid { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+        .stat-card { padding: 20px; border-radius: 15px; min-width: 130px; border: 1px solid var(--border-color); }
+        .stat-number { font-size: 32px; font-weight: bold; }
+        .stat-label { font-size: 14px; margin-top: 5px; }
+        
+        .search-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 2px solid var(--border-color); border-radius: 20px; padding: 30px; z-index: 2000; width: 90%; max-width: 500px; }
+        .search-modal.show { display: block; }
+        .search-input { width: 100%; padding: 12px; border-radius: 30px; border: 2px solid var(--border-color); font-size: 16px; margin-bottom: 20px; }
+        .search-results { max-height: 300px; overflow-y: auto; }
+        .search-result-item { padding: 10px; margin: 5px 0; border-radius: 15px; cursor: pointer; transition: 0.2s; }
+        .search-result-item:hover { transform: scale(1.02); }
+        .close-modal { border: none; padding: 10px 20px; border-radius: 30px; cursor: pointer; margin-top: 15px; }
+        
+        .notification-panel { position: fixed; top: 70px; right: 20px; width: 300px; border: 2px solid var(--border-color); border-radius: 15px; z-index: 2000; display: none; }
+        .notification-panel.show { display: block; }
+        .notification-item { padding: 12px; border-bottom: 1px solid var(--border-color); cursor: pointer; }
+        .notification-item:hover { background: rgba(0,0,0,0.1); }
+        .notification-actions { display: flex; gap: 10px; margin-top: 8px; }
+        .notif-accept, .notif-reject { padding: 5px 12px; border-radius: 20px; border: none; cursor: pointer; font-size: 12px; }
+        .notif-accept { background: #00aa44; color: white; }
+        .notif-reject { background: #aa0044; color: white; }
+        
+        .chat-modal { display: none; position: fixed; bottom: 20px; right: 20px; width: 350px; height: 450px; border: 2px solid var(--border-color); border-radius: 15px; z-index: 2000; flex-direction: column; }
+        .chat-modal.show { display: flex; }
+        .chat-header { padding: 12px; border-radius: 13px 13px 0 0; display: flex; justify-content: space-between; align-items: center; }
+        .chat-messages { flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+        .message { max-width: 80%; padding: 8px 12px; border-radius: 15px; }
+        .message.sent { background: var(--accent); color: #333; align-self: flex-end; }
+        .message.received { background: var(--bg-card); align-self: flex-start; }
+        .chat-input-area { display: flex; padding: 12px; gap: 8px; border-top: 1px solid var(--border-color); }
+        .chat-input { flex: 1; padding: 8px; border-radius: 20px; border: 1px solid var(--border-color); }
+        .chat-send { border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; }
+        
+        .task-list { text-align: left; max-width: 650px; margin: 0 auto; }
+        .task-item { padding: 15px; margin: 10px 0; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; border-left: 4px solid var(--accent); }
+        .task-completed { color: #00aa44; font-weight: bold; }
+        .task-incomplete { color: var(--accent); }
+        
+        .shop-items { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-top: 20px; }
+        .shop-item { border-radius: 15px; padding: 12px; width: 140px; cursor: pointer; transition: 0.2s; border: 2px solid var(--border-color); }
+        .shop-item:hover { transform: scale(1.05); border-color: var(--accent); }
+        .shop-item.locked { opacity: 0.5; }
+        .shop-item-price { font-weight: bold; margin-top: 8px; font-size: 14px; }
+        .shop-item-banner { width: 100%; height: 60px; border-radius: 10px; background-size: cover; background-position: center; margin-bottom: 8px; }
+        .shop-item-color { width: 40px; height: 40px; border-radius: 50%; margin: 0 auto 8px; border: 2px solid white; }
+        .shop-item-frame { width: 50px; height: 50px; border-radius: 50%; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; border: 2px solid white; transition: 0.2s; }
+        .shop-item-frame:hover { transform: scale(1.05); }
+        
+        .balance { font-size: 24px; font-weight: bold; margin-bottom: 20px; }
+        
+        .promo-section { margin: 20px 0; padding: 20px; border-radius: 20px; border: 2px solid var(--border-color); }
+        .promo-title { font-size: 20px; font-weight: bold; margin-bottom: 15px; }
+        .promo-input-group { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+        .promo-input { padding: 12px 20px; font-size: 16px; border-radius: 30px; border: 2px solid var(--border-color); width: 250px; text-align: center; }
+        .promo-submit { background: linear-gradient(135deg, #ffcc00, #ffaa00); color: #333; border: none; padding: 12px 30px; border-radius: 30px; cursor: pointer; font-weight: 700; font-size: 16px; }
+        .promo-submit:hover { transform: scale(1.02); }
+        .promo-message { margin-top: 15px; font-size: 14px; }
+        .promo-message.success { color: #00ffaa; }
+        .promo-message.error { color: #ff5555; }
+        
+        .notification { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #00aa44; border-radius: 20px; padding: 15px 30px; z-index: 2000; text-align: center; animation: fadeInOut 2.5s ease-in-out; color: white; font-weight: bold; white-space: nowrap; }
+        .notification.error { background: #aa0044; }
+        @keyframes fadeInOut { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); } 15% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 85% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); } }
+        
+        .color-picker, .banner-picker, .frame-picker, .theme-picker { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 20px; border-radius: 20px; border: 2px solid var(--border-color); z-index: 2000; display: none; max-width: 500px; max-height: 80vh; overflow-y: auto; }
+        .color-picker.show, .banner-picker.show, .frame-picker.show, .theme-picker.show { display: block; }
+        .color-options, .banner-options, .frame-options, .theme-options { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin: 20px 0; justify-content: center; }
+        .color-option { width: 40px; height: 40px; border-radius: 50%; cursor: pointer; border: 2px solid white; }
+        .banner-option { width: 80px; height: 50px; border-radius: 10px; cursor: pointer; background-size: cover; background-position: center; border: 2px solid white; }
+        .frame-option { width: 60px; height: 60px; border-radius: 50%; cursor: pointer; border: 2px solid white; display: flex; align-items: center; justify-content: center; font-size: 24px; transition: 0.2s; }
+        .frame-option:hover { transform: scale(1.05); }
+        .theme-option { width: 100%; padding: 15px; border-radius: 15px; cursor: pointer; border: 2px solid var(--border-color); text-align: center; transition: 0.2s; }
+        .theme-option:hover { transform: scale(1.02); border-color: var(--accent); }
+        .theme-option.active { border-color: var(--accent); background: var(--accent); color: var(--btn-text); }
+        .close-picker { border: none; padding: 8px 20px; border-radius: 30px; cursor: pointer; margin-top: 10px; }
+        .hidden-input { display: none; }
+        
+        .achievements-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; margin-top: 20px; }
+        .achievement-card { border-radius: 15px; padding: 15px; border: 2px solid var(--border-color); transition: 0.2s; display: flex; align-items: center; gap: 15px; }
+        .achievement-card.unlocked { border-color: var(--accent); background: linear-gradient(135deg, var(--bg-card), var(--bg-game-box)); }
+        .achievement-icon { font-size: 40px; min-width: 60px; text-align: center; }
+        .achievement-info { flex: 1; text-align: left; }
+        .achievement-name { font-weight: bold; font-size: 16px; }
+        .achievement-desc { font-size: 12px; margin-top: 5px; }
+        .achievement-reward { font-size: 12px; color: #00aa44; margin-top: 5px; }
+        .achievement-badge { font-size: 24px; min-width: 50px; text-align: center; }
+        .achievement-badge.locked { opacity: 0.3; }
+        .achievement-category { margin-bottom: 30px; }
+        .achievement-category h4 { margin-bottom: 15px; text-align: left; font-size: 20px; border-left: 4px solid var(--accent); padding-left: 15px; }
+        
+        .view-profile-container { max-width: 900px; margin: 100px auto 40px; border-radius: 20px; overflow: hidden; border: 2px solid var(--border-color); transition: all 0.3s; position: relative; }
+        .view-profile-header-actions { display: flex; justify-content: flex-end; padding: 15px; gap: 10px; }
+        .add-friend-btn { border: none; padding: 10px 25px; border-radius: 30px; cursor: pointer; font-weight: 700; }
+        .back-btn { background: #888; border: none; padding: 10px 20px; border-radius: 30px; cursor: pointer; color: white; }
+        
+        /* ===== ТЕМЫ ОФОРМЛЕНИЯ ДЛЯ ПРОФИЛЯ (без переопределения цвета ника) ===== */
+        .profile-container.theme-floral { background: #ffe4ec; border-color: #ff69b4; }
+        .profile-container.theme-floral .banner { background: #ffb7c5; }
+        .profile-container.theme-floral .avatar { background: #ffb7c5; border-color: #ff69b4; color: #4a2a3a; }
+        .profile-container.theme-floral .profile-btn { background: #ffb7c5; color: #4a2a3a; }
+        .profile-container.theme-floral .profile-btn:hover { background: #ff9eb5; }
+        .profile-container.theme-floral .stat-card { background: #fff5f8; border-color: #ff69b4; color: #4a2a3a; }
+        .profile-container.theme-floral .stat-number { color: #ff69b4; }
+        .profile-container.theme-floral .stat-label { color: #8a6a7a; }
+        .profile-container.theme-floral .content-panel { border-top-color: #ff69b4; }
+        .profile-container.theme-floral .content-panel h3 { color: #ff69b4; }
+        .profile-container.theme-floral .task-item { background: #fff5f8; border-left-color: #ff69b4; color: #4a2a3a; }
+        .profile-container.theme-floral .shop-item { background: #fff5f8; border-color: #ff69b4; color: #4a2a3a; }
+        .profile-container.theme-floral .shop-item-price { color: #ff69b4; }
+        .profile-container.theme-floral .balance { color: #ff69b4; }
+        .profile-container.theme-floral::before { content: '🌸'; position: absolute; top: 10px; left: 10px; font-size: 30px; opacity: 0.4; pointer-events: none; }
+        .profile-container.theme-floral::after { content: '🌸'; position: absolute; bottom: 10px; right: 10px; font-size: 30px; opacity: 0.4; pointer-events: none; }
+        
+        .profile-container.theme-cosmic { background: #0f0f35; border-color: #6a8aee; }
+        .profile-container.theme-cosmic .banner { background: #4a6ac4; }
+        .profile-container.theme-cosmic .avatar { background: #4a6ac4; border-color: #6a8aee; color: #ffffff; }
+        .profile-container.theme-cosmic .profile-btn { background: #4a6ac4; color: #ffffff; }
+        .profile-container.theme-cosmic .profile-btn:hover { background: #5a7ad4; }
+        .profile-container.theme-cosmic .stat-card { background: #1a1a45; border-color: #6a8aee; color: #c0e0ff; }
+        .profile-container.theme-cosmic .stat-number { color: #6a8aee; }
+        .profile-container.theme-cosmic .stat-label { color: #80a0cc; }
+        .profile-container.theme-cosmic .content-panel { border-top-color: #6a8aee; }
+        .profile-container.theme-cosmic .content-panel h3 { color: #6a8aee; }
+        .profile-container.theme-cosmic .task-item { background: #1a1a45; border-left-color: #6a8aee; color: #c0e0ff; }
+        .profile-container.theme-cosmic .shop-item { background: #1a1a45; border-color: #6a8aee; color: #c0e0ff; }
+        .profile-container.theme-cosmic .shop-item-price { color: #6a8aee; }
+        .profile-container.theme-cosmic .balance { color: #6a8aee; }
+        .profile-container.theme-cosmic::before { content: '⭐'; position: absolute; top: 10px; left: 10px; font-size: 25px; opacity: 0.5; pointer-events: none; }
+        .profile-container.theme-cosmic::after { content: '🌙'; position: absolute; bottom: 10px; right: 10px; font-size: 30px; opacity: 0.5; pointer-events: none; }
+        
+        .profile-container.theme-forest { background: #203520; border-color: #6aaa6a; }
+        .profile-container.theme-forest .banner { background: #4a8a4a; }
+        .profile-container.theme-forest .avatar { background: #4a8a4a; border-color: #6aaa6a; color: #ffffff; }
+        .profile-container.theme-forest .profile-btn { background: #4a8a4a; color: #ffffff; }
+        .profile-container.theme-forest .profile-btn:hover { background: #5a9a5a; }
+        .profile-container.theme-forest .stat-card { background: #2a452a; border-color: #6aaa6a; color: #c0e0c0; }
+        .profile-container.theme-forest .stat-number { color: #6aaa6a; }
+        .profile-container.theme-forest .stat-label { color: #90b090; }
+        .profile-container.theme-forest .content-panel { border-top-color: #6aaa6a; }
+        .profile-container.theme-forest .content-panel h3 { color: #6aaa6a; }
+        .profile-container.theme-forest .task-item { background: #2a452a; border-left-color: #6aaa6a; color: #c0e0c0; }
+        .profile-container.theme-forest .shop-item { background: #2a452a; border-color: #6aaa6a; color: #c0e0c0; }
+        .profile-container.theme-forest .shop-item-price { color: #6aaa6a; }
+        .profile-container.theme-forest .balance { color: #6aaa6a; }
+        .profile-container.theme-forest::before { content: '🌲'; position: absolute; top: 10px; left: 10px; font-size: 25px; opacity: 0.5; pointer-events: none; }
+        .profile-container.theme-forest::after { content: '🍃'; position: absolute; bottom: 10px; right: 10px; font-size: 25px; opacity: 0.5; pointer-events: none; }
+        
+        .profile-container.theme-luxury { background: #3a2a15; border-color: #ffcc44; }
+        .profile-container.theme-luxury .banner { background: #d4aa44; }
+        .profile-container.theme-luxury .avatar { background: #d4aa44; border-color: #ffcc44; color: #2a1a0a; }
+        .profile-container.theme-luxury .profile-btn { background: #d4aa44; color: #2a1a0a; }
+        .profile-container.theme-luxury .profile-btn:hover { background: #e4ba54; }
+        .profile-container.theme-luxury .stat-card { background: #4a3a20; border-color: #ffcc44; color: #ffdd88; }
+        .profile-container.theme-luxury .stat-number { color: #ffcc44; }
+        .profile-container.theme-luxury .stat-label { color: #ccaa66; }
+        .profile-container.theme-luxury .content-panel { border-top-color: #ffcc44; }
+        .profile-container.theme-luxury .content-panel h3 { color: #ffcc44; }
+        .profile-container.theme-luxury .task-item { background: #4a3a20; border-left-color: #ffcc44; color: #ffdd88; }
+        .profile-container.theme-luxury .shop-item { background: #4a3a20; border-color: #ffcc44; color: #ffdd88; }
+        .profile-container.theme-luxury .shop-item-price { color: #ffcc44; }
+        .profile-container.theme-luxury .balance { color: #ffcc44; }
+        .profile-container.theme-luxury::before { content: '✨'; position: absolute; top: 10px; left: 10px; font-size: 25px; opacity: 0.6; pointer-events: none; }
+        .profile-container.theme-luxury::after { content: '💎'; position: absolute; bottom: 10px; right: 10px; font-size: 25px; opacity: 0.6; pointer-events: none; }
+        
+        .profile-container.theme-magic { background: #251535; border-color: #aa6aee; }
+        .profile-container.theme-magic .banner { background: #7a4ac4; }
+        .profile-container.theme-magic .avatar { background: #7a4ac4; border-color: #aa6aee; color: #ffffff; }
+        .profile-container.theme-magic .profile-btn { background: #7a4ac4; color: #ffffff; }
+        .profile-container.theme-magic .profile-btn:hover { background: #8a5ad4; }
+        .profile-container.theme-magic .stat-card { background: #302045; border-color: #aa6aee; color: #ddc0ff; }
+        .profile-container.theme-magic .stat-number { color: #aa6aee; }
+        .profile-container.theme-magic .stat-label { color: #aa90cc; }
+        .profile-container.theme-magic .content-panel { border-top-color: #aa6aee; }
+        .profile-container.theme-magic .content-panel h3 { color: #aa6aee; }
+        .profile-container.theme-magic .task-item { background: #302045; border-left-color: #aa6aee; color: #ddc0ff; }
+        .profile-container.theme-magic .shop-item { background: #302045; border-color: #aa6aee; color: #ddc0ff; }
+        .profile-container.theme-magic .shop-item-price { color: #aa6aee; }
+        .profile-container.theme-magic .balance { color: #aa6aee; }
+        .profile-container.theme-magic::before { content: '🔮'; position: absolute; top: 10px; left: 10px; font-size: 25px; opacity: 0.5; pointer-events: none; }
+        .profile-container.theme-magic::after { content: '✨'; position: absolute; bottom: 10px; right: 10px; font-size: 25px; opacity: 0.5; pointer-events: none; }
+        
+        /* Цвет юзернейма не переопределяется темами */
+        .profile-container.theme-floral .username,
+        .profile-container.theme-cosmic .username,
+        .profile-container.theme-forest .username,
+        .profile-container.theme-luxury .username,
+        .profile-container.theme-magic .username {
+            color: inherit !important;
+        }
+        
+        /* Для просмотра чужого профиля */
+        .view-profile-container.theme-floral { background: #ffe4ec; border-color: #ff69b4; }
+        .view-profile-container.theme-floral .avatar { background: #ffb7c5; border-color: #ff69b4; color: #4a2a3a; }
+        .view-profile-container.theme-floral .stat-card { background: #fff5f8; border-color: #ff69b4; color: #4a2a3a; }
+        .view-profile-container.theme-floral .stat-number { color: #ff69b4; }
+        .view-profile-container.theme-floral .content-panel h3 { color: #ff69b4; }
+        .view-profile-container.theme-floral .username { color: inherit !important; }
+        .view-profile-container.theme-floral::before { content: '🌸'; position: absolute; top: 10px; left: 10px; font-size: 30px; opacity: 0.4; pointer-events: none; }
+        .view-profile-container.theme-floral::after { content: '🌸'; position: absolute; bottom: 10px; right: 10px; font-size: 30px; opacity: 0.4; pointer-events: none; }
+        
+        .view-profile-container.theme-cosmic { background: #0f0f35; border-color: #6a8aee; }
+        .view-profile-container.theme-cosmic .avatar { background: #4a6ac4; border-color: #6a8aee; color: #ffffff; }
+        .view-profile-container.theme-cosmic .stat-card { background: #1a1a45; border-color: #6a8aee; color: #c0e0ff; }
+        .view-profile-container.theme-cosmic .stat-number { color: #6a8aee; }
+        .view-profile-container.theme-cosmic .content-panel h3 { color: #6a8aee; }
+        .view-profile-container.theme-cosmic .username { color: inherit !important; }
+        .view-profile-container.theme-cosmic::before { content: '⭐'; position: absolute; top: 10px; left: 10px; font-size: 25px; opacity: 0.5; pointer-events: none; }
+        .view-profile-container.theme-cosmic::after { content: '🌙'; position: absolute; bottom: 10px; right: 10px; font-size: 30px; opacity: 0.5; pointer-events: none; }
+        
+        .view-profile-container.theme-forest { background: #203520; border-color: #6aaa6a; }
+        .view-profile-container.theme-forest .avatar { background: #4a8a4a; border-color: #6aaa6a; color: #ffffff; }
+        .view-profile-container.theme-forest .stat-card { background: #2a452a; border-color: #6aaa6a; color: #c0e0c0; }
+        .view-profile-container.theme-forest .stat-number { color: #6aaa6a; }
+        .view-profile-container.theme-forest .content-panel h3 { color: #6aaa6a; }
+        .view-profile-container.theme-forest .username { color: inherit !important; }
+        .view-profile-container.theme-forest::before { content: '🌲'; position: absolute; top: 10px; left: 10px; font-size: 25px; opacity: 0.5; pointer-events: none; }
+        .view-profile-container.theme-forest::after { content: '🍃'; position: absolute; bottom: 10px; right: 10px; font-size: 25px; opacity: 0.5; pointer-events: none; }
+        
+        .view-profile-container.theme-luxury { background: #3a2a15; border-color: #ffcc44; }
+        .view-profile-container.theme-luxury .avatar { background: #d4aa44; border-color: #ffcc44; color: #2a1a0a; }
+        .view-profile-container.theme-luxury .stat-card { background: #4a3a20; border-color: #ffcc44; color: #ffdd88; }
+        .view-profile-container.theme-luxury .stat-number { color: #ffcc44; }
+        .view-profile-container.theme-luxury .content-panel h3 { color: #ffcc44; }
+        .view-profile-container.theme-luxury .username { color: inherit !important; }
+        .view-profile-container.theme-luxury::before { content: '✨'; position: absolute; top: 10px; left: 10px; font-size: 25px; opacity: 0.6; pointer-events: none; }
+        .view-profile-container.theme-luxury::after { content: '💎'; position: absolute; bottom: 10px; right: 10px; font-size: 25px; opacity: 0.6; pointer-events: none; }
+        
+        .view-profile-container.theme-magic { background: #251535; border-color: #aa6aee; }
+        .view-profile-container.theme-magic .avatar { background: #7a4ac4; border-color: #aa6aee; color: #ffffff; }
+        .view-profile-container.theme-magic .stat-card { background: #302045; border-color: #aa6aee; color: #ddc0ff; }
+        .view-profile-container.theme-magic .stat-number { color: #aa6aee; }
+        .view-profile-container.theme-magic .content-panel h3 { color: #aa6aee; }
+        .view-profile-container.theme-magic .username { color: inherit !important; }
+        .view-profile-container.theme-magic::before { content: '🔮'; position: absolute; top: 10px; left: 10px; font-size: 25px; opacity: 0.5; pointer-events: none; }
+        .view-profile-container.theme-magic::after { content: '✨'; position: absolute; bottom: 10px; right: 10px; font-size: 25px; opacity: 0.5; pointer-events: none; }
+    </style>
+</head>
+<body>
+
+<div class="LoveChord-container">
+    <div class="LoveChord-btn" onclick="window.location.href='index.html'">
+        <span class="LoveChord-main">LoveChord</span>
+        <span class="about-songs">все о песнях*</span>
+    </div>
+</div>
+
+<div class="search-icon" onclick="openSearchModal()">🔍</div>
+<div class="notification-icon" id="notificationIcon" onclick="toggleNotifications()">
+    🔔
+    <span id="notificationBadge" class="notification-badge" style="display: none;">0</span>
+</div>
+<div class="profile-icon" id="profileIcon" onclick="window.location.href='profile-dashboard.html'">👤</div>
+<button class="theme-toggle-bottom" onclick="toggleGlobalTheme()">🌓 Тема</button>
+
+<div class="nav-menu">
+    <button class="nav-btn" onclick="window.location.href='game.html'">🎤 Угадай автора музыки</button>
+    <button class="nav-btn" onclick="window.location.href='photo-game.html'">📸 Угадай автора по фото</button>
+    <button class="nav-btn" onclick="window.location.href='popular-game.html'">📊 Какая песня популярней</button>
+    <button class="nav-btn" onclick="window.location.href='favorite-game.html'">❤️ Выбери любимую песню</button>
+    <button class="nav-btn" onclick="window.location.href='year-game.html'">📅 Угадай год</button>
+    <button class="nav-btn" onclick="window.location.href='who-wrote-game.html'">✍️ Кто написал</button>
+    <button class="nav-btn" onclick="window.location.href='emoji-game.html'">😊 Угадай по эмодзи</button>
+    <button class="nav-btn" onclick="window.location.href='lyrics-game.html'">📝 Угадай по тексту</button>
+</div>
+
+<div id="profileContainer" class="profile-container">
+    <div class="banner" id="banner"></div>
+    <div class="avatar-section">
+        <div class="avatar" id="avatar">👤</div>
+        <div class="username-area">
+            <div class="username" id="username">Загрузка...</div>
+            <div class="username-change-info" id="usernameInfo"></div>
+        </div>
+    </div>
+    <div class="profile-buttons">
+        <button class="profile-btn" onclick="showStats()">📊 Статистика</button>
+        <button class="profile-btn" onclick="showTasks()">📋 Задания</button>
+        <button class="profile-btn" onclick="showShop()">🛒 Магазин</button>
+        <button class="profile-btn achievements-btn" onclick="showAchievements()">🏆 Достижения</button>
+        <button class="profile-btn friends-btn" onclick="showFriends()">👥 Друзья</button>
+        <button class="profile-btn promo-btn" onclick="showPromo()">🎁 Промокод</button>
+        <button class="profile-btn logout-btn" onclick="logout()">🚪 Выйти</button>
+    </div>
+    <div id="contentPanel" class="content-panel">
+        <h3>📊 Моя статистика</h3>
+        <div class="stats-grid" id="statsGrid"></div>
+    </div>
+</div>
+
+<div id="searchModal" class="search-modal">
+    <h3>🔍 Поиск игроков</h3>
+    <input type="text" id="searchInput" class="search-input" placeholder="Введите никнейм..." onkeyup="searchUsers()">
+    <div id="searchResults" class="search-results"></div>
+    <button class="close-modal" onclick="closeSearchModal()">Закрыть</button>
+</div>
+
+<div id="notificationPanel" class="notification-panel">
+    <h4 style="padding: 12px;">Уведомления</h4>
+    <div id="notificationsList"></div>
+</div>
+
+<div id="chatModal" class="chat-modal">
+    <div class="chat-header">
+        <span id="chatFriendName">Чат</span>
+        <button onclick="closeChat()" style="background:none; border:none; color:var(--text-primary); cursor:pointer;">✕</button>
+    </div>
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-input-area">
+        <input type="text" id="chatInput" class="chat-input" placeholder="Сообщение...">
+        <button class="chat-send" onclick="sendMessage()">📤</button>
+    </div>
+</div>
+
+<div id="colorPicker" class="color-picker"><h3>Выбери цвет ника</h3><div class="color-options" id="colorOptions"></div><button class="close-picker" onclick="closeColorPicker()">Закрыть</button></div>
+<div id="bannerPicker" class="banner-picker"><h3>Выбери баннер</h3><div class="banner-options" id="bannerOptions"></div><div id="customBannerBtn" class="custom-banner-btn" style="display: none;" onclick="uploadCustomBanner()">📷 Поставить свой баннер</div><button class="close-picker" onclick="closeBannerPicker()">Закрыть</button></div>
+<div id="framePicker" class="frame-picker"><h3>✨ Выбери рамку для аватара ✨</h3><div class="frame-options" id="frameOptions"></div><button class="close-picker" onclick="closeFramePicker()">Закрыть</button></div>
+<div id="themePicker" class="theme-picker"><h3>🎨 Выбери тему для профиля (500 жетонов)</h3><div class="theme-options" id="themeOptions"></div><button class="close-picker" onclick="closeThemePicker()">Закрыть</button></div>
+
+<input type="file" id="avatarInput" accept="image/*" class="hidden-input">
+<input type="file" id="customBannerInput" accept="image/*" class="hidden-input">
+
+<script>
+// ===== ТЕМЫ ОФОРМЛЕНИЯ ДЛЯ ПРОФИЛЯ =====
+const themes = [
+    { id: 'default', name: 'Стандартная', class: '', price: 0, icon: '🌙' },
+    { id: 'floral', name: 'Розовая цветочная', class: 'theme-floral', price: 500, icon: '🌸' },
+    { id: 'cosmic', name: 'Синяя космическая', class: 'theme-cosmic', price: 500, icon: '⭐' },
+    { id: 'forest', name: 'Зелёная лесная', class: 'theme-forest', price: 500, icon: '🌲' },
+    { id: 'luxury', name: 'Золотая роскошная', class: 'theme-luxury', price: 500, icon: '💎' },
+    { id: 'magic', name: 'Фиолетовая магическая', class: 'theme-magic', price: 500, icon: '🔮' }
+];
+
+// ===== РАМКИ ДЛЯ АВАТАРА =====
+const avatarFrames = [
+    { id: 'neon_red', name: 'Неоновая красная', price: 200, class: 'frame-neon-red', icon: '🔴' },
+    { id: 'neon_blue', name: 'Неоновая синяя', price: 200, class: 'frame-neon-blue', icon: '🔵' },
+    { id: 'neon_green', name: 'Неоновая зелёная', price: 200, class: 'frame-neon-green', icon: '🟢' },
+    { id: 'neon_yellow', name: 'Неоновая жёлтая', price: 200, class: 'frame-neon-yellow', icon: '🟡' },
+    { id: 'neon_purple', name: 'Неоновая фиолетовая', price: 200, class: 'frame-neon-purple', icon: '🟣' },
+    { id: 'neon_orange', name: 'Неоновая оранжевая', price: 200, class: 'frame-neon-orange', icon: '🟠' },
+    { id: 'neon_pink', name: 'Неоновая розовая', price: 200, class: 'frame-neon-pink', icon: '💗' },
+    { id: 'neon_cyan', name: 'Неоновая голубая', price: 200, class: 'frame-neon-cyan', icon: '💙' },
+    { id: 'metal_gold', name: 'Металлик Золото', price: 200, class: 'frame-metal-gold', icon: '🥇' },
+    { id: 'metal_silver', name: 'Металлик Серебро', price: 200, class: 'frame-metal-silver', icon: '🥈' },
+    { id: 'metal_bronze', name: 'Металлик Бронза', price: 200, class: 'frame-metal-bronze', icon: '🥉' },
+    { id: 'metal_platinum', name: 'Металлик Платина', price: 200, class: 'frame-metal-platinum', icon: '💎' },
+    { id: 'diamond_blue', name: 'Бриллиант Сапфир', price: 200, class: 'frame-diamond-blue', icon: '💙' },
+    { id: 'diamond_pink', name: 'Бриллиант Рубин', price: 200, class: 'frame-diamond-pink', icon: '💗' },
+    { id: 'diamond_green', name: 'Бриллиант Изумруд', price: 200, class: 'frame-diamond-green', icon: '💚' },
+    { id: 'diamond_rainbow', name: 'Бриллиант Радуга', price: 200, class: 'frame-diamond-rainbow', icon: '🌈' },
+    { id: 'holo_silver', name: 'Голография Серебро', price: 200, class: 'frame-holo-silver', icon: '✨' },
+    { id: 'holo_rainbow', name: 'Голография Радуга', price: 200, class: 'frame-holo-rainbow', icon: '🌟' },
+    { id: 'holo_magenta', name: 'Голография Маджента', price: 200, class: 'frame-holo-magenta', icon: '💜' },
+    { id: 'space_stars', name: 'Космос Звёзды', price: 200, class: 'frame-space-stars', icon: '⭐' },
+    { id: 'space_nebula', name: 'Космос Туманность', price: 200, class: 'frame-space-nebula', icon: '🌌' },
+    { id: 'magic_fire', name: 'Магия Огня', price: 200, class: 'frame-magic-fire', icon: '🔥' },
+    { id: 'magic_ice', name: 'Магия Льда', price: 200, class: 'frame-magic-ice', icon: '❄️' }
+];
+
+const bannerColors = [
+    { name: 'Тёмный', color: '#1e1e2f', price: 0 }, { name: 'Серый', color: '#2a2a3a', price: 0 },
+    { name: 'Розовый', color: '#f5c4c4', price: 0 }, { name: 'Тёмно-розовый', color: '#e8a0a0', price: 0 },
+    { name: 'Красный', color: '#ff6b6b', price: 50 }, { name: 'Бирюзовый', color: '#4ecdc4', price: 50 },
+    { name: 'Голубой', color: '#45b7d1', price: 50 }, { name: 'Мятный', color: '#96ceb4', price: 50 },
+    { name: 'Жёлтый', color: '#ffeead', price: 50 }, { name: 'Золотой', color: '#ffcc00', price: 50 },
+    { name: 'Кирпичный', color: '#c44c4c', price: 50 }, { name: 'Синий', color: '#3a6ea5', price: 50 },
+    { name: 'Зелёный', color: '#2c5f2d', price: 50 }, { name: 'Оранжевый', color: '#ff8c42', price: 50 },
+    { name: 'Фиолетовый', color: '#6b5b95', price: 50 }
+];
+
+const bannerImages = {
+    'Britney0.4': { name: 'Britney 0.4', url: 'https://img.stl24.com/list/PORTRAIT/50%20Самых%20красивых%20женщин/Britney%20Spears/full/0001_Britney%20Spears.jpg', price: 0 },
+    'Britney0.1': { name: 'Britney 0.1', url: 'https://avatars.mds.yandex.net/i?id=37bc379c06dec5a7c4a249ce55e07e26_l-4210399-images-thumbs&n=13', price: 50 },
+    'Britney0.2': { name: 'Britney 0.2', url: 'https://avatars.mds.yandex.net/i?id=022187f8c6d26563292ab612b085c293_l-9181115-images-thumbs&n=13', price: 50 },
+    'Britney0.3': { name: 'Britney 0.3', url: 'https://avatars.mds.yandex.net/i?id=382803292f43482adbc7d8348606c40a_l-5194885-images-thumbs&n=13', price: 50 },
+    'Marshmello0.1': { name: 'Marshmello 0.1', url: 'https://avatars.mds.yandex.net/i?id=1817b5f2db89cd61a828f7e434e9a75715191c0a-9213435-images-thumbs&n=13', price: 50 },
+    'Marshmello0.2': { name: 'Marshmello 0.2', url: 'https://avatars.mds.yandex.net/i?id=ca40e6db0b47c018af3a74482e978aece576acca-12615496-images-thumbs&n=13', price: 0 },
+    'Christina0.1': { name: 'Christina 0.1', url: 'https://avatars.mds.yandex.net/i?id=7c8f25bdcd73b70edca596286c74aac0_l-2769791-images-thumbs&n=13', price: 50 },
+    'Christina0.2': { name: 'Christina 0.2', url: 'https://images.thevoicemag.ru/upload/img_cache/45d/45d7c7d31d4f25f6f5b1307dead69670_ce_740x388x0x0_cropped_740x387.jpg', price: 0 }
+};
+
+const usernameColors = {
+    '#ffffff': { name: 'Белый', price: 0 }, '#f5c4c4': { name: 'Розовый', price: 0 }, '#e8a0a0': { name: 'Тёмно-розовый', price: 0 },
+    '#333333': { name: 'Тёмно-серый', price: 50 }, '#666666': { name: 'Серый', price: 50 }, '#ff6b6b': { name: 'Красный', price: 50 },
+    '#4ecdc4': { name: 'Бирюзовый', price: 50 }, '#45b7d1': { name: 'Голубой', price: 50 }, '#96ceb4': { name: 'Мятный', price: 50 },
+    '#ffeead': { name: 'Желтый', price: 50 }, '#ffcc00': { name: 'Золотой', price: 50 }, '#c44c4c': { name: 'Кирпичный', price: 50 },
+    '#3a6ea5': { name: 'Синий', price: 50 }, '#2c5f2d': { name: 'Зеленый', price: 50 }, '#ff8c42': { name: 'Оранжевый', price: 50 },
+    '#6b5b95': { name: 'Фиолетовый', price: 50 }
+};
+
+const dailyTasksList = [
+    { id: 'favorite_game', name: 'Поиграть в игру "❤️ Выбери любимую песню"', reward: 15 },
+    { id: 'emoji_3', name: 'Угадать 3 песни по эмодзи', reward: 2 }, { id: 'emoji_5', name: 'Угадать 5 песен по эмодзи', reward: 4 },
+    { id: 'emoji_7', name: 'Угадать 7 песен по эмодзи', reward: 6 }, { id: 'emoji_10', name: 'Угадать 10 песен по эмодзи', reward: 8 },
+    { id: 'emoji_15', name: 'Угадать 15 песен по эмодзи', reward: 12 }
+];
+
+const permanentTasks = [
+    { id: 'first_game', name: 'Поиграть впервые в "🎤 Угадай автора музыки"', reward: 'color_gray', rewardType: 'colors', rewardData: ['#333333', '#666666'] },
+    { id: 'first_photo', name: 'Поиграть впервые в "📸 Угадай автора по фото"', reward: '30', rewardType: 'tokens' },
+    { id: 'first_popular', name: 'Поиграть впервые в "📊 Какая песня популярней"', reward: '30', rewardType: 'tokens' },
+    { id: 'first_favorite', name: 'Поиграть впервые в "❤️ Выбери любимую песню"', reward: '30', rewardType: 'tokens' },
+    { id: 'first_year', name: 'Поиграть впервые в "📅 Угадай год"', reward: '30', rewardType: 'tokens' },
+    { id: 'first_who_wrote', name: 'Поиграть впервые в "✍️ Кто написал..."', reward: '30', rewardType: 'tokens' },
+    { id: 'first_emoji', name: 'Поиграть впервые в "😊 Угадай по эмодзи"', reward: '30', rewardType: 'tokens' },
+    { id: 'totalGames30', name: 'Сыграть в общем 30 игр', reward: 'color_pink', rewardType: 'colors', rewardData: ['#ffb7c5', '#ffc0cb', '#ffd1dc', '#ffe4e1'] },
+    { id: 'totalGames50', name: 'Сыграть в общем 50 игр', reward: 'banner_Britney0.1', rewardType: 'banner', rewardData: 'Britney0.1' },
+    { id: 'totalGames100', name: 'Сыграть в общем 100 игр', reward: '50', rewardType: 'tokens' },
+    { id: 'totalGames150', name: 'Сыграть в общем 150 игр', reward: '60', rewardType: 'tokens' },
+    { id: 'wins30', name: 'Набрать в общем 30 побед', reward: '30', rewardType: 'tokens' },
+    { id: 'wins50', name: 'Набрать в общем 50 побед', reward: 'color_green', rewardType: 'colors', rewardData: ['#90ee90', '#98fb98', '#7cfc00', '#32cd32'] },
+    { id: 'wins100', name: 'Набрать в общем 100 побед', reward: '30', rewardType: 'tokens' },
+    { id: 'wins150', name: 'Набрать в общем 150 побед', reward: '50', rewardType: 'tokens' },
+    { id: 'streak5', name: 'Набрать серию побед 5', reward: 'color_blue', rewardType: 'colors', rewardData: ['#87ceeb', '#87cefa', '#00bfff', '#1e90ff'] },
+    { id: 'streak10', name: 'Набрать серию побед 10', reward: 'banner_Marshmello0.2', rewardType: 'banner', rewardData: 'Marshmello0.2' },
+    { id: 'streak15', name: 'Набрать серию побед 15', reward: '50', rewardType: 'tokens' },
+    { id: 'streak20', name: 'Набрать серию побед 20', reward: '150', rewardType: 'tokens' },
+    { id: 'dailyTasks10', name: 'Выполнить 10 ежедневных заданий', reward: 'banner_Christina0.2', rewardType: 'banner', rewardData: 'Christina0.2' },
+    { id: 'dailyTasks15', name: 'Выполнить 15 ежедневных заданий', reward: '70', rewardType: 'tokens' },
+    { id: 'dailyTasks20', name: 'Выполнить 20 ежедневных заданий', reward: '150', rewardType: 'tokens' }
+];
+
+const achievementsList = [
+    { id: 'collector1', name: 'Коллекционер I', desc: 'Собрать 3 цвета юзернейма', category: 'Коллекционер', icon: '🎨', reward: 10, need: 3, type: 'colors' },
+    { id: 'collector2', name: 'Коллекционер II', desc: 'Собрать 5 цветов юзернейма', category: 'Коллекционер', icon: '🎨', reward: 20, need: 5, type: 'colors' },
+    { id: 'collector3', name: 'Коллекционер III', desc: 'Собрать 10 цветов юзернейма', category: 'Коллекционер', icon: '🎨', reward: 40, need: 10, type: 'colors' },
+    { id: 'collector4', name: 'Коллекционер IV', desc: 'Собрать 15 цветов юзернейма', category: 'Коллекционер', icon: '🎨', reward: 80, need: 15, type: 'colors' },
+    { id: 'collector5', name: 'Коллекционер V', desc: 'Собрать 20 цветов юзернейма', category: 'Коллекционер', icon: '🎨', reward: 150, need: 20, type: 'colors' },
+    { id: 'master1', name: 'Мастер игр I', desc: 'Ответить правильно 5 раз', category: 'Мастер игр', icon: '🎮', reward: 5, need: 5, type: 'correct' },
+    { id: 'master2', name: 'Мастер игр II', desc: 'Ответить правильно 10 раз', category: 'Мастер игр', icon: '🎮', reward: 10, need: 10, type: 'correct' },
+    { id: 'master3', name: 'Мастер игр III', desc: 'Ответить правильно 30 раз', category: 'Мастер игр', icon: '🎮', reward: 20, need: 30, type: 'correct' },
+    { id: 'master4', name: 'Мастер игр IV', desc: 'Ответить правильно 50 раз', category: 'Мастер игр', icon: '🎮', reward: 30, need: 50, type: 'correct' },
+    { id: 'master5', name: 'Мастер игр V', desc: 'Ответить правильно 100 раз', category: 'Мастер игр', icon: '🎮', reward: 50, need: 100, type: 'correct' },
+    { id: 'master6', name: 'Мастер игр VI', desc: 'Ответить правильно 200 раз', category: 'Мастер игр', icon: '🎮', reward: 80, need: 200, type: 'correct' },
+    { id: 'master7', name: 'Мастер игр VII', desc: 'Ответить правильно 300 раз', category: 'Мастер игр', icon: '🎮', reward: 120, need: 300, type: 'correct' },
+    { id: 'marathon1', name: 'Марафонец I', desc: 'Сыграть 10 игр', category: 'Марафонец', icon: '🏃', reward: 5, need: 10, type: 'games' },
+    { id: 'marathon2', name: 'Марафонец II', desc: 'Сыграть 30 игр', category: 'Марафонец', icon: '🏃', reward: 10, need: 30, type: 'games' },
+    { id: 'marathon3', name: 'Марафонец III', desc: 'Сыграть 50 игр', category: 'Марафонец', icon: '🏃', reward: 20, need: 50, type: 'games' },
+    { id: 'marathon4', name: 'Марафонец IV', desc: 'Сыграть 100 игр', category: 'Марафонец', icon: '🏃', reward: 40, need: 100, type: 'games' },
+    { id: 'marathon5', name: 'Марафонец V', desc: 'Сыграть 200 игр', category: 'Марафонец', icon: '🏃', reward: 80, need: 200, type: 'games' },
+    { id: 'marathon6', name: 'Марафонец VI', desc: 'Сыграть 300 игр', category: 'Марафонец', icon: '🏃', reward: 120, need: 300, type: 'games' },
+    { id: 'marathon7', name: 'Марафонец VII', desc: 'Сыграть 500 игр', category: 'Марафонец', icon: '🏃', reward: 200, need: 500, type: 'games' },
+    { id: 'perfect1', name: 'Идеальный раунд I', desc: '3 правильных ответа подряд', category: 'Идеальный раунд', icon: '⭐', reward: 5, need: 3, type: 'streak' },
+    { id: 'perfect2', name: 'Идеальный раунд II', desc: '5 правильных ответов подряд', category: 'Идеальный раунд', icon: '⭐⭐', reward: 10, need: 5, type: 'streak' },
+    { id: 'perfect3', name: 'Идеальный раунд III', desc: '10 правильных ответов подряд', category: 'Идеальный раунд', icon: '⭐⭐⭐', reward: 20, need: 10, type: 'streak' },
+    { id: 'perfect4', name: 'Идеальный раунд IV', desc: '20 правильных ответов подряд', category: 'Идеальный раунд', icon: '🌟🌟', reward: 40, need: 20, type: 'streak' },
+    { id: 'perfect5', name: 'Идеальный раунд V', desc: '30 правильных ответов подряд', category: 'Идеальный раунд', icon: '🌟🌟🌟', reward: 60, need: 30, type: 'streak' },
+    { id: 'perfect6', name: 'Идеальный раунд VI', desc: '50 правильных ответов подряд', category: 'Идеальный раунд', icon: '💎', reward: 100, need: 50, type: 'streak' },
+    { id: 'perfect7', name: 'Идеальный раунд VII', desc: '100 правильных ответов подряд', category: 'Идеальный раунд', icon: '💎💎', reward: 200, need: 100, type: 'streak' },
+    { id: 'perfect8', name: 'Идеальный раунд VIII', desc: '200 правильных ответов подряд', category: 'Идеальный раунд', icon: '💎💎💎', reward: 400, need: 200, type: 'streak' },
+    { id: 'perfect9', name: 'Идеальный раунд IX', desc: '300 правильных ответов подряд', category: 'Идеальный раунд', icon: '🏆', reward: 600, need: 300, type: 'streak' },
+    { id: 'perfect10', name: 'Идеальный раунд X', desc: '500 правильных ответов подряд', category: 'Идеальный раунд', icon: '👑', reward: 1000, need: 500, type: 'streak' },
+    { id: 'fast1', name: 'Быстрый старт I', desc: 'Ответить за 5 секунд', category: 'Быстрый старт', icon: '⚡', reward: 5, need: 5, type: 'fast' },
+    { id: 'fast2', name: 'Быстрый старт II', desc: 'Ответить за 4 секунды', category: 'Быстрый старт', icon: '⚡⚡', reward: 10, need: 4, type: 'fast' },
+    { id: 'fast3', name: 'Быстрый старт III', desc: 'Ответить за 3 секунды', category: 'Быстрый старт', icon: '⚡⚡⚡', reward: 20, need: 3, type: 'fast' },
+    { id: 'fast4', name: 'Быстрый старт IV', desc: 'Ответить за 2 секунды', category: 'Быстрый старт', icon: '✨', reward: 50, need: 2, type: 'fast' },
+    { id: 'fast5', name: 'Быстрый старт V', desc: 'Ответить за 1 секунду', category: 'Быстрый старт', icon: '💫', reward: 100, need: 1, type: 'fast' },
+    { id: 'millionaire1', name: 'Миллионер I', desc: 'Накопить 100 жетонов', category: 'Миллионер', icon: '💰', reward: 10, need: 100, type: 'tokens' },
+    { id: 'millionaire2', name: 'Миллионер II', desc: 'Накопить 200 жетонов', category: 'Миллионер', icon: '💰💰', reward: 20, need: 200, type: 'tokens' },
+    { id: 'millionaire3', name: 'Миллионер III', desc: 'Накопить 500 жетонов', category: 'Миллионер', icon: '💰💰💰', reward: 40, need: 500, type: 'tokens' },
+    { id: 'millionaire4', name: 'Миллионер IV', desc: 'Накопить 1000 жетонов', category: 'Миллионер', icon: '🪙', reward: 80, need: 1000, type: 'tokens' },
+    { id: 'millionaire5', name: 'Миллионер V', desc: 'Накопить 3000 жетонов', category: 'Миллионер', icon: '🪙🪙', reward: 150, need: 3000, type: 'tokens' },
+    { id: 'millionaire6', name: 'Миллионер VI', desc: 'Накопить 5000 жетонов', category: 'Миллионер', icon: '🪙🪙🪙', reward: 250, need: 5000, type: 'tokens' },
+    { id: 'millionaire7', name: 'Миллионер VII', desc: 'Накопить 10000 жетонов', category: 'Миллионер', icon: '💎', reward: 500, need: 10000, type: 'tokens' },
+    { id: 'millionaire8', name: 'Миллионер VIII', desc: 'Накопить 30000 жетонов', category: 'Миллионер', icon: '💎💎', reward: 1000, need: 30000, type: 'tokens' },
+    { id: 'millionaire9', name: 'Миллионер IX', desc: 'Накопить 50000 жетонов', category: 'Миллионер', icon: '👑', reward: 2000, need: 50000, type: 'tokens' },
+    { id: 'freebie1', name: 'Любитель халявы I', desc: 'Ввести 1 промокод', category: 'Любитель халявы', icon: '🎁', reward: 5, need: 1, type: 'promo' },
+    { id: 'freebie2', name: 'Любитель халявы II', desc: 'Ввести 2 промокода', category: 'Любитель халявы', icon: '🎁🎁', reward: 10, need: 2, type: 'promo' },
+    { id: 'freebie3', name: 'Любитель халявы III', desc: 'Ввести 3 промокода', category: 'Любитель халявы', icon: '🎁🎁🎁', reward: 20, need: 3, type: 'promo' },
+    { id: 'freebie4', name: 'Любитель халявы IV', desc: 'Ввести 4 промокода', category: 'Любитель халявы', icon: '🎀', reward: 40, need: 4, type: 'promo' },
+    { id: 'freebie5', name: 'Любитель халявы V', desc: 'Ввести 5 промокодов', category: 'Любитель халявы', icon: '🎀🎀', reward: 80, need: 5, type: 'promo' },
+    { id: 'daily1', name: 'Лучший I', desc: 'Заходить на сайт в течение 3 дней', category: 'Лучший', icon: '📅', reward: 10, need: 3, type: 'daily' },
+    { id: 'daily2', name: 'Лучший II', desc: 'Заходить на сайт в течение 5 дней', category: 'Лучший', icon: '📅📅', reward: 20, need: 5, type: 'daily' },
+    { id: 'daily3', name: 'Лучший III', desc: 'Заходить на сайт в течение 7 дней', category: 'Лучший', icon: '📅📅📅', reward: 40, need: 7, type: 'daily' },
+    { id: 'daily4', name: 'Лучший IV', desc: 'Заходить на сайт в течение 14 дней', category: 'Лучший', icon: '🌟', reward: 80, need: 14, type: 'daily' },
+    { id: 'daily5', name: 'Лучший V', desc: 'Заходить на сайт в течение 30 дней', category: 'Лучший', icon: '🏆', reward: 200, need: 30, type: 'daily' }
+];
+
+let userData = null, currentUser = null, viewingProfile = null, currentChatWith = null;
+
+function showNotification(msg, isError) {
+    let n = document.createElement('div');
+    n.className = 'notification' + (isError ? ' error' : '');
+    n.textContent = msg;
+    document.body.appendChild(n);
+    setTimeout(() => n.remove(), 2500);
+}
+
+function saveUserData() {
+    let users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+    users[currentUser] = userData;
+    localStorage.setItem('lovechord_users', JSON.stringify(users));
+}
+
+function applyAvatarFrame() {
+    let avatarDiv = document.getElementById('avatar');
+    if (!avatarDiv) return;
+    let allFrameClasses = avatarFrames.map(f => f.class);
+    avatarDiv.classList.remove(...allFrameClasses);
+    if (userData.currentAvatarFrame && userData.currentAvatarFrame !== 'none') {
+        avatarDiv.classList.add(userData.currentAvatarFrame);
+    }
+}
+
+function applyUsernameColor() {
+    const usernameEl = document.getElementById('username');
+    if (usernameEl && userData.usernameColor) {
+        usernameEl.style.color = userData.usernameColor;
+        usernameEl.style.setProperty('color', userData.usernameColor, 'important');
+    }
+}
+
+function applyProfileTheme(themeClass) {
+    let profileDiv = document.getElementById('profileContainer');
+    if (!profileDiv) return;
+    profileDiv.classList.remove('theme-floral', 'theme-cosmic', 'theme-forest', 'theme-luxury', 'theme-magic');
+    if (themeClass && themeClass !== '') {
+        profileDiv.classList.add(themeClass);
+    }
+}
+
+function buyTheme(themeId) {
+    let theme = themes.find(t => t.id === themeId);
+    if (!theme) return;
+    if (userData.unlockedThemes && userData.unlockedThemes.includes(themeId)) {
+        userData.currentTheme = theme.class;
+        applyProfileTheme(userData.currentTheme);
+        saveUserData();
+        applyUsernameColor();
+        showNotification('Тема "' + theme.name + '" применена к профилю!', false);
+        return;
+    }
+    if (userData.tokens >= theme.price) {
+        if (!userData.unlockedThemes) userData.unlockedThemes = [];
+        userData.unlockedThemes.push(themeId);
+        userData.tokens -= theme.price;
+        userData.currentTheme = theme.class;
+        applyProfileTheme(userData.currentTheme);
+        saveUserData();
+        applyUsernameColor();
+        showNotification('Вы купили тему "' + theme.name + '" за ' + theme.price + ' жетонов!', false);
+        showShop();
+    } else {
+        showNotification('Недостаточно жетонов! Нужно ' + theme.price + ' жетонов.', true);
+    }
+}
+
+function showThemePicker() {
+    let picker = document.getElementById('themePicker');
+    let opts = document.getElementById('themeOptions');
+    opts.innerHTML = '';
+    for (let t of themes) {
+        let owned = userData.unlockedThemes && userData.unlockedThemes.includes(t.id);
+        let isActive = (userData.currentTheme === t.class);
+        let div = document.createElement('div');
+        div.className = 'theme-option' + (isActive ? ' active' : '');
+        div.innerHTML = '<div style="font-size:30px;">' + t.icon + '</div><div style="font-weight:bold;">' + t.name + '</div><div style="font-size:12px;">' + (owned ? (isActive ? '✓ Активна' : '✅ В коллекции') : (t.price + ' жетонов')) + '</div>';
+        div.onclick = () => buyTheme(t.id);
+        opts.appendChild(div);
+    }
+    picker.classList.add('show');
+}
+
+function closeThemePicker() {
+    document.getElementById('themePicker').classList.remove('show');
+}
+
+function checkAchievements() {
+    if (!userData.achievements) userData.achievements = [];
+    for (let ach of achievementsList) {
+        if (userData.achievements.includes(ach.id)) continue;
+        let val = 0;
+        if (ach.type === 'colors') val = userData.unlockedUsernameColors.length;
+        else if (ach.type === 'correct') val = userData.stats.totalCorrectAnswers || 0;
+        else if (ach.type === 'games') val = userData.stats.totalGamesPlayed || 0;
+        else if (ach.type === 'streak') val = userData.gameStreak || 0;
+        else if (ach.type === 'fast') val = userData.fastestAnswer || 99;
+        else if (ach.type === 'tokens') val = userData.tokens || 0;
+        else if (ach.type === 'promo') val = userData.usedPromoCodes ? userData.usedPromoCodes.length : 0;
+        else if (ach.type === 'daily') val = userData.dailyLoginStreak || 0;
+        
+        let completed = (ach.type === 'fast') ? (val <= ach.need) : (val >= ach.need);
+        if (completed) {
+            userData.achievements.push(ach.id);
+            userData.tokens += ach.reward;
+            showNotification('🏆 ДОСТИЖЕНИЕ РАЗБЛОКИРОВАНО! 🏆\n' + ach.name + ' +' + ach.reward + ' жетонов!', false);
+        }
+    }
+    saveUserData();
+}
+
+function buyFrame(frameId) {
+    let frame = avatarFrames.find(f => f.id === frameId);
+    if (!frame) return;
+    if (userData.unlockedAvatarFrames && userData.unlockedAvatarFrames.includes(frameId)) {
+        userData.currentAvatarFrame = frame.class;
+        saveUserData();
+        applyAvatarFrame();
+        showNotification('Рамка "' + frame.name + '" надета!', false);
+        return;
+    }
+    if (userData.tokens >= frame.price) {
+        if (!userData.unlockedAvatarFrames) userData.unlockedAvatarFrames = [];
+        userData.unlockedAvatarFrames.push(frameId);
+        userData.tokens -= frame.price;
+        userData.currentAvatarFrame = frame.class;
+        saveUserData();
+        applyAvatarFrame();
+        showNotification('Вы купили и надели рамку "' + frame.name + '" за ' + frame.price + ' жетонов!', false);
+        showShop();
+    } else {
+        showNotification('Недостаточно жетонов! Нужно ' + frame.price + ' жетонов.', true);
+    }
+}
+
+function showFramePicker() {
+    let picker = document.getElementById('framePicker');
+    let opts = document.getElementById('frameOptions');
+    opts.innerHTML = '';
+    for (let f of avatarFrames) {
+        let owned = userData.unlockedAvatarFrames && userData.unlockedAvatarFrames.includes(f.id);
+        let div = document.createElement('div');
+        div.className = 'frame-option';
+        div.innerHTML = f.icon;
+        div.title = f.name + (owned ? ' (надеть)' : ' (' + f.price + ' жетонов)');
+        div.onclick = () => buyFrame(f.id);
+        opts.appendChild(div);
+    }
+    picker.classList.add('show');
+}
+
+function closeFramePicker() {
+    document.getElementById('framePicker').classList.remove('show');
+}
+
+// ===== ДРУЗЬЯ И УВЕДОМЛЕНИЯ =====
+function sendFriendRequest(toUser) {
+    if (toUser === currentUser) { showNotification('Нельзя добавить самого себя!', true); return; }
+    let users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+    if (!users[toUser]) { showNotification('Пользователь не найден!', true); return; }
+    if (userData.friends && userData.friends.includes(toUser)) { showNotification('Этот пользователь уже в друзьях!', true); return; }
+    
+    if (!users[toUser].friendRequests) users[toUser].friendRequests = [];
+    if (users[toUser].friendRequests.includes(currentUser)) { showNotification('Запрос уже отправлен!', true); return; }
+    
+    users[toUser].friendRequests.push(currentUser);
+    localStorage.setItem('lovechord_users', JSON.stringify(users));
+    showNotification('Запрос в друзья отправлен!', false);
+}
+
+function acceptFriendRequest(fromUser) {
+    let users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+    if (!userData.friends) userData.friends = [];
+    if (!userData.friends.includes(fromUser)) userData.friends.push(fromUser);
+    if (!users[fromUser].friends) users[fromUser].friends = [];
+    if (!users[fromUser].friends.includes(currentUser)) users[fromUser].friends.push(currentUser);
+    
+    let index = userData.friendRequests.indexOf(fromUser);
+    if (index !== -1) userData.friendRequests.splice(index, 1);
+    
+    if (!userData.chats) userData.chats = {};
+    if (!userData.chats[fromUser]) userData.chats[fromUser] = [];
+    
+    localStorage.setItem('lovechord_users', JSON.stringify(users));
+    saveUserData();
+    showNotification('Вы приняли запрос в друзья!', false);
+    updateNotificationBadge();
+    if (document.getElementById('contentPanel').innerHTML.includes('Друзья')) showFriends();
+}
+
+function rejectFriendRequest(fromUser) {
+    let users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+    let index = userData.friendRequests.indexOf(fromUser);
+    if (index !== -1) userData.friendRequests.splice(index, 1);
+    saveUserData();
+    
+    if (users[fromUser]) {
+        if (!users[fromUser].notifications) users[fromUser].notifications = [];
+        users[fromUser].notifications.push({ type: 'rejected', from: currentUser });
+        localStorage.setItem('lovechord_users', JSON.stringify(users));
+    }
+    showNotification('Запрос отклонен', false);
+    updateNotificationBadge();
+}
+
+function sendMessage() {
+    let input = document.getElementById('chatInput');
+    let text = input.value.trim();
+    if (!text || !currentChatWith) return;
+    
+    if (!userData.chats) userData.chats = {};
+    if (!userData.chats[currentChatWith]) userData.chats[currentChatWith] = [];
+    userData.chats[currentChatWith].push({ from: currentUser, text: text, time: Date.now() });
+    saveUserData();
+    
+    let users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+    if (users[currentChatWith]) {
+        if (!users[currentChatWith].chats) users[currentChatWith].chats = {};
+        if (!users[currentChatWith].chats[currentUser]) users[currentChatWith].chats[currentUser] = [];
+        users[currentChatWith].chats[currentUser].push({ from: currentUser, text: text, time: Date.now() });
+        localStorage.setItem('lovechord_users', JSON.stringify(users));
+    }
+    
+    input.value = '';
+    loadChatMessages();
+}
+
+function loadChatMessages() {
+    let container = document.getElementById('chatMessages');
+    if (!container || !currentChatWith) return;
+    let messages = (userData.chats && userData.chats[currentChatWith]) ? userData.chats[currentChatWith] : [];
+    container.innerHTML = '';
+    for (let msg of messages) {
+        let div = document.createElement('div');
+        div.className = 'message ' + (msg.from === currentUser ? 'sent' : 'received');
+        div.textContent = msg.text;
+        container.appendChild(div);
+    }
+    container.scrollTop = container.scrollHeight;
+}
+
+function openChatWith(friendName) {
+    currentChatWith = friendName;
+    let modal = document.getElementById('chatModal');
+    document.getElementById('chatFriendName').textContent = friendName;
+    modal.classList.add('show');
+    loadChatMessages();
+}
+
+function closeChat() {
+    document.getElementById('chatModal').classList.remove('show');
+    currentChatWith = null;
+}
+
+function updateNotificationBadge() {
+    let count = (userData.friendRequests ? userData.friendRequests.length : 0) + (userData.notifications ? userData.notifications.length : 0);
+    let badge = document.getElementById('notificationBadge');
+    if (count > 0) { badge.textContent = count; badge.style.display = 'flex'; }
+    else badge.style.display = 'none';
+}
+
+function toggleNotifications() {
+    let panel = document.getElementById('notificationPanel');
+    if (panel.classList.contains('show')) panel.classList.remove('show');
+    else {
+        let list = document.getElementById('notificationsList');
+        list.innerHTML = '';
+        if (userData.friendRequests && userData.friendRequests.length > 0) {
+            for (let req of userData.friendRequests) {
+                let div = document.createElement('div');
+                div.className = 'notification-item';
+                div.innerHTML = `<div><strong>${req}</strong> хочет добавить вас в друзья</div>
+                    <div class="notification-actions">
+                        <button class="notif-accept" onclick="acceptFriendRequest('${req}')">Принять</button>
+                        <button class="notif-reject" onclick="rejectFriendRequest('${req}')">Отклонить</button>
+                    </div>`;
+                list.appendChild(div);
+            }
+        }
+        if (userData.notifications && userData.notifications.length > 0) {
+            for (let notif of userData.notifications) {
+                let div = document.createElement('div');
+                div.className = 'notification-item';
+                if (notif.type === 'rejected') {
+                    div.innerHTML = `<div><strong>${notif.from}</strong> отклонил ваш запрос в друзья</div>`;
+                }
+                list.appendChild(div);
+            }
+        }
+        if (list.children.length === 0) {
+            list.innerHTML = '<div style="padding:12px;">Нет уведомлений</div>';
+        }
+        panel.classList.add('show');
+    }
+}
+
+// ===== ПОИСК =====
+function openSearchModal() {
+    document.getElementById('searchModal').classList.add('show');
+    document.getElementById('searchInput').value = '';
+    document.getElementById('searchResults').innerHTML = '';
+}
+
+function closeSearchModal() {
+    document.getElementById('searchModal').classList.remove('show');
+}
+
+function searchUsers() {
+    let query = document.getElementById('searchInput').value.toLowerCase().trim();
+    if (!query) { document.getElementById('searchResults').innerHTML = ''; return; }
+    let users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+    let results = [];
+    for (let name in users) {
+        if (name.toLowerCase().includes(query) && name !== currentUser) results.push(name);
+    }
+    let html = '';
+    for (let res of results.slice(0, 10)) {
+        html += `<div class="search-result-item" onclick="viewProfile('${res}')">🔍 ${res}</div>`;
+    }
+    if (html === '') html = '<div>Ничего не найдено</div>';
+    document.getElementById('searchResults').innerHTML = html;
+}
+
+function viewProfile(username) {
+    closeSearchModal();
+    let users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+    let profile = users[username];
+    if (!profile) { showNotification('Пользователь не найден', true); return; }
+    
+    viewingProfile = username;
+    let isFriend = userData.friends && userData.friends.includes(username);
+    let isRequestSent = userData.friendRequests && userData.friendRequests.includes(username);
+    
+    document.getElementById('profileContainer').style.display = 'none';
+    
+    let viewContainer = document.createElement('div');
+    viewContainer.id = 'viewProfileContainer';
+    viewContainer.className = 'view-profile-container';
+    
+    if (profile.currentTheme && profile.currentTheme !== '') {
+        viewContainer.classList.add(profile.currentTheme);
+    }
+    
+    let bannerHtml = '';
+    if (profile.currentBannerType === 'color') {
+        bannerHtml = `<div class="banner" style="background: ${profile.currentBanner}; background-size: auto;"></div>`;
+    } else {
+        bannerHtml = `<div class="banner" style="background: url('${profile.currentBanner}') center/cover;"></div>`;
+    }
+    
+    let avatarHtml = '';
+    if (profile.avatar) {
+        avatarHtml = `<img src="${profile.avatar}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+    } else {
+        avatarHtml = profile.username.charAt(0).toUpperCase();
+    }
+    
+    viewContainer.innerHTML = `
+        ${bannerHtml}
+        <div class="avatar-section" style="position: relative; margin-top: -60px; padding: 0 20px; display: flex; align-items: flex-end; gap: 20px; flex-wrap: wrap;">
+            <div class="avatar" id="viewAvatar" style="display: flex; align-items: center; justify-content: center; font-size: 50px; font-weight: bold;">${avatarHtml}</div>
+            <div class="username-area" style="flex: 1; text-align: left; padding-bottom: 15px;">
+                <div class="username" style="font-size: 28px; font-weight: bold;">${profile.username}</div>
+            </div>
+        </div>
+        <div class="view-profile-header-actions">
+            <button class="back-btn" onclick="closeViewProfile()">← Назад</button>`;
+    
+    if (!isFriend && !isRequestSent && username !== currentUser) {
+        viewContainer.innerHTML += `<button class="add-friend-btn" onclick="sendFriendRequest('${username}')">➕ Добавить в друзья</button>`;
+    } else if (isRequestSent) {
+        viewContainer.innerHTML += `<div style="margin-top:15px;color:var(--accent);">⏳ Запрос отправлен</div>`;
+    } else if (isFriend) {
+        viewContainer.innerHTML += `<button class="add-friend-btn" onclick="openChatWith('${username}')">💬 Написать сообщение</button>`;
+    }
+    
+    viewContainer.innerHTML += `</div><div class="content-panel">
+        <h3>📊 Статистика</h3><div class="stats-grid">
+        <div class="stat-card"><div class="stat-number">${profile.stats.totalGamesPlayed || 0}</div><div class="stat-label">Сыграно игр</div></div>
+        <div class="stat-card"><div class="stat-number">${profile.stats.totalCorrectAnswers || 0}</div><div class="stat-label">Правильных</div></div>
+        <div class="stat-card"><div class="stat-number">${profile.stats.totalWrongAnswers || 0}</div><div class="stat-label">Неправильных</div></div>
+        <div class="stat-card"><div class="stat-number">${profile.stats.wins || 0}</div><div class="stat-label">Побед</div></div>
+        <div class="stat-card"><div class="stat-number">${profile.dailyLoginStreak || 0}</div><div class="stat-label">Серия входов</div></div>
+    </div>`;
+    
+    viewContainer.innerHTML += `</div>`;
+    document.body.insertBefore(viewContainer, document.getElementById('profileContainer').nextSibling);
+    
+    if (profile.currentAvatarFrame && profile.currentAvatarFrame !== 'none') {
+        let viewAvatar = document.getElementById('viewAvatar');
+        if (viewAvatar) viewAvatar.classList.add(profile.currentAvatarFrame);
+    }
+    
+    if (profile.usernameColor) {
+        let viewUsername = viewContainer.querySelector('.username');
+        if (viewUsername) {
+            viewUsername.style.color = profile.usernameColor;
+            viewUsername.style.setProperty('color', profile.usernameColor, 'important');
+        }
+    }
+}
+
+function closeViewProfile() {
+    let viewContainer = document.getElementById('viewProfileContainer');
+    if (viewContainer) viewContainer.remove();
+    document.getElementById('profileContainer').style.display = 'block';
+    viewingProfile = null;
+}
+
+function showFriends() {
+    let friends = userData.friends || [];
+    let html = '<h3>👥 Мои друзья</h3><div class="friends-list">';
+    if (friends.length === 0) html += '<div>У вас пока нет друзей. Добавьте их через поиск!</div>';
+    for (let friend of friends) {
+        html += `<div class="friend-item">
+            <span class="friend-name" onclick="viewProfile('${friend}')">👤 ${friend}</span>
+            <button class="friend-chat-btn" onclick="openChatWith('${friend}')">💬 Чат</button>
+        </div>`;
+    }
+    html += '</div>';
+    document.getElementById('contentPanel').innerHTML = html;
+}
+
+// ===== ОСТАЛЬНЫЕ ФУНКЦИИ =====
+function loadUserData() {
+    currentUser = localStorage.getItem('lovechord_current_user');
+    let users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+    if (!currentUser || !users[currentUser]) { window.location.href = 'profile.html'; return; }
+    
+    userData = users[currentUser];
+    if (!userData.stats) userData.stats = { totalGamesPlayed: 0, totalCorrectAnswers: 0, totalWrongAnswers: 0, wins: 0 };
+    if (!userData.tokens) userData.tokens = 100;
+    if (!userData.unlockedUsernameColors) userData.unlockedUsernameColors = ['#ffffff', '#f5c4c4', '#e8a0a0'];
+    if (!userData.unlockedBannerColors) userData.unlockedBannerColors = ['#1e1e2f', '#2a2a3a', '#f5c4c4', '#e8a0a0'];
+    if (!userData.unlockedBannerImages) userData.unlockedBannerImages = ['Britney0.4'];
+    if (!userData.unlockedAvatarFrames) userData.unlockedAvatarFrames = [];
+    if (!userData.currentAvatarFrame) userData.currentAvatarFrame = 'none';
+    if (!userData.unlockedThemes) userData.unlockedThemes = ['default'];
+    if (!userData.currentTheme) userData.currentTheme = '';
+    if (!userData.usernameColor) userData.usernameColor = '#ffffff';
+    if (!userData.currentBanner) userData.currentBanner = '#2a2a3a';
+    if (!userData.currentBannerType) userData.currentBannerType = 'color';
+    if (!userData.completedTasks) userData.completedTasks = [];
+    if (!userData.dailyTasksCompleted) userData.dailyTasksCompleted = [];
+    if (!userData.dailyTasksCompletedCount) userData.dailyTasksCompletedCount = 0;
+    if (!userData.gameStreak) userData.gameStreak = 0;
+    if (!userData.hasCustomBanner) userData.hasCustomBanner = false;
+    if (!userData.usedPromoCodes) userData.usedPromoCodes = [];
+    if (!userData.achievements) userData.achievements = [];
+    if (!userData.fastestAnswer) userData.fastestAnswer = 99;
+    if (!userData.dailyLoginStreak) userData.dailyLoginStreak = 1;
+    if (!userData.lastLoginDate) userData.lastLoginDate = new Date().toDateString();
+    if (!userData.friends) userData.friends = [];
+    if (!userData.friendRequests) userData.friendRequests = [];
+    if (!userData.notifications) userData.notifications = [];
+    if (!userData.chats) userData.chats = {};
+    
+    let today = new Date().toDateString();
+    if (userData.lastLoginDate !== today) {
+        let yesterday = new Date(Date.now() - 86400000).toDateString();
+        userData.dailyLoginStreak = (userData.lastLoginDate === yesterday) ? (userData.dailyLoginStreak + 1) : 1;
+        userData.lastLoginDate = today;
+        saveUserData();
+    }
+    
+    if (!userData.dailyTasks || userData.lastDailyDate !== today) {
+        let shuffled = [...dailyTasksList];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            let j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        userData.dailyTasks = shuffled.slice(0, 3);
+        userData.dailyTasksCompleted = [];
+        userData.lastDailyDate = today;
+    }
+    
+    document.getElementById('username').textContent = userData.username;
+    applyUsernameColor();
+    
+    let lastChange = userData.lastUsernameChange, now = Date.now(), weekMs = 7 * 24 * 60 * 60 * 1000;
+    let infoDiv = document.getElementById('usernameInfo');
+    if (!lastChange || (now - lastChange) >= weekMs) {
+        infoDiv.innerHTML = '✏️ Нажмите, чтобы изменить имя (доступно)';
+        infoDiv.style.color = '#00aa44';
+        infoDiv.onclick = () => changeUsername();
+    } else {
+        let daysLeft = Math.ceil((weekMs - (now - lastChange)) / (24 * 60 * 60 * 1000));
+        infoDiv.innerHTML = '⏰ Изменение имени будет доступно через ' + daysLeft + ' дн.';
+        infoDiv.style.color = '#ff8888';
+        infoDiv.onclick = null;
+    }
+    
+    let avatar = document.getElementById('avatar');
+    if (userData.avatar) avatar.innerHTML = '<img src="' + userData.avatar + '">';
+    else { avatar.innerHTML = userData.username.charAt(0).toUpperCase(); avatar.style.fontSize = '50px'; avatar.style.fontWeight = 'bold'; }
+    
+    let banner = document.getElementById('banner');
+    if (userData.currentBannerType === 'color') { banner.style.background = userData.currentBanner; banner.style.backgroundSize = 'auto'; }
+    else banner.style.background = 'url(' + userData.currentBanner + ') center/cover';
+    
+    applyAvatarFrame();
+    applyProfileTheme(userData.currentTheme);
+    checkAchievements();
+    saveUserData();
+    checkTasks();
+    updateNotificationBadge();
+    showStats();
+}
+
+function showStats() {
+    document.getElementById('contentPanel').innerHTML = '<h3>📊 Моя статистика</h3><div class="stats-grid">' +
+        '<div class="stat-card"><div class="stat-number">' + (userData.stats.totalGamesPlayed || 0) + '</div><div class="stat-label">Сыграно игр</div></div>' +
+        '<div class="stat-card"><div class="stat-number">' + (userData.stats.totalCorrectAnswers || 0) + '</div><div class="stat-label">Правильных</div></div>' +
+        '<div class="stat-card"><div class="stat-number">' + (userData.stats.totalWrongAnswers || 0) + '</div><div class="stat-label">Неправильных</div></div>' +
+        '<div class="stat-card"><div class="stat-number">' + (userData.tokens || 0) + '</div><div class="stat-label">Жетонов</div></div>' +
+        '<div class="stat-card"><div class="stat-number">' + (userData.stats.wins || 0) + '</div><div class="stat-label">Побед</div></div>' +
+        '<div class="stat-card"><div class="stat-number">' + (userData.dailyLoginStreak || 0) + '</div><div class="stat-label">Серия входов</div></div></div>';
+}
+
+function showAchievements() {
+    let cats = [...new Set(achievementsList.map(a => a.category))];
+    let html = '<h3>🏆 МОИ ДОСТИЖЕНИЯ 🏆</h3>';
+    for (let cat of cats) {
+        let list = achievementsList.filter(a => a.category === cat);
+        let unlocked = list.filter(a => userData.achievements.includes(a.id)).length;
+        html += '<div class="achievement-category"><h4>' + cat + ' (' + unlocked + '/' + list.length + ')</h4><div class="achievements-grid">';
+        for (let ach of list) {
+            let isUnlocked = userData.achievements.includes(ach.id);
+            html += '<div class="achievement-card ' + (isUnlocked ? 'unlocked' : '') + '">' +
+                '<div class="achievement-icon">' + ach.icon + '</div>' +
+                '<div class="achievement-info"><div class="achievement-name">' + ach.name + '</div>' +
+                '<div class="achievement-desc">' + ach.desc + '</div><div class="achievement-reward">+' + ach.reward + ' жетонов</div></div>' +
+                '<div class="achievement-badge ' + (isUnlocked ? '' : 'locked') + '">' + (isUnlocked ? '✓' : '🔒') + '</div></div>';
+        }
+        html += '</div></div>';
+    }
+    document.getElementById('contentPanel').innerHTML = html;
+}
+
+function showTasks() {
+    let daily = '<h3>📋 Ежедневные задания</h3><div class="task-list">';
+    for (let t of userData.dailyTasks) {
+        let done = userData.dailyTasksCompleted.includes(t.id);
+        daily += '<div class="task-item"><span>' + t.name + '</span><span class="' + (done ? 'task-completed' : 'task-incomplete') + '">' + (done ? '✅ Задание выполнено' : '⏳ +' + t.reward + ' жетонов') + '</span></div>';
+    }
+    daily += '</div>';
+    let perm = '<h3>📋 Постоянные задания</h3><div class="task-list">';
+    for (let t of permanentTasks) {
+        let done = userData.completedTasks.includes(t.id);
+        let rewardText = t.rewardType === 'tokens' ? '+' + t.reward + ' жетонов' : (t.rewardType === 'colors' ? '🎨 Новые цвета' : '🖼 Баннер "' + t.rewardData + '"');
+        perm += '<div class="task-item"><span>' + t.name + '</span><span class="' + (done ? 'task-completed' : 'task-incomplete') + '">' + (done ? '✅ Задание выполнено' : '⏳ ' + rewardText) + '</span></div>';
+    }
+    perm += '</div>';
+    document.getElementById('contentPanel').innerHTML = daily + perm;
+}
+
+function showShop() {
+    let colorsHtml = '<h3>🎨 Цвета для ника (50 жетонов)</h3><div class="shop-items">';
+    for (let [c, d] of Object.entries(usernameColors)) {
+        let owned = userData.unlockedUsernameColors.includes(c);
+        colorsHtml += '<div class="shop-item ' + (!owned ? 'locked' : '') + '" onclick="buyColor(\'' + c + '\')"><div class="shop-item-color" style="background:' + c + ';"></div><div>' + d.name + '</div><div class="shop-item-price">' + (!owned ? d.price + ' жетонов' : '✅ Есть') + '</div></div>';
+    }
+    colorsHtml += '</div>';
+    
+    let bannerColorsHtml = '<h3>🎨 Цветные баннеры (50 жетонов)</h3><div class="shop-items">';
+    for (let b of bannerColors) {
+        let owned = userData.unlockedBannerColors.includes(b.color);
+        bannerColorsHtml += '<div class="shop-item ' + (!owned ? 'locked' : '') + '" onclick="buyBannerColor(\'' + b.color + '\')"><div class="shop-item-color" style="background:' + b.color + ';"></div><div>' + b.name + '</div><div class="shop-item-price">' + (!owned ? b.price + ' жетонов' : '✅ Есть') + '</div></div>';
+    }
+    bannerColorsHtml += '</div>';
+    
+    let bannerImagesHtml = '<h3>🖼 Баннеры с картинками (50 жетонов)</h3><div class="shop-items">';
+    for (let [id, d] of Object.entries(bannerImages)) {
+        let owned = userData.unlockedBannerImages.includes(id);
+        bannerImagesHtml += '<div class="shop-item ' + (!owned ? 'locked' : '') + '" onclick="buyBannerImage(\'' + id + '\')"><div class="shop-item-banner" style="background: url(' + d.url + ') center/cover; height: 60px;"></div><div>' + d.name + '</div><div class="shop-item-price">' + (!owned ? d.price + ' жетонов' : '✅ Есть') + '</div></div>';
+    }
+    bannerImagesHtml += '<div class="shop-item ' + (!userData.hasCustomBanner ? 'locked' : '') + '" onclick="buyCustomBanner()"><div class="shop-item-banner" style="background: linear-gradient(135deg, #ff6b6b, #4ecdc4); display: flex; align-items: center; justify-content: center; font-size: 35px;">🖼️</div><div>Пользовательский баннер</div><div class="shop-item-price">' + (!userData.hasCustomBanner ? '5000 жетонов' : '✅ Есть') + '</div></div>';
+    
+    let framesHtml = '<h3>✨ Рамки для аватара (200 жетонов)</h3><div class="shop-items">';
+    for (let f of avatarFrames) {
+        let owned = userData.unlockedAvatarFrames && userData.unlockedAvatarFrames.includes(f.id);
+        let isActive = (userData.currentAvatarFrame === f.class);
+        framesHtml += '<div class="shop-item ' + (!owned ? 'locked' : '') + '" onclick="buyFrame(\'' + f.id + '\')"><div class="shop-item-frame" style="border:2px solid white;">' + f.icon + '</div><div style="font-size:12px;">' + f.name + '</div><div class="shop-item-price">' + (!owned ? f.price + ' жетонов' : (isActive ? '✅ Надета' : '✅ Есть')) + '</div></div>';
+    }
+    framesHtml += '</div>';
+    
+    let themesHtml = '<h3>🎨 Темы для профиля (500 жетонов)</h3><div class="shop-items">';
+    for (let t of themes) {
+        let owned = userData.unlockedThemes && userData.unlockedThemes.includes(t.id);
+        let isActive = (userData.currentTheme === t.class);
+        themesHtml += '<div class="shop-item ' + (!owned ? 'locked' : '') + '" onclick="buyTheme(\'' + t.id + '\')"><div style="font-size:40px;">' + t.icon + '</div><div>' + t.name + '</div><div class="shop-item-price">' + (!owned ? t.price + ' жетонов' : (isActive ? '✅ Активна' : '✅ Есть')) + '</div></div>';
+    }
+    themesHtml += '</div>';
+    
+    document.getElementById('contentPanel').innerHTML = '<div class="balance">🪙 Баланс: ' + userData.tokens + ' жетонов</div>' + colorsHtml + bannerColorsHtml + bannerImagesHtml + framesHtml + themesHtml;
+}
+
+function showPromo() {
+    document.getElementById('contentPanel').innerHTML = '<div class="promo-section"><div class="promo-title">🎁 ВВЕДИ ПРОМОКОД 🎁</div>' +
+        '<div class="promo-input-group"><input type="text" id="promoInput" class="promo-input" placeholder="Введите промокод">' +
+        '<button class="promo-submit" onclick="activatePromoCode()">Активировать</button></div>' +
+        '<div id="promoMessage" class="promo-message">Введите промокод и получите награду!</div></div>' +
+        '<div class="balance" style="margin-top:20px;">🪙 Баланс: ' + userData.tokens + ' жетонов</div>';
+}
+
+function activatePromoCode() {
+    let code = document.getElementById('promoInput').value.trim();
+    let msg = document.getElementById('promoMessage');
+    if (userData.usedPromoCodes && userData.usedPromoCodes.includes(code)) {
+        msg.innerHTML = '❌ Данный промокод уже активирован!';
+        msg.className = 'promo-message error';
+        return;
+    }
+    if (code === 'Creator2009') {
+        userData.tokens += 1000;
+        if (!userData.usedPromoCodes) userData.usedPromoCodes = [];
+        userData.usedPromoCodes.push('Creator2009');
+        saveUserData();
+        checkAchievements();
+        msg.innerHTML = '✅ Промокод активирован! Вы получили 1000 жетонов! 🎉';
+        msg.className = 'promo-message success';
+        let balanceDiv = document.querySelector('.balance');
+        if (balanceDiv) balanceDiv.innerHTML = '🪙 Баланс: ' + userData.tokens + ' жетонов';
+        showNotification('🎉 Промокод активирован! +1000 жетонов!', false);
+    } else if (code === 'ForCreator') {
+        userData.tokens += 50000;
+        if (!userData.usedPromoCodes) userData.usedPromoCodes = [];
+        userData.usedPromoCodes.push('ForCreator');
+        saveUserData();
+        checkAchievements();
+        msg.innerHTML = '✅ Промокод активирован! Вы получили 50000 жетонов! 🎉';
+        msg.className = 'promo-message success';
+        let balanceDiv = document.querySelector('.balance');
+        if (balanceDiv) balanceDiv.innerHTML = '🪙 Баланс: ' + userData.tokens + ' жетонов';
+        showNotification('🎉 Промокод активирован! +50000 жетонов!', false);
+    } else {
+        msg.innerHTML = '❌ Неверный промокод! Попробуйте ещё раз.';
+        msg.className = 'promo-message error';
+    }
+}
+
+function buyColor(color) {
+    if (userData.unlockedUsernameColors.includes(color)) {
+        userData.usernameColor = color;
+        saveUserData();
+        applyUsernameColor();
+        showNotification('Цвет "' + usernameColors[color].name + '" применен!', false);
+        return;
+    }
+    let price = usernameColors[color].price;
+    if (userData.tokens >= price) {
+        userData.unlockedUsernameColors.push(color);
+        userData.tokens -= price;
+        userData.usernameColor = color;
+        saveUserData();
+        applyUsernameColor();
+        checkAchievements();
+        showNotification('Вы купили цвет "' + usernameColors[color].name + '" за ' + price + ' жетонов!', false);
+        showShop();
+    } else showNotification('Недостаточно жетонов! Нужно ' + price + ' жетонов.', true);
+}
+
+function buyBannerColor(color) {
+    if (userData.unlockedBannerColors.includes(color)) {
+        userData.currentBanner = color;
+        userData.currentBannerType = 'color';
+        document.getElementById('banner').style.background = color;
+        saveUserData();
+        showNotification('Цвет баннера применен!', false);
+        return;
+    }
+    let banner = bannerColors.find(b => b.color === color);
+    if (userData.tokens >= banner.price) {
+        userData.unlockedBannerColors.push(color);
+        userData.tokens -= banner.price;
+        userData.currentBanner = color;
+        userData.currentBannerType = 'color';
+        document.getElementById('banner').style.background = color;
+        saveUserData();
+        showNotification('Вы купили цвет баннера за ' + banner.price + ' жетонов!', false);
+        showShop();
+    } else showNotification('Недостаточно жетонов!', true);
+}
+
+function buyBannerImage(id) {
+    if (userData.unlockedBannerImages.includes(id)) {
+        userData.currentBanner = bannerImages[id].url;
+        userData.currentBannerType = 'image';
+        document.getElementById('banner').style.background = 'url(' + bannerImages[id].url + ') center/cover';
+        saveUserData();
+        showNotification('Баннер "' + bannerImages[id].name + '" применен!', false);
+        return;
+    }
+    let banner = bannerImages[id];
+    if (userData.tokens >= banner.price) {
+        userData.unlockedBannerImages.push(id);
+        userData.tokens -= banner.price;
+        userData.currentBanner = banner.url;
+        userData.currentBannerType = 'image';
+        document.getElementById('banner').style.background = 'url(' + banner.url + ') center/cover';
+        saveUserData();
+        showNotification('Вы купили баннер "' + banner.name + '" за ' + banner.price + ' жетонов!', false);
+        showShop();
+    } else showNotification('Недостаточно жетонов!', true);
+}
+
+function buyCustomBanner() {
+    if (userData.hasCustomBanner) { showNotification('У вас уже есть эта функция!', false); return; }
+    if (userData.tokens >= 5000) {
+        userData.hasCustomBanner = true;
+        userData.tokens -= 5000;
+        saveUserData();
+        showNotification('Вы купили возможность ставить свой баннер за 5000 жетонов!', false);
+        showShop();
+    } else showNotification('Недостаточно жетонов! Нужно 5000 жетонов.', true);
+}
+
+function uploadCustomBanner() {
+    if (!userData.hasCustomBanner) { showNotification('Сначала купите эту функцию в магазине!', true); return; }
+    document.getElementById('customBannerInput').onchange = function(e) {
+        let file = e.target.files[0];
+        if (file) {
+            let reader = new FileReader();
+            reader.onload = function(ev) {
+                userData.currentBanner = ev.target.result;
+                userData.currentBannerType = 'custom';
+                document.getElementById('banner').style.background = 'url(' + ev.target.result + ') center/cover';
+                saveUserData();
+                showNotification('Пользовательский баннер применен!', false);
+                closeBannerPicker();
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+    document.getElementById('customBannerInput').click();
+}
+
+function changeUsername() {
+    let newName = prompt('Введите новый юзернейм (только латиница, цифры, _):', userData.username);
+    if (!newName) return;
+    if (!/^[a-zA-Z0-9_]+$/.test(newName)) { showNotification('Только латиница, цифры и _', true); return; }
+    let users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+    if (users[newName] && newName !== userData.username) { showNotification('Имя уже занято!', true); return; }
+    delete users[userData.username];
+    userData.username = newName;
+    userData.lastUsernameChange = Date.now();
+    users[newName] = userData;
+    localStorage.setItem('lovechord_users', JSON.stringify(users));
+    localStorage.setItem('lovechord_current_user', newName);
+    loadUserData();
+    loadProfileIcon();
+    showNotification('Имя изменено! Следующее изменение через неделю.', false);
+}
+
+function checkTasks() {
+    for (let t of permanentTasks) {
+        if (userData.completedTasks.includes(t.id)) continue;
+        let completed = false;
+        if (t.id === 'totalGames30' && userData.stats.totalGamesPlayed >= 30) completed = true;
+        if (t.id === 'totalGames50' && userData.stats.totalGamesPlayed >= 50) completed = true;
+        if (t.id === 'totalGames100' && userData.stats.totalGamesPlayed >= 100) completed = true;
+        if (t.id === 'totalGames150' && userData.stats.totalGamesPlayed >= 150) completed = true;
+        if (t.id === 'wins30' && userData.stats.wins >= 30) completed = true;
+        if (t.id === 'wins50' && userData.stats.wins >= 50) completed = true;
+        if (t.id === 'wins100' && userData.stats.wins >= 100) completed = true;
+        if (t.id === 'wins150' && userData.stats.wins >= 150) completed = true;
+        if (t.id === 'streak5' && userData.gameStreak >= 5) completed = true;
+        if (t.id === 'streak10' && userData.gameStreak >= 10) completed = true;
+        if (t.id === 'streak15' && userData.gameStreak >= 15) completed = true;
+        if (t.id === 'streak20' && userData.gameStreak >= 20) completed = true;
+        if (t.id === 'dailyTasks10' && userData.dailyTasksCompletedCount >= 10) completed = true;
+        if (t.id === 'dailyTasks15' && userData.dailyTasksCompletedCount >= 15) completed = true;
+        if (t.id === 'dailyTasks20' && userData.dailyTasksCompletedCount >= 20) completed = true;
+        
+        if (completed) {
+            userData.completedTasks.push(t.id);
+            if (t.rewardType === 'tokens') {
+                userData.tokens += parseInt(t.reward);
+                showNotification('🎉 "' + t.name + '" выполнено! +' + t.reward + ' жетонов!', false);
+            } else if (t.rewardType === 'colors') {
+                for (let c of t.rewardData) { if (!userData.unlockedUsernameColors.includes(c)) userData.unlockedUsernameColors.push(c); }
+                showNotification('🎉 "' + t.name + '" выполнено! Открыты новые цвета!', false);
+            } else if (t.rewardType === 'banner') {
+                if (!userData.unlockedBannerImages.includes(t.rewardData)) userData.unlockedBannerImages.push(t.rewardData);
+                showNotification('🎉 "' + t.name + '" выполнено! Открыт баннер!', false);
+            }
+            saveUserData();
+            checkAchievements();
+            showStats();
+        }
+    }
+}
+
+function loadProfileIcon() {
+    let users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+    let cur = localStorage.getItem('lovechord_current_user');
+    if (cur && users[cur]) {
+        let icon = document.getElementById('profileIcon');
+        if (users[cur].avatar) icon.innerHTML = '<img src="' + users[cur].avatar + '">';
+        else { icon.innerHTML = users[cur].username.charAt(0).toUpperCase(); icon.style.fontSize = '24px'; icon.style.fontWeight = 'bold'; }
+    }
+}
+
+function setupAvatarUpload() {
+    document.getElementById('avatar').onclick = () => document.getElementById('avatarInput').click();
+    document.getElementById('avatarInput').onchange = function(e) {
+        let file = e.target.files[0];
+        if (file) {
+            let reader = new FileReader();
+            reader.onload = function(ev) {
+                userData.avatar = ev.target.result;
+                saveUserData();
+                loadUserData();
+                loadProfileIcon();
+                showNotification('Аватар обновлен!', false);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+}
+
+function showColorPicker() {
+    let picker = document.getElementById('colorPicker');
+    let opts = document.getElementById('colorOptions');
+    opts.innerHTML = '';
+    for (let [c, d] of Object.entries(usernameColors)) {
+        let owned = userData.unlockedUsernameColors.includes(c);
+        let div = document.createElement('div');
+        div.className = 'color-option';
+        div.style.background = c;
+        div.title = d.name;
+        if (owned) div.onclick = () => { userData.usernameColor = c; saveUserData(); applyUsernameColor(); showNotification('Цвет ника изменен на ' + d.name + '!', false); closeColorPicker(); };
+        else div.onclick = () => showNotification('Купите этот цвет в магазине!', true);
+        opts.appendChild(div);
+    }
+    picker.classList.add('show');
+}
+
+function closeColorPicker() { document.getElementById('colorPicker').classList.remove('show'); }
+
+function showBannerPicker() {
+    let picker = document.getElementById('bannerPicker');
+    let opts = document.getElementById('bannerOptions');
+    opts.innerHTML = '';
+    for (let b of bannerColors) {
+        let owned = userData.unlockedBannerColors.includes(b.color);
+        let div = document.createElement('div');
+        div.className = 'banner-option';
+        div.style.background = b.color;
+        div.title = b.name;
+        if (owned) div.onclick = () => { userData.currentBanner = b.color; userData.currentBannerType = 'color'; document.getElementById('banner').style.background = b.color; saveUserData(); showNotification('Баннер изменен на ' + b.name + '!', false); closeBannerPicker(); };
+        else div.onclick = () => showNotification('Купите этот баннер в магазине!', true);
+        opts.appendChild(div);
+    }
+    for (let [id, d] of Object.entries(bannerImages)) {
+        let owned = userData.unlockedBannerImages.includes(id);
+        let div = document.createElement('div');
+        div.className = 'banner-option';
+        div.style.background = 'url(' + d.url + ') center/cover';
+        div.title = d.name;
+        if (owned) div.onclick = () => { userData.currentBanner = d.url; userData.currentBannerType = 'image'; document.getElementById('banner').style.background = 'url(' + d.url + ') center/cover'; saveUserData(); showNotification('Баннер "' + d.name + '" применен!', false); closeBannerPicker(); };
+        else div.onclick = () => showNotification('Купите этот баннер в магазине!', true);
+        opts.appendChild(div);
+    }
+    document.getElementById('customBannerBtn').style.display = userData.hasCustomBanner ? 'block' : 'none';
+    picker.classList.add('show');
+}
+
+function closeBannerPicker() { document.getElementById('bannerPicker').classList.remove('show'); }
+
+function logout() { localStorage.removeItem('lovechord_current_user'); window.location.href = 'profile.html'; }
+
+function toggleGlobalTheme() {
+    if (document.body.classList.contains('light-theme')) {
+        document.body.classList.remove('light-theme');
+        localStorage.setItem('lovechord_theme', 'dark');
+    } else {
+        document.body.classList.add('light-theme');
+        localStorage.setItem('lovechord_theme', 'light');
+    }
+}
+
+function loadGlobalTheme() { 
+    if (localStorage.getItem('lovechord_theme') === 'light') {
+        document.body.classList.add('light-theme');
+    } else {
+        document.body.classList.remove('light-theme');
+    }
+}
+
+// Экспорт функций
+window.showStats = showStats;
+window.showAchievements = showAchievements;
+window.showTasks = showTasks;
+window.showShop = showShop;
+window.showFriends = showFriends;
+window.showPromo = showPromo;
+window.activatePromoCode = activatePromoCode;
+window.buyColor = buyColor;
+window.buyBannerColor = buyBannerColor;
+window.buyBannerImage = buyBannerImage;
+window.buyCustomBanner = buyCustomBanner;
+window.uploadCustomBanner = uploadCustomBanner;
+window.buyFrame = buyFrame;
+window.buyTheme = buyTheme;
+window.showFramePicker = showFramePicker;
+window.closeFramePicker = closeFramePicker;
+window.showThemePicker = showThemePicker;
+window.closeThemePicker = closeThemePicker;
+window.closeColorPicker = closeColorPicker;
+window.closeBannerPicker = closeBannerPicker;
+window.logout = logout;
+window.toggleGlobalTheme = toggleGlobalTheme;
+window.openSearchModal = openSearchModal;
+window.closeSearchModal = closeSearchModal;
+window.searchUsers = searchUsers;
+window.viewProfile = viewProfile;
+window.closeViewProfile = closeViewProfile;
+window.sendFriendRequest = sendFriendRequest;
+window.acceptFriendRequest = acceptFriendRequest;
+window.rejectFriendRequest = rejectFriendRequest;
+window.openChatWith = openChatWith;
+window.closeChat = closeChat;
+window.sendMessage = sendMessage;
+window.toggleNotifications = toggleNotifications;
+
+loadGlobalTheme();
+loadUserData();
+loadProfileIcon();
+setupAvatarUpload();
+document.getElementById('username').onclick = () => showColorPicker();
+document.getElementById('banner').onclick = () => showBannerPicker();
+document.getElementById('avatar').onclick = () => document.getElementById('avatarInput').click();
+
+setInterval(() => { if (currentChatWith) loadChatMessages(); }, 1000);
+</script>
+</body>
+</html>

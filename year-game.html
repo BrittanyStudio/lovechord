@@ -1,0 +1,1832 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="referrer" content="no-referrer">
+    <title>Угадай год выпуска песни - LoveChord</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap');
+        
+        :root {
+            --bg-body: #1e1e2f;
+            --bg-game-box: #2a2a3a;
+            --bg-card: #1e1e2f;
+            --text-primary: white;
+            --text-secondary: #aaa;
+            --btn-bg: #f5c4c4;
+            --btn-hover: #e8a0a0;
+            --btn-text: #333;
+            --border-color: #f5c4c4;
+            --accent: #ffcc00;
+            --success: #00aa44;
+            --success-glow: #00ff55;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            text-align: center;
+            background: var(--bg-body);
+            color: var(--text-primary);
+            padding: 20px;
+            transition: background 0.3s, color 0.3s;
+        }
+        
+        body.light-theme {
+            --bg-body: #ffe4e1;
+            --bg-game-box: #ffd6d6;
+            --bg-card: #ffebeb;
+            --text-primary: #333;
+            --text-secondary: #666;
+            --btn-bg: #2a2a3a;
+            --btn-hover: #3a3a4a;
+            --btn-text: #f5c4c4;
+            --border-color: #2a2a3a;
+            --accent: #ff6b6b;
+        }
+        
+        @keyframes achievementUnlock {
+            0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+            50% { transform: scale(1.2) rotate(0deg); }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+        
+        @keyframes confettiFall {
+            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+        
+        @keyframes glowPulse {
+            0% { box-shadow: 0 0 0 0 var(--success-glow); }
+            50% { box-shadow: 0 0 20px 10px var(--success-glow); }
+            100% { box-shadow: 0 0 0 0 var(--success-glow); }
+        }
+        
+        .achievement-notification {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
+            color: #333;
+            padding: 20px 40px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 24px;
+            z-index: 10000;
+            animation: achievementUnlock 0.5s ease-out;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            text-align: center;
+            min-width: 300px;
+        }
+        
+        .achievement-notification .achievement-icon { font-size: 48px; display: block; margin-bottom: 10px; }
+        .achievement-notification .achievement-title { font-size: 20px; margin-bottom: 5px; }
+        .achievement-notification .achievement-desc { font-size: 14px; opacity: 0.9; }
+        
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            position: absolute;
+            z-index: 9999;
+            pointer-events: none;
+            animation: confettiFall 3s ease-in forwards;
+        }
+        
+        .game-box.completed { animation: glowPulse 0.5s ease-out; }
+        
+        .LoveChord-container {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            text-align: center;
+            z-index: 1000;
+        }
+        
+        .LoveChord-btn {
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: none;
+            padding: 10px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: block;
+            text-align: center;
+            text-decoration: none;
+        }
+        
+        .LoveChord-btn:hover { background: var(--btn-hover); transform: scale(1.02); }
+        .LoveChord-main { display: block; font-size: 20px; font-weight: 800; font-family: 'Montserrat', sans-serif; letter-spacing: 2px; font-variant: small-caps; }
+        .about-songs { display: block; font-size: 9px; text-decoration: none; margin-top: 3px; font-weight: normal; font-family: 'Montserrat', sans-serif; }
+
+        /* ИКОНКИ ПОИСКА И УВЕДОМЛЕНИЙ */
+        .search-icon {
+            position: fixed;
+            top: 20px;
+            right: 140px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: 2px solid var(--border-color);
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            z-index: 1000;
+        }
+        .search-icon:hover { transform: scale(1.05); background: var(--btn-hover); }
+        
+        .notification-icon {
+            position: fixed;
+            top: 20px;
+            right: 200px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: 2px solid var(--border-color);
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            z-index: 1000;
+        }
+        .notification-icon:hover { transform: scale(1.05); background: var(--btn-hover); }
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff4444;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .profile-icon {
+            position: fixed;
+            top: 20px;
+            right: 80px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: 2px solid var(--border-color);
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            z-index: 1000;
+            overflow: hidden;
+        }
+        
+        .profile-icon:hover { transform: scale(1.05); background: var(--btn-hover); }
+        .profile-icon img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .daily-task-indicator {
+            position: fixed;
+            top: 20px;
+            right: 260px;
+            background: var(--btn-bg);
+            border-radius: 20px;
+            padding: 5px 12px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--btn-text);
+        }
+        
+        .daily-task-indicator.completed { background: var(--success); color: white; animation: glowPulse 0.5s ease-out; }
+        
+        .theme-toggle-bottom {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 16px;
+            font-weight: 600;
+            z-index: 1000;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .theme-toggle-bottom:hover { background: var(--btn-hover); transform: scale(1.02); }
+        
+        .nav-menu {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 30px;
+            margin-top: 60px;
+            z-index: 1000;
+            position: relative;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+            padding-bottom: 10px;
+            cursor: grab;
+        }
+        
+        .nav-menu:active { cursor: grabbing; }
+        .nav-menu::-webkit-scrollbar { height: 5px; }
+        .nav-menu::-webkit-scrollbar-track { background: var(--bg-game-box); border-radius: 10px; }
+        .nav-menu::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
+        .nav-menu::-webkit-scrollbar-thumb:hover { background: var(--btn-hover); }
+        
+        .nav-btn {
+            background: var(--bg-game-box);
+            border: 2px solid var(--border-color);
+            padding: 10px 20px;
+            font-size: 14px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.2s;
+            color: var(--border-color);
+            font-weight: 600;
+            font-family: 'Montserrat', sans-serif;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        
+        .nav-btn:hover:not(.active) { background: var(--btn-bg); color: var(--btn-text); }
+        .nav-btn.active { background: var(--btn-bg); color: var(--btn-text); cursor: default; opacity: 0.7; }
+        
+        .category-menu {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        
+        .category-btn {
+            background: var(--bg-game-box);
+            border: 2px solid var(--border-color);
+            padding: 12px 25px;
+            font-size: 16px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.2s;
+            color: var(--border-color);
+            font-weight: 600;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .category-btn:hover { background: var(--btn-bg); color: var(--btn-text); }
+        
+        .records-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            max-width: 800px;
+            margin: 0 auto 20px auto;
+        }
+        
+        .record-card {
+            background: var(--bg-game-box);
+            border-radius: 20px;
+            padding: 15px 20px;
+            flex: 1;
+            text-align: center;
+            border: 2px solid var(--border-color);
+        }
+        
+        .record-card h3 { color: var(--border-color); font-size: 18px; margin-bottom: 10px; font-variant: small-caps; letter-spacing: 1px; }
+        .record-score { font-size: 36px; font-weight: bold; color: var(--accent); }
+        .record-date { font-size: 12px; color: var(--text-secondary); margin-top: 8px; }
+        .record-label { font-size: 14px; color: var(--border-color); margin-top: 5px; }
+        
+        .game-box {
+            background: var(--bg-game-box);
+            max-width: 550px;
+            margin: 20px auto;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+            transition: all 0.3s;
+        }
+        
+        h1 { color: var(--border-color); font-family: 'Montserrat', sans-serif; font-variant: small-caps; font-weight: 800; letter-spacing: 2px; font-size: 26px; margin-bottom: 10px; }
+        .score { font-size: 22px; font-weight: bold; margin-bottom: 15px; color: var(--accent); font-family: 'Montserrat', sans-serif; }
+        
+        .song-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 2px solid var(--border-color);
+        }
+        
+        .song-photo {
+            width: 180px;
+            height: 180px;
+            margin: 0 auto;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid var(--border-color);
+            background: var(--bg-body);
+        }
+        
+        .song-photo img { width: 100%; height: 100%; object-fit: cover; }
+        .placeholder-photo { font-size: 60px; line-height: 180px; color: var(--border-color); }
+        .song-title { font-size: 20px; font-weight: bold; margin: 15px 0 5px; color: var(--border-color); }
+        .song-artist { font-size: 16px; color: var(--text-secondary); margin-bottom: 20px; }
+        .options-container { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin: 20px 0; }
+        
+        .year-btn {
+            background: var(--btn-bg);
+            border: none;
+            padding: 12px 25px;
+            font-size: 18px;
+            margin: 5px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: 0.2s;
+            color: var(--btn-text);
+            font-family: 'Montserrat', sans-serif;
+            min-width: 100px;
+        }
+        
+        .year-btn:hover { background: var(--btn-hover); transform: scale(1.05); }
+        .year-btn.disabled { opacity: 0.5; cursor: not-allowed; }
+        .year-btn.disabled:hover { transform: none; }
+        
+        .result-message { font-size: 18px; margin: 20px 0; padding: 15px; border-radius: 15px; }
+        .correct { background: #00aa44; color: white; }
+        .wrong { background: #aa0044; color: white; }
+        
+        .next-btn {
+            background: var(--btn-bg);
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            margin: 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: 0.2s;
+            color: var(--btn-text);
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .next-btn:hover { background: var(--btn-hover); transform: scale(1.02); }
+        
+        .reset-btn {
+            background: #888;
+            border: none;
+            padding: 12px 25px;
+            font-size: 14px;
+            margin: 10px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: 0.2s;
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .reset-btn:hover { background: #666; }
+        .loading { font-size: 12px; color: var(--text-secondary); margin-top: 10px; }
+        .question-text { font-size: 18px; margin: 10px 0; color: var(--accent); }
+        
+        /* МОДАЛЬНЫЕ ОКНА */
+        .search-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--bg-game-box);
+            border: 2px solid var(--border-color);
+            border-radius: 20px;
+            padding: 30px;
+            z-index: 2000;
+            width: 90%;
+            max-width: 500px;
+        }
+        .search-modal.show { display: block; }
+        .search-input { width: 100%; padding: 12px; border-radius: 30px; border: 2px solid var(--border-color); background: var(--bg-body); color: var(--text-primary); font-family: 'Montserrat', sans-serif; font-size: 16px; margin-bottom: 20px; }
+        .search-results { max-height: 300px; overflow-y: auto; }
+        .search-result-item { padding: 10px; margin: 5px 0; background: var(--bg-card); border-radius: 15px; cursor: pointer; transition: 0.2s; }
+        .search-result-item:hover { background: var(--bg-game-box); transform: scale(1.02); }
+        .close-modal { background: var(--btn-bg); border: none; padding: 10px 20px; border-radius: 30px; cursor: pointer; margin-top: 15px; }
+        
+        .notification-panel {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            width: 300px;
+            background: var(--bg-game-box);
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            z-index: 2000;
+            display: none;
+        }
+        .notification-panel.show { display: block; }
+        .notification-item {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+        .notification-item:hover { background: var(--bg-card); }
+        .notification-actions { display: flex; gap: 10px; margin-top: 8px; }
+        .notif-accept, .notif-reject { padding: 5px 12px; border-radius: 20px; border: none; cursor: pointer; font-size: 12px; }
+        .notif-accept { background: #00aa44; color: white; }
+        .notif-reject { background: #aa0044; color: white; }
+        
+        .chat-modal {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 350px;
+            height: 450px;
+            background: var(--bg-game-box);
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            z-index: 2000;
+            flex-direction: column;
+        }
+        .chat-modal.show { display: flex; }
+        .chat-header {
+            padding: 12px;
+            background: var(--bg-card);
+            border-radius: 13px 13px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chat-messages {
+            flex: 1;
+            padding: 12px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .message {
+            max-width: 80%;
+            padding: 8px 12px;
+            border-radius: 15px;
+        }
+        .message.sent { background: var(--accent); color: #333; align-self: flex-end; }
+        .message.received { background: var(--bg-card); align-self: flex-start; }
+        .chat-input-area { display: flex; padding: 12px; gap: 8px; border-top: 1px solid var(--border-color); }
+        .chat-input { flex: 1; padding: 8px; border-radius: 20px; border: 1px solid var(--border-color); background: var(--bg-body); color: var(--text-primary); }
+        .chat-send { background: var(--btn-bg); border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; }
+        
+        .notification { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #00aa44; border-radius: 20px; padding: 15px 30px; z-index: 2000; text-align: center; animation: fadeInOut 2.5s ease-in-out; color: white; font-weight: bold; white-space: nowrap; }
+        .notification.error { background: #aa0044; }
+        @keyframes fadeInOut { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); } 15% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 85% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); } }
+    </style>
+</head>
+<body>
+
+    <div class="LoveChord-container">
+        <div class="LoveChord-btn" onclick="window.location.href='index.html'">
+            <span class="LoveChord-main">LoveChord</span>
+            <span class="about-songs">все о песнях*</span>
+        </div>
+    </div>
+
+    <!-- ИКОНКИ ПОИСКА И УВЕДОМЛЕНИЙ -->
+    <div class="search-icon" onclick="openSearchModal()">🔍</div>
+    <div class="notification-icon" id="notificationIcon" onclick="toggleNotifications()">
+        🔔
+        <span id="notificationBadge" class="notification-badge" style="display: none;">0</span>
+    </div>
+
+    <div class="daily-task-indicator" id="dailyTaskIndicator" onclick="window.location.href='profile-dashboard.html'">
+        <span>📅</span>
+        <span id="taskStatus">Задание дня</span>
+    </div>
+
+    <div class="profile-icon" id="profileIcon" onclick="window.location.href='profile-dashboard.html'">
+        👤
+    </div>
+
+    <div class="nav-menu">
+        <button class="nav-btn" onclick="window.location.href='game.html'">🎤 Угадай автора музыки</button>
+        <button class="nav-btn" onclick="window.location.href='photo-game.html'">📸 Угадай автора по фото</button>
+        <button class="nav-btn" onclick="window.location.href='popular-game.html'">📊 Какая песня популярней</button>
+        <button class="nav-btn" onclick="window.location.href='favorite-game.html'">❤️ Выбери любимую песню</button>
+        <button class="nav-btn active" onclick="window.location.href='year-game.html'">📅 Угадай год</button>
+        <button class="nav-btn" onclick="window.location.href='who-wrote-game.html'">✍️ Кто написал...</button>
+        <button class="nav-btn" onclick="window.location.href='emoji-game.html'">😊 Угадай по эмодзи</button>
+        <button class="nav-btn" onclick="window.location.href='lyrics-game.html'">📝 Угадай по тексту</button>
+    </div>
+
+    <div class="records-container">
+        <div class="record-card">
+            <h3>🏆 Лучший личный счёт</h3>
+            <div class="record-score" id="personalBestScore">0</div>
+            <div class="record-date" id="personalBestDate">—</div>
+            <div class="record-label" id="personalRecordLabel">английские</div>
+        </div>
+        <div class="record-card">
+            <h3>🌍 Лучший счёт среди всех</h3>
+            <div class="record-score" id="globalBestScore">0</div>
+            <div class="record-date" id="globalBestDate">—</div>
+            <div class="record-label" id="globalRecordLabel">английские</div>
+        </div>
+    </div>
+
+    <div class="game-box" id="gameBox">
+        <h1 id="mainTitle">📅 Угадай год выпуска (Английские) 🎵</h1>
+        <p>Выбери год, когда вышла эта песня!</p>
+
+        <div class="score">
+            🏆 Текущий счёт: <span id="scoreValue">0</span>
+        </div>
+
+        <div class="category-menu">
+            <button class="category-btn" onclick="switchCategory('english')">🇬🇧 Английские</button>
+            <button class="category-btn" onclick="switchCategory('russian')">🇷🇺 Русские</button>
+            <button class="category-btn" onclick="switchCategory('kpop')">🇰🇷 К-поп</button>
+        </div>
+
+        <div class="song-card" id="songCard">
+            <div class="song-photo">
+                <div class="placeholder-photo" id="photoPlaceholder">🎵</div>
+                <img id="songPhoto" style="display: none;" alt="Обложка песни">
+            </div>
+            <div class="song-title" id="songTitle">Загрузка...</div>
+            <div class="song-artist" id="songArtist">...</div>
+            <div class="loading" id="loadingText">Загрузка обложки...</div>
+        </div>
+
+        <div id="questionText" class="question-text">Какой год выпуска?</div>
+
+        <div class="options-container" id="optionsContainer"></div>
+
+        <div id="resultMessage" class="result-message"></div>
+        
+        <button class="next-btn" id="nextBtn" style="display: none;" onclick="nextQuestion()">➡ Следующая песня</button>
+        <button class="reset-btn" onclick="resetGame()">🔄 Начать заново</button>
+    </div>
+
+    <!-- МОДАЛЬНЫЕ ОКНА -->
+    <div id="searchModal" class="search-modal">
+        <h3>🔍 Поиск игроков</h3>
+        <input type="text" id="searchInput" class="search-input" placeholder="Введите никнейм..." onkeyup="searchUsers()">
+        <div id="searchResults" class="search-results"></div>
+        <button class="close-modal" onclick="closeSearchModal()">Закрыть</button>
+    </div>
+
+    <div id="notificationPanel" class="notification-panel">
+        <h4 style="padding: 12px;">Уведомления</h4>
+        <div id="notificationsList"></div>
+    </div>
+
+    <div id="chatModal" class="chat-modal">
+        <div class="chat-header">
+            <span id="chatFriendName">Чат</span>
+            <button onclick="closeChat()" style="background:none; border:none; color:var(--text-primary); cursor:pointer;">✕</button>
+        </div>
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-input-area">
+            <input type="text" id="chatInput" class="chat-input" placeholder="Сообщение...">
+            <button class="chat-send" onclick="sendMessage()">📤</button>
+        </div>
+    </div>
+
+    <button class="theme-toggle-bottom" onclick="toggleTheme()">🌓 Тема</button>
+
+    <script>
+        const LASTFM_API_KEY = "c1a62adb44d88fb86118541518449a9d";
+        
+        // ===== АНГЛИЙСКИЕ ПЕСНИ (200+) =====
+        const englishSongs = [
+            { title: "Bohemian Rhapsody", artist: "Queen", year: 1975 },
+            { title: "Billie Jean", artist: "Michael Jackson", year: 1982 },
+            { title: "Thriller", artist: "Michael Jackson", year: 1982 },
+            { title: "Beat It", artist: "Michael Jackson", year: 1982 },
+            { title: "Smells Like Teen Spirit", artist: "Nirvana", year: 1991 },
+            { title: "Come As You Are", artist: "Nirvana", year: 1991 },
+            { title: "...Baby One More Time", artist: "Britney Spears", year: 1998 },
+            { title: "Toxic", artist: "Britney Spears", year: 2003 },
+            { title: "Circus", artist: "Britney Spears", year: 2008 },
+            { title: "Bad Romance", artist: "Lady Gaga", year: 2009 },
+            { title: "Poker Face", artist: "Lady Gaga", year: 2008 },
+            { title: "Just Dance", artist: "Lady Gaga", year: 2008 },
+            { title: "Shake It Off", artist: "Taylor Swift", year: 2014 },
+            { title: "Blank Space", artist: "Taylor Swift", year: 2014 },
+            { title: "Look What You Made Me Do", artist: "Taylor Swift", year: 2017 },
+            { title: "Anti-Hero", artist: "Taylor Swift", year: 2022 },
+            { title: "Hello", artist: "Adele", year: 2015 },
+            { title: "Someone Like You", artist: "Adele", year: 2011 },
+            { title: "Rolling in the Deep", artist: "Adele", year: 2010 },
+            { title: "Easy on Me", artist: "Adele", year: 2021 },
+            { title: "Umbrella", artist: "Rihanna", year: 2007 },
+            { title: "Diamonds", artist: "Rihanna", year: 2012 },
+            { title: "We Found Love", artist: "Rihanna", year: 2011 },
+            { title: "Roar", artist: "Katy Perry", year: 2013 },
+            { title: "Firework", artist: "Katy Perry", year: 2010 },
+            { title: "Dark Horse", artist: "Katy Perry", year: 2013 },
+            { title: "Shape of You", artist: "Ed Sheeran", year: 2017 },
+            { title: "Thinking Out Loud", artist: "Ed Sheeran", year: 2014 },
+            { title: "Perfect", artist: "Ed Sheeran", year: 2017 },
+            { title: "Blinding Lights", artist: "The Weeknd", year: 2019 },
+            { title: "Starboy", artist: "The Weeknd", year: 2016 },
+            { title: "Save Your Tears", artist: "The Weeknd", year: 2020 },
+            { title: "Happy", artist: "Pharrell Williams", year: 2013 },
+            { title: "Uptown Funk", artist: "Bruno Mars", year: 2014 },
+            { title: "Just the Way You Are", artist: "Bruno Mars", year: 2010 },
+            { title: "Sorry", artist: "Justin Bieber", year: 2015 },
+            { title: "Love Yourself", artist: "Justin Bieber", year: 2015 },
+            { title: "Baby", artist: "Justin Bieber", year: 2010 },
+            { title: "Bad Guy", artist: "Billie Eilish", year: 2019 },
+            { title: "Happier Than Ever", artist: "Billie Eilish", year: 2021 },
+            { title: "Levitating", artist: "Dua Lipa", year: 2020 },
+            { title: "Don't Start Now", artist: "Dua Lipa", year: 2019 },
+            { title: "Watermelon Sugar", artist: "Harry Styles", year: 2019 },
+            { title: "As It Was", artist: "Harry Styles", year: 2022 },
+            { title: "Flowers", artist: "Miley Cyrus", year: 2023 },
+            { title: "Drivers License", artist: "Olivia Rodrigo", year: 2021 },
+            { title: "Good 4 U", artist: "Olivia Rodrigo", year: 2021 },
+            { title: "Havana", artist: "Camila Cabello", year: 2017 },
+            { title: "Señorita", artist: "Camila Cabello", year: 2019 },
+            { title: "Closer", artist: "The Chainsmokers", year: 2016 },
+            { title: "Something Just Like This", artist: "The Chainsmokers", year: 2017 },
+            { title: "Lean On", artist: "Major Lazer", year: 2015 },
+            { title: "Wake Me Up", artist: "Avicii", year: 2013 },
+            { title: "Hey Brother", artist: "Avicii", year: 2013 },
+            { title: "Titanium", artist: "David Guetta", year: 2011 },
+            { title: "Summer", artist: "Calvin Harris", year: 2014 },
+            { title: "This Is What You Came For", artist: "Calvin Harris", year: 2016 },
+            { title: "Attention", artist: "Charlie Puth", year: 2017 },
+            { title: "We Don't Talk Anymore", artist: "Charlie Puth", year: 2016 },
+            { title: "See You Again", artist: "Wiz Khalifa", year: 2015 },
+            { title: "Freak", artist: "Doja Cat", year: 2020 },
+            { title: "Say So", artist: "Doja Cat", year: 2019 },
+            { title: "Kiss Me More", artist: "Doja Cat", year: 2021 },
+            { title: "Primadonna", artist: "Marina", year: 2012 },
+            { title: "How to Be a Heartbreaker", artist: "Marina", year: 2012 },
+            { title: "Supermassive Black Hole", artist: "Muse", year: 2006 },
+            { title: "Uprising", artist: "Muse", year: 2009 },
+            { title: "Yellow", artist: "Coldplay", year: 2000 },
+            { title: "Fix You", artist: "Coldplay", year: 2005 },
+            { title: "Viva La Vida", artist: "Coldplay", year: 2008 },
+            { title: "Natural", artist: "Imagine Dragons", year: 2018 },
+            { title: "Believer", artist: "Imagine Dragons", year: 2017 },
+            { title: "Radioactive", artist: "Imagine Dragons", year: 2012 },
+            { title: "Thunder", artist: "Imagine Dragons", year: 2017 },
+            { title: "Demons", artist: "Imagine Dragons", year: 2012 },
+            { title: "We Will Rock You", artist: "Queen", year: 1977 },
+            { title: "We Are the Champions", artist: "Queen", year: 1977 },
+            { title: "I Will Always Love You", artist: "Whitney Houston", year: 1992 },
+            { title: "My Heart Will Go On", artist: "Celine Dion", year: 1997 },
+            { title: "Every Breath You Take", artist: "The Police", year: 1983 },
+            { title: "Sweet Child O' Mine", artist: "Guns N' Roses", year: 1987 },
+            { title: "November Rain", artist: "Guns N' Roses", year: 1991 },
+            { title: "Don't Stop Believin'", artist: "Journey", year: 1981 },
+            { title: "Livin' On A Prayer", artist: "Bon Jovi", year: 1986 },
+            { title: "Eye of the Tiger", artist: "Survivor", year: 1982 },
+            { title: "Another One Bites The Dust", artist: "Queen", year: 1980 },
+            { title: "I Want To Break Free", artist: "Queen", year: 1984 },
+            { title: "Radio Ga Ga", artist: "Queen", year: 1984 },
+            { title: "The Show Must Go On", artist: "Queen", year: 1991 },
+            { title: "Wonderwall", artist: "Oasis", year: 1995 },
+            { title: "Creep", artist: "Radiohead", year: 1992 },
+            { title: "Seven Nation Army", artist: "The White Stripes", year: 2003 },
+            { title: "Mr. Brightside", artist: "The Killers", year: 2003 },
+            { title: "Take Me to Church", artist: "Hozier", year: 2013 },
+            { title: "Riptide", artist: "Vance Joy", year: 2013 },
+            { title: "Pumped Up Kicks", artist: "Foster The People", year: 2010 },
+            { title: "Sail", artist: "AWOLNATION", year: 2011 },
+            { title: "Lose Yourself", artist: "Eminem", year: 2002 },
+            { title: "Stan", artist: "Eminem", year: 2000 },
+            { title: "Halo", artist: "Beyoncé", year: 2008 },
+            { title: "Single Ladies", artist: "Beyoncé", year: 2008 },
+            { title: "Crazy in Love", artist: "Beyoncé", year: 2003 },
+            { title: "God's Plan", artist: "Drake", year: 2018 },
+            { title: "In My Feelings", artist: "Drake", year: 2018 },
+            { title: "Rockstar", artist: "Post Malone", year: 2017 },
+            { title: "Circles", artist: "Post Malone", year: 2019 },
+            { title: "Sunflower", artist: "Post Malone", year: 2018 },
+            { title: "Dance Monkey", artist: "Tones and I", year: 2019 },
+            { title: "Someone You Loved", artist: "Lewis Capaldi", year: 2018 },
+            { title: "Before You Go", artist: "Lewis Capaldi", year: 2019 },
+            { title: "Mood", artist: "24kGoldn", year: 2020 },
+            { title: "Stay", artist: "The Kid LAROI", year: 2021 },
+            { title: "Heat Waves", artist: "Glass Animals", year: 2020 },
+            { title: "Without Me", artist: "Halsey", year: 2018 },
+            { title: "Gangnam Style", artist: "PSY", year: 2012 },
+            { title: "Despacito", artist: "Luis Fonsi", year: 2017 },
+            { title: "Havana", artist: "Camila Cabello", year: 2017 },
+            { title: "Girls Like You", artist: "Maroon 5", year: 2018 }
+        ];
+
+        // ===== РУССКИЕ ПЕСНИ (200+) =====
+        const russianSongs = [
+            { title: "Группа крови", artist: "Кино", year: 1988 },
+            { title: "Кукушка", artist: "Кино", year: 1990 },
+            { title: "Звезда по имени Солнце", artist: "Кино", year: 1989 },
+            { title: "Пачка сигарет", artist: "Кино", year: 1989 },
+            { title: "Спокойная ночь", artist: "Кино", year: 1989 },
+            { title: "В наших глазах", artist: "Кино", year: 1988 },
+            { title: "Хочу перемен", artist: "Кино", year: 1988 },
+            { title: "Трава у дома", artist: "Земляне", year: 1979 },
+            { title: "Конь", artist: "Любэ", year: 1990 },
+            { title: "Комбат", artist: "Любэ", year: 1995 },
+            { title: "Позови меня тихо по имени", artist: "Любэ", year: 1996 },
+            { title: "Там за туманами", artist: "Любэ", year: 1998 },
+            { title: "На заре", artist: "Альянс", year: 1987 },
+            { title: "Владимирский централ", artist: "Михаил Круг", year: 1997 },
+            { title: "Кольщик", artist: "Михаил Круг", year: 1996 },
+            { title: "Тополиный пух", artist: "Иванушки International", year: 1998 },
+            { title: "Тучи", artist: "Иванушки International", year: 1997 },
+            { title: "Я сошла с ума", artist: "Тату", year: 1999 },
+            { title: "Нас не догонят", artist: "Тату", year: 2001 },
+            { title: "30 минут", artist: "Тату", year: 2000 },
+            { title: "Ночь", artist: "Андрей Губин", year: 1999 },
+            { title: "Девушки как звёзды", artist: "Андрей Губин", year: 2000 },
+            { title: "Плачет девушка в автомате", artist: "Евгений Осин", year: 1997 },
+            { title: "Белая роза", artist: "Ласковый май", year: 1988 },
+            { title: "Розовый вечер", artist: "Ласковый май", year: 1989 },
+            { title: "Седая ночь", artist: "Ласковый май", year: 1989 },
+            { title: "Мальчик", artist: "IOWA", year: 2012 },
+            { title: "Улыбайся", artist: "IOWA", year: 2013 },
+            { title: "Плакала", artist: "KAZKA", year: 2018 },
+            { title: "Кукла колдуна", artist: "Король и Шут", year: 1996 },
+            { title: "Лесник", artist: "Король и Шут", year: 1996 },
+            { title: "Прыгну со скалы", artist: "Король и Шут", year: 1999 },
+            { title: "Дурак и молния", artist: "Король и Шут", year: 1998 },
+            { title: "Выхода нет", artist: "Сплин", year: 2000 },
+            { title: "Моё сердце", artist: "Сплин", year: 2003 },
+            { title: "Я тебя не отдам", artist: "Serebro", year: 2012 },
+            { title: "Плачут небеса", artist: "Тимати", year: 2015 },
+            { title: "Ягода малинка", artist: "Хабиб", year: 2019 },
+            { title: "Птичка", artist: "HammAli & Navai", year: 2019 },
+            { title: "За бывшего", artist: "Люся Чеботина", year: 2020 },
+            { title: "Пошлю его на", artist: "Люся Чеботина", year: 2021 },
+            { title: "Хобби", artist: "INSTASAMKA", year: 2018 },
+            { title: "За деньги да", artist: "INSTASAMKA", year: 2019 },
+            { title: "Эскейп", artist: "FACE", year: 2018 },
+            { title: "Веном", artist: "FACE", year: 2019 },
+            { title: "Ice", artist: "MORGENSHTERN", year: 2019 },
+            { title: "Ламбада", artist: "Xolidayboy", year: 2020 },
+            { title: "Я русский", artist: "SHAMAN", year: 2022 },
+            { title: "Встанем", artist: "SHAMAN", year: 2022 },
+            { title: "Прятки", artist: "Ваня Дмитриенко", year: 2020 },
+            { title: "Шёлк", artist: "Ваня Дмитриенко", year: 2021 },
+            { title: "Силуэт", artist: "Ваня Дмитриенко", year: 2021 },
+            { title: "Малиновая Лада", artist: "GAYAZOV$ BROTHER$", year: 2021 },
+            { title: "Выбираю море", artist: "GAYAZOV$ BROTHER$", year: 2021 },
+            { title: "Пчеловод", artist: "RASA", year: 2020 },
+            { title: "Барбисайз", artist: "Дора", year: 2019 },
+            { title: "Родной", artist: "Полина Гагарина", year: 2019 },
+            { title: "Замуж", artist: "Клава Кока", year: 2020 },
+            { title: "Покинула чат", artist: "Клава Кока", year: 2021 },
+            { title: "Краш", artist: "Клава Кока", year: 2021 },
+            { title: "Дико тусим", artist: "Даня Милохин", year: 2019 },
+            { title: "Детство", artist: "Rauf & Faik", year: 2018 },
+            { title: "Колыбельная", artist: "Rauf & Faik", year: 2019 },
+            { title: "Я люблю тебя", artist: "Rauf & Faik", year: 2019 },
+            { title: "Она не я", artist: "Artik & Asti", year: 2016 },
+            { title: "Девочка танцуй", artist: "Artik & Asti", year: 2017 },
+            { title: "Неделимы", artist: "Artik & Asti", year: 2018 },
+            { title: "Качели", artist: "Artik & Asti", year: 2019 },
+            { title: "Фонари", artist: "Artik & Asti", year: 2020 },
+            { title: "Грустный дэнс", artist: "Artik & Asti", year: 2021 },
+            { title: "Номер 1", artist: "MOT", year: 2019 },
+            { title: "Миллион", artist: "MOT", year: 2020 },
+            { title: "Космос", artist: "MOT", year: 2021 },
+            { title: "Выдыхай", artist: "MOT", year: 2021 },
+            { title: "Лабиринт", artist: "MOT", year: 2022 },
+            { title: "Миллион алых роз", artist: "Алла Пугачёва", year: 1983 },
+            { title: "Ленинград", artist: "Ленинград", year: 1997 },
+            { title: "В Питере — пить", artist: "Ленинград", year: 2016 },
+            { title: "Экспонат", artist: "Ленинград", year: 2016 },
+            { title: "iPhuck 10", artist: "Ленинград", year: 2019 },
+            { title: "Звенит январская вьюга", artist: "Наталья Селезнёва", year: 1977 },
+            { title: "Листья жгут", artist: "Михаил Боярский", year: 1979 },
+            { title: "Белая ночь", artist: "Форум", year: 1986 },
+            { title: "Ночное такси", artist: "Женя Белоусов", year: 1990 },
+            { title: "Серые Глаза", artist: "Ирина Салтыкова", year: 1996 },
+            { title: "Люби меня, люби", artist: "Отпетые Мошенники", year: 2000 },
+            { title: "Стеклянная любовь", artist: "ALIB", year: 2018 },
+            { title: "Не плачь", artist: "Ария", year: 1987 },
+            { title: "Что такое осень", artist: "ДДТ", year: 1991 },
+            { title: "Мой рок-н-ролл", artist: "Би-2", year: 2000 },
+            { title: "Серебро", artist: "Би-2", year: 2002 },
+            { title: "Алюминиевые огурцы", artist: "Кино", year: 1987 },
+            { title: "Электричка", artist: "Кино", year: 1987 },
+            { title: "Базовый минимум", artist: "SABI, MIA Boyka", year: 2020 },
+            { title: "Французский поцелуй", artist: "Миша Марвин & Ханна", year: 2020 },
+            { title: "Харизма", artist: "Wallem", year: 2021 },
+            { title: "Целый мир", artist: "Alex Lim", year: 2022 },
+            { title: "Дарите женщинам цветы", artist: "Jazzdauren", year: 2019 },
+            { title: "Дорогу молодым", artist: "Goro", year: 2020 },
+            { title: "Пожары", artist: "Xolidayboy", year: 2021 },
+            { title: "Самурай", artist: "BODIEV", year: 2022 },
+            { title: "Асфальт", artist: "Jakone, Kiliana", year: 2021 },
+            { title: "Матушка Земля", artist: "Татьяна Куртукова", year: 2022 }
+        ];
+
+        // ===== К-ПОП ПЕСНИ (200+) =====
+        const kpopSongs = [
+            { title: "Gangnam Style", artist: "PSY", year: 2012 },
+            { title: "Gentleman", artist: "PSY", year: 2013 },
+            { title: "Daddy", artist: "PSY", year: 2015 },
+            { title: "That That", artist: "PSY", year: 2022 },
+            { title: "I Need U", artist: "BTS", year: 2015 },
+            { title: "Blood Sweat & Tears", artist: "BTS", year: 2016 },
+            { title: "DNA", artist: "BTS", year: 2017 },
+            { title: "Fake Love", artist: "BTS", year: 2018 },
+            { title: "IDOL", artist: "BTS", year: 2018 },
+            { title: "Boy With Luv", artist: "BTS", year: 2019 },
+            { title: "ON", artist: "BTS", year: 2020 },
+            { title: "Dynamite", artist: "BTS", year: 2020 },
+            { title: "Life Goes On", artist: "BTS", year: 2020 },
+            { title: "Butter", artist: "BTS", year: 2021 },
+            { title: "Permission to Dance", artist: "BTS", year: 2021 },
+            { title: "Yet To Come", artist: "BTS", year: 2022 },
+            { title: "Spring Day", artist: "BTS", year: 2017 },
+            { title: "Black Swan", artist: "BTS", year: 2020 },
+            { title: "MIC Drop", artist: "BTS", year: 2017 },
+            { title: "Fire", artist: "BTS", year: 2016 },
+            { title: "DDU-DU DDU-DU", artist: "BLACKPINK", year: 2018 },
+            { title: "Kill This Love", artist: "BLACKPINK", year: 2019 },
+            { title: "How You Like That", artist: "BLACKPINK", year: 2020 },
+            { title: "Lovesick Girls", artist: "BLACKPINK", year: 2020 },
+            { title: "Pink Venom", artist: "BLACKPINK", year: 2022 },
+            { title: "Shut Down", artist: "BLACKPINK", year: 2022 },
+            { title: "BOOMBAYAH", artist: "BLACKPINK", year: 2016 },
+            { title: "Whistle", artist: "BLACKPINK", year: 2016 },
+            { title: "Playing with Fire", artist: "BLACKPINK", year: 2016 },
+            { title: "Cheer Up", artist: "TWICE", year: 2016 },
+            { title: "TT", artist: "TWICE", year: 2016 },
+            { title: "Fancy", artist: "TWICE", year: 2019 },
+            { title: "Feel Special", artist: "TWICE", year: 2019 },
+            { title: "Alcohol-Free", artist: "TWICE", year: 2021 },
+            { title: "The Feels", artist: "TWICE", year: 2021 },
+            { title: "What is Love?", artist: "TWICE", year: 2018 },
+            { title: "Yes or Yes", artist: "TWICE", year: 2018 },
+            { title: "I Can't Stop Me", artist: "TWICE", year: 2020 },
+            { title: "Next Level", artist: "aespa", year: 2021 },
+            { title: "Savage", artist: "aespa", year: 2021 },
+            { title: "Black Mamba", artist: "aespa", year: 2020 },
+            { title: "Spicy", artist: "aespa", year: 2023 },
+            { title: "Drama", artist: "aespa", year: 2023 },
+            { title: "God's Menu", artist: "Stray Kids", year: 2020 },
+            { title: "Maniac", artist: "Stray Kids", year: 2022 },
+            { title: "Thunderous", artist: "Stray Kids", year: 2021 },
+            { title: "Back Door", artist: "Stray Kids", year: 2020 },
+            { title: "S-Class", artist: "Stray Kids", year: 2023 },
+            { title: "LALALALA", artist: "Stray Kids", year: 2023 },
+            { title: "Eleven", artist: "IVE", year: 2021 },
+            { title: "Love Dive", artist: "IVE", year: 2022 },
+            { title: "After LIKE", artist: "IVE", year: 2022 },
+            { title: "I AM", artist: "IVE", year: 2023 },
+            { title: "Kitsch", artist: "IVE", year: 2023 },
+            { title: "Hype Boy", artist: "NewJeans", year: 2022 },
+            { title: "Attention", artist: "NewJeans", year: 2022 },
+            { title: "Ditto", artist: "NewJeans", year: 2022 },
+            { title: "OMG", artist: "NewJeans", year: 2023 },
+            { title: "Super Shy", artist: "NewJeans", year: 2023 },
+            { title: "ETA", artist: "NewJeans", year: 2023 },
+            { title: "ANTIFRAGILE", artist: "LE SSERAFIM", year: 2022 },
+            { title: "FEARLESS", artist: "LE SSERAFIM", year: 2022 },
+            { title: "Unforgiven", artist: "LE SSERAFIM", year: 2023 },
+            { title: "Perfect Night", artist: "LE SSERAFIM", year: 2023 },
+            { title: "Easy", artist: "LE SSERAFIM", year: 2024 },
+            { title: "TOMBOY", artist: "(G)I-DLE", year: 2022 },
+            { title: "Nxde", artist: "(G)I-DLE", year: 2022 },
+            { title: "Queencard", artist: "(G)I-DLE", year: 2023 },
+            { title: "Latata", artist: "(G)I-DLE", year: 2018 },
+            { title: "Hann", artist: "(G)I-DLE", year: 2018 },
+            { title: "Senorita", artist: "(G)I-DLE", year: 2019 },
+            { title: "DUMDi DUMDi", artist: "(G)I-DLE", year: 2020 },
+            { title: "LALISA", artist: "LISA", year: 2021 },
+            { title: "MONEY", artist: "LISA", year: 2021 },
+            { title: "SOLO", artist: "JENNIE", year: 2018 },
+            { title: "Flower", artist: "JISOO", year: 2023 },
+            { title: "On The Ground", artist: "ROSÉ", year: 2021 },
+            { title: "Gone", artist: "ROSÉ", year: 2021 },
+            { title: "WANNABE", artist: "ITZY", year: 2020 },
+            { title: "Dalla Dalla", artist: "ITZY", year: 2019 },
+            { title: "Sneakers", artist: "ITZY", year: 2022 },
+            { title: "Cake", artist: "ITZY", year: 2023 },
+            { title: "Bouncy", artist: "ATEEZ", year: 2023 },
+            { title: "Guerrilla", artist: "ATEEZ", year: 2022 },
+            { title: "Drunk-Dazed", artist: "ENHYPEN", year: 2021 },
+            { title: "Bite Me", artist: "ENHYPEN", year: 2023 },
+            { title: "Given-Taken", artist: "ENHYPEN", year: 2020 },
+            { title: "Cupid", artist: "FIFTY FIFTY", year: 2023 },
+            { title: "Sugar Rush Ride", artist: "TXT", year: 2023 },
+            { title: "Good Boy Gone Bad", artist: "TXT", year: 2022 },
+            { title: "Blue Hour", artist: "TXT", year: 2020 },
+            { title: "Super", artist: "SEVENTEEN", year: 2023 },
+            { title: "Hot", artist: "SEVENTEEN", year: 2022 },
+            { title: "Rock with you", artist: "SEVENTEEN", year: 2021 },
+            { title: "Love Shot", artist: "EXO", year: 2018 },
+            { title: "Monster", artist: "EXO", year: 2016 },
+            { title: "Growl", artist: "EXO", year: 2013 },
+            { title: "Kick It", artist: "NCT", year: 2020 },
+            { title: "Sticker", artist: "NCT", year: 2021 },
+            { title: "Glitch Mode", artist: "NCT", year: 2022 },
+            { title: "Love Scenario", artist: "iKON", year: 2018 },
+            { title: "Rhythm Ta", artist: "iKON", year: 2015 },
+            { title: "Bboom Bboom", artist: "MOMOLAND", year: 2018 },
+            { title: "Catallena", artist: "Orange Caramel", year: 2014 },
+            { title: "Up & Down", artist: "EXID", year: 2014 },
+            { title: "Gashina", artist: "SUNMI", year: 2017 },
+            { title: "Siren", artist: "SUNMI", year: 2018 }
+        ];
+
+        let currentCategory = 'english';
+        let currentSongs = [];
+        let currentIndex = 0;
+        let currentScore = 0;
+        let canAnswer = true;
+        let gameActive = true;
+        let correctAnswersCount = 0;
+        
+        let personalBest = { english: 0, russian: 0, kpop: 0, dateEnglish: null, dateRussian: null, dateKpop: null };
+        let globalBest = { english: 0, russian: 0, kpop: 0, dateEnglish: null, dateRussian: null, dateKpop: null };
+        
+        const songPhoto = document.getElementById('songPhoto');
+        const photoPlaceholder = document.getElementById('photoPlaceholder');
+        const songTitle = document.getElementById('songTitle');
+        const songArtist = document.getElementById('songArtist');
+        const loadingText = document.getElementById('loadingText');
+        const optionsContainer = document.getElementById('optionsContainer');
+        const resultMessage = document.getElementById('resultMessage');
+        const nextBtn = document.getElementById('nextBtn');
+        const scoreSpan = document.getElementById('scoreValue');
+        const personalBestScoreSpan = document.getElementById('personalBestScore');
+        const personalBestDateSpan = document.getElementById('personalBestDate');
+        const globalBestScoreSpan = document.getElementById('globalBestScore');
+        const globalBestDateSpan = document.getElementById('globalBestDate');
+        const personalRecordLabel = document.getElementById('personalRecordLabel');
+        const globalRecordLabel = document.getElementById('globalRecordLabel');
+        const mainTitle = document.getElementById('mainTitle');
+        const gameBox = document.getElementById('gameBox');
+        const taskStatusSpan = document.getElementById('taskStatus');
+        
+        // Глобальные переменные для поиска и уведомлений
+        let currentUserGlobal = null;
+        let userDataGlobal = null;
+        let currentChatWithGlobal = null;
+
+        // ===== ФУНКЦИИ ДЛЯ ПОИСКА, ДРУЗЕЙ И ЧАТА =====
+        function showNotificationGlobal(msg, isError) {
+            let n = document.createElement('div');
+            n.className = 'notification' + (isError ? ' error' : '');
+            n.textContent = msg;
+            document.body.appendChild(n);
+            setTimeout(() => n.remove(), 2500);
+        }
+
+        function loadGlobalUserData() {
+            currentUserGlobal = localStorage.getItem('lovechord_current_user');
+            let users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+            if (currentUserGlobal && users[currentUserGlobal]) {
+                userDataGlobal = users[currentUserGlobal];
+                if (!userDataGlobal.friends) userDataGlobal.friends = [];
+                if (!userDataGlobal.friendRequests) userDataGlobal.friendRequests = [];
+                if (!userDataGlobal.notifications) userDataGlobal.notifications = [];
+                if (!userDataGlobal.chats) userDataGlobal.chats = {};
+                updateNotificationBadgeGlobal();
+            }
+        }
+
+        function saveGlobalUserData() {
+            let users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+            users[currentUserGlobal] = userDataGlobal;
+            localStorage.setItem('lovechord_users', JSON.stringify(users));
+        }
+
+        function updateNotificationBadgeGlobal() {
+            let count = (userDataGlobal.friendRequests ? userDataGlobal.friendRequests.length : 0) + (userDataGlobal.notifications ? userDataGlobal.notifications.length : 0);
+            let badge = document.getElementById('notificationBadge');
+            if (badge) {
+                if (count > 0) { badge.textContent = count; badge.style.display = 'flex'; }
+                else badge.style.display = 'none';
+            }
+        }
+
+        function openSearchModal() {
+            let modal = document.getElementById('searchModal');
+            if (modal) modal.classList.add('show');
+            let input = document.getElementById('searchInput');
+            if (input) { input.value = ''; }
+            let results = document.getElementById('searchResults');
+            if (results) results.innerHTML = '';
+        }
+
+        function closeSearchModal() {
+            let modal = document.getElementById('searchModal');
+            if (modal) modal.classList.remove('show');
+        }
+
+        function searchUsers() {
+            let query = document.getElementById('searchInput').value.toLowerCase().trim();
+            let resultsDiv = document.getElementById('searchResults');
+            if (!query) { resultsDiv.innerHTML = ''; return; }
+            let users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+            let results = [];
+            for (let name in users) {
+                if (name.toLowerCase().includes(query) && name !== currentUserGlobal) results.push(name);
+            }
+            let html = '';
+            for (let res of results.slice(0, 10)) {
+                html += `<div class="search-result-item" onclick="viewProfileGlobal('${res}')">🔍 ${res}</div>`;
+            }
+            if (html === '') html = '<div>Ничего не найдено</div>';
+            resultsDiv.innerHTML = html;
+        }
+
+        function viewProfileGlobal(username) {
+            closeSearchModal();
+            window.location.href = 'profile-dashboard.html?view=' + encodeURIComponent(username);
+        }
+
+        function sendFriendRequestGlobal(toUser) {
+            if (toUser === currentUserGlobal) { showNotificationGlobal('Нельзя добавить самого себя!', true); return; }
+            let users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+            if (!users[toUser]) { showNotificationGlobal('Пользователь не найден!', true); return; }
+            if (userDataGlobal.friends && userDataGlobal.friends.includes(toUser)) { showNotificationGlobal('Этот пользователь уже в друзьях!', true); return; }
+            
+            if (!users[toUser].friendRequests) users[toUser].friendRequests = [];
+            if (users[toUser].friendRequests.includes(currentUserGlobal)) { showNotificationGlobal('Запрос уже отправлен!', true); return; }
+            
+            users[toUser].friendRequests.push(currentUserGlobal);
+            localStorage.setItem('lovechord_users', JSON.stringify(users));
+            showNotificationGlobal('Запрос в друзья отправлен!', false);
+        }
+
+        function acceptFriendRequestGlobal(fromUser) {
+            let users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+            if (!userDataGlobal.friends) userDataGlobal.friends = [];
+            if (!userDataGlobal.friends.includes(fromUser)) userDataGlobal.friends.push(fromUser);
+            if (!users[fromUser].friends) users[fromUser].friends = [];
+            if (!users[fromUser].friends.includes(currentUserGlobal)) users[fromUser].friends.push(currentUserGlobal);
+            
+            let index = userDataGlobal.friendRequests.indexOf(fromUser);
+            if (index !== -1) userDataGlobal.friendRequests.splice(index, 1);
+            
+            if (!userDataGlobal.chats) userDataGlobal.chats = {};
+            if (!userDataGlobal.chats[fromUser]) userDataGlobal.chats[fromUser] = [];
+            
+            localStorage.setItem('lovechord_users', JSON.stringify(users));
+            saveGlobalUserData();
+            showNotificationGlobal('Вы приняли запрос в друзья!', false);
+            updateNotificationBadgeGlobal();
+            if (document.getElementById('notificationsList')) toggleNotificationsGlobal();
+        }
+
+        function rejectFriendRequestGlobal(fromUser) {
+            let users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+            let index = userDataGlobal.friendRequests.indexOf(fromUser);
+            if (index !== -1) userDataGlobal.friendRequests.splice(index, 1);
+            saveGlobalUserData();
+            
+            if (users[fromUser]) {
+                if (!users[fromUser].notifications) users[fromUser].notifications = [];
+                users[fromUser].notifications.push({ type: 'rejected', from: currentUserGlobal });
+                localStorage.setItem('lovechord_users', JSON.stringify(users));
+            }
+            showNotificationGlobal('Запрос отклонен', false);
+            updateNotificationBadgeGlobal();
+        }
+
+        function toggleNotificationsGlobal() {
+            let panel = document.getElementById('notificationPanel');
+            if (!panel) return;
+            if (panel.classList.contains('show')) panel.classList.remove('show');
+            else {
+                let list = document.getElementById('notificationsList');
+                if (list) {
+                    list.innerHTML = '';
+                    if (userDataGlobal.friendRequests && userDataGlobal.friendRequests.length > 0) {
+                        for (let req of userDataGlobal.friendRequests) {
+                            let div = document.createElement('div');
+                            div.className = 'notification-item';
+                            div.innerHTML = `<div><strong>${req}</strong> хочет добавить вас в друзья</div>
+                                <div class="notification-actions">
+                                    <button class="notif-accept" onclick="acceptFriendRequestGlobal('${req}')">Принять</button>
+                                    <button class="notif-reject" onclick="rejectFriendRequestGlobal('${req}')">Отклонить</button>
+                                </div>`;
+                            list.appendChild(div);
+                        }
+                    }
+                    if (userDataGlobal.notifications && userDataGlobal.notifications.length > 0) {
+                        for (let notif of userDataGlobal.notifications) {
+                            let div = document.createElement('div');
+                            div.className = 'notification-item';
+                            if (notif.type === 'rejected') {
+                                div.innerHTML = `<div><strong>${notif.from}</strong> отклонил ваш запрос в друзья</div>`;
+                            }
+                            list.appendChild(div);
+                        }
+                    }
+                    if (list.children.length === 0) {
+                        list.innerHTML = '<div style="padding:12px;">Нет уведомлений</div>';
+                    }
+                }
+                panel.classList.add('show');
+            }
+        }
+
+        function openChatWithGlobal(friendName) {
+            currentChatWithGlobal = friendName;
+            let modal = document.getElementById('chatModal');
+            if (modal) {
+                document.getElementById('chatFriendName').textContent = friendName;
+                modal.classList.add('show');
+                loadChatMessagesGlobal();
+            }
+        }
+
+        function closeChatGlobal() {
+            let modal = document.getElementById('chatModal');
+            if (modal) modal.classList.remove('show');
+            currentChatWithGlobal = null;
+        }
+
+        function sendMessageGlobal() {
+            let input = document.getElementById('chatInput');
+            let text = input.value.trim();
+            if (!text || !currentChatWithGlobal) return;
+            
+            if (!userDataGlobal.chats) userDataGlobal.chats = {};
+            if (!userDataGlobal.chats[currentChatWithGlobal]) userDataGlobal.chats[currentChatWithGlobal] = [];
+            userDataGlobal.chats[currentChatWithGlobal].push({ from: currentUserGlobal, text: text, time: Date.now() });
+            saveGlobalUserData();
+            
+            let users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+            if (users[currentChatWithGlobal]) {
+                if (!users[currentChatWithGlobal].chats) users[currentChatWithGlobal].chats = {};
+                if (!users[currentChatWithGlobal].chats[currentUserGlobal]) users[currentChatWithGlobal].chats[currentUserGlobal] = [];
+                users[currentChatWithGlobal].chats[currentUserGlobal].push({ from: currentUserGlobal, text: text, time: Date.now() });
+                localStorage.setItem('lovechord_users', JSON.stringify(users));
+            }
+            
+            input.value = '';
+            loadChatMessagesGlobal();
+        }
+
+        function loadChatMessagesGlobal() {
+            let container = document.getElementById('chatMessages');
+            if (!container || !currentChatWithGlobal) return;
+            let messages = (userDataGlobal.chats && userDataGlobal.chats[currentChatWithGlobal]) ? userDataGlobal.chats[currentChatWithGlobal] : [];
+            container.innerHTML = '';
+            for (let msg of messages) {
+                let div = document.createElement('div');
+                div.className = 'message ' + (msg.from === currentUserGlobal ? 'sent' : 'received');
+                div.textContent = msg.text;
+                container.appendChild(div);
+            }
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function createConfetti() {
+            const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ffaa00', '#ff6600'];
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * window.innerWidth + 'px';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.width = Math.random() * 10 + 5 + 'px';
+                confetti.style.height = Math.random() * 10 + 5 + 'px';
+                confetti.style.animationDuration = Math.random() * 2 + 2 + 's';
+                confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 3000);
+            }
+        }
+        
+        function showAchievementNotification(title, desc, icon = '🏆') {
+            const notification = document.createElement('div');
+            notification.className = 'achievement-notification';
+            notification.innerHTML = `<div class="achievement-icon">${icon}</div><div class="achievement-title">${title}</div><div class="achievement-desc">${desc}</div>`;
+            document.body.appendChild(notification);
+            gameBox.classList.add('completed');
+            setTimeout(() => gameBox.classList.remove('completed'), 500);
+            createConfetti();
+            setTimeout(() => {
+                notification.style.animation = 'achievementUnlock 0.3s reverse';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+        
+        // ПРОВЕРКА ПОСТОЯННЫХ ЗАДАНИЙ
+        function checkPermanentTasks(user) {
+            const permanentTasks = [
+                { id: 'first_year', name: 'Поиграть впервые в "📅 Угадай год"', reward: '30', rewardType: 'tokens' },
+                { id: 'totalGames30', name: 'Сыграть в общем 30 игр', reward: 'color_pink', rewardType: 'colors', rewardData: ['#ffb7c5', '#ffc0cb', '#ffd1dc', '#ffe4e1'] },
+                { id: 'totalGames50', name: 'Сыграть в общем 50 игр', reward: 'banner_Britney0.1', rewardType: 'banner', rewardData: 'Britney0.1' },
+                { id: 'totalGames100', name: 'Сыграть в общем 100 игр', reward: '50', rewardType: 'tokens' },
+                { id: 'totalGames150', name: 'Сыграть в общем 150 игр', reward: '60', rewardType: 'tokens' },
+                { id: 'wins30', name: 'Набрать в общем 30 побед', reward: '30', rewardType: 'tokens' },
+                { id: 'wins50', name: 'Набрать в общем 50 побед', reward: 'color_green', rewardType: 'colors', rewardData: ['#90ee90', '#98fb98', '#7cfc00', '#32cd32'] },
+                { id: 'wins100', name: 'Набрать в общем 100 побед', reward: '30', rewardType: 'tokens' },
+                { id: 'wins150', name: 'Набрать в общем 150 побед', reward: '50', rewardType: 'tokens' },
+                { id: 'streak5', name: 'Набрать серию побед 5', reward: 'color_blue', rewardType: 'colors', rewardData: ['#87ceeb', '#87cefa', '#00bfff', '#1e90ff'] },
+                { id: 'streak10', name: 'Набрать серию побед 10', reward: 'banner_Marshmello0.2', rewardType: 'banner', rewardData: 'Marshmello0.2' },
+                { id: 'streak15', name: 'Набрать серию побед 15', reward: '50', rewardType: 'tokens' },
+                { id: 'streak20', name: 'Набрать серию побед 20', reward: '150', rewardType: 'tokens' },
+                { id: 'dailyTasks10', name: 'Выполнить 10 ежедневных заданий', reward: 'banner_Christina0.2', rewardType: 'banner', rewardData: 'Christina0.2' },
+                { id: 'dailyTasks15', name: 'Выполнить 15 ежедневных заданий', reward: '70', rewardType: 'tokens' },
+                { id: 'dailyTasks20', name: 'Выполнить 20 ежедневных заданий', reward: '150', rewardType: 'tokens' }
+            ];
+            
+            if (!user.completedTasks) user.completedTasks = [];
+            
+            for (const task of permanentTasks) {
+                if (user.completedTasks.includes(task.id)) continue;
+                
+                let completed = false;
+                
+                if (task.id === 'first_year' && user.stats.totalGamesPlayed >= 1) completed = true;
+                if (task.id === 'totalGames30' && user.stats.totalGamesPlayed >= 30) completed = true;
+                if (task.id === 'totalGames50' && user.stats.totalGamesPlayed >= 50) completed = true;
+                if (task.id === 'totalGames100' && user.stats.totalGamesPlayed >= 100) completed = true;
+                if (task.id === 'totalGames150' && user.stats.totalGamesPlayed >= 150) completed = true;
+                if (task.id === 'wins30' && user.stats.wins >= 30) completed = true;
+                if (task.id === 'wins50' && user.stats.wins >= 50) completed = true;
+                if (task.id === 'wins100' && user.stats.wins >= 100) completed = true;
+                if (task.id === 'wins150' && user.stats.wins >= 150) completed = true;
+                if (task.id === 'streak5' && user.streak >= 5) completed = true;
+                if (task.id === 'streak10' && user.streak >= 10) completed = true;
+                if (task.id === 'streak15' && user.streak >= 15) completed = true;
+                if (task.id === 'streak20' && user.streak >= 20) completed = true;
+                if (task.id === 'dailyTasks10' && user.dailyTasksCompletedCount >= 10) completed = true;
+                if (task.id === 'dailyTasks15' && user.dailyTasksCompletedCount >= 15) completed = true;
+                if (task.id === 'dailyTasks20' && user.dailyTasksCompletedCount >= 20) completed = true;
+                
+                if (completed) {
+                    user.completedTasks.push(task.id);
+                    
+                    if (task.rewardType === 'tokens') {
+                        user.tokens += parseInt(task.reward);
+                        showAchievementNotification(`🎉 ЗАДАНИЕ ВЫПОЛНЕНО!`, `${task.name} +${task.reward} жетонов`, '🏆');
+                    } else if (task.rewardType === 'colors') {
+                        if (!user.unlockedUsernameColors) user.unlockedUsernameColors = [];
+                        for (const color of task.rewardData) {
+                            if (!user.unlockedUsernameColors.includes(color)) {
+                                user.unlockedUsernameColors.push(color);
+                            }
+                        }
+                        showAchievementNotification(`🎉 ЗАДАНИЕ ВЫПОЛНЕНО!`, `${task.name} - открыты новые цвета!`, '🎨');
+                    } else if (task.rewardType === 'banner') {
+                        if (!user.unlockedBannerImages) user.unlockedBannerImages = [];
+                        if (!user.unlockedBannerImages.includes(task.rewardData)) {
+                            user.unlockedBannerImages.push(task.rewardData);
+                            showAchievementNotification(`🎉 ЗАДАНИЕ ВЫПОЛНЕНО!`, `${task.name} - открыт баннер!`, '🖼️');
+                        }
+                    }
+                }
+            }
+        }
+        
+        // ПРОВЕРКА ЕЖЕДНЕВНЫХ ЗАДАНИЙ
+        function checkDailyTasks(user, today, newCorrectCount) {
+            if (!user.dailyTasks) return false;
+            
+            let anyTaskCompleted = false;
+            
+            for (const task of user.dailyTasks) {
+                if (user.dailyTasksCompleted.includes(task.id)) continue;
+                
+                let isCompleted = false;
+                
+                if (task.id === 'year_3' && newCorrectCount >= 3) isCompleted = true;
+                else if (task.id === 'year_5' && newCorrectCount >= 5) isCompleted = true;
+                else if (task.id === 'year_7' && newCorrectCount >= 7) isCompleted = true;
+                else if (task.id === 'year_10' && newCorrectCount >= 10) isCompleted = true;
+                else if (task.id === 'year_13' && newCorrectCount >= 13) isCompleted = true;
+                else if (task.id === 'year_15' && newCorrectCount >= 15) isCompleted = true;
+                
+                if (isCompleted) {
+                    user.dailyTasksCompleted.push(task.id);
+                    user.tokens = (user.tokens || 100) + task.reward;
+                    anyTaskCompleted = true;
+                    showAchievementNotification(`✨ ЗАДАНИЕ ВЫПОЛНЕНО! ✨`, `${task.name}! +${task.reward} жетонов`, '📅');
+                }
+            }
+            
+            if (anyTaskCompleted) {
+                user.dailyTasksCompletedCount = (user.dailyTasksCompletedCount || 0) + 1;
+                checkPermanentTasks(user);
+            }
+            
+            return anyTaskCompleted;
+        }
+        
+        function updateUserStats(isCorrect, isWin, gameName, category) {
+            const currentUser = localStorage.getItem('lovechord_current_user');
+            if (!currentUser) return;
+            
+            const users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+            const user = users[currentUser];
+            if (!user) return;
+            
+            if (!user.stats) {
+                user.stats = { totalGamesPlayed: 0, totalCorrectAnswers: 0, totalWrongAnswers: 0, wins: 0 };
+            }
+            if (!user.tokens) user.tokens = 100;
+            if (!user.unlockedUsernameColors) user.unlockedUsernameColors = ['#ffffff', '#f5c4c4', '#e8a0a0'];
+            if (!user.unlockedBannerColors) user.unlockedBannerColors = ['#1e1e2f', '#2a2a3a', '#f5c4c4', '#e8a0a0'];
+            if (!user.unlockedBannerImages) user.unlockedBannerImages = ['Britney0.4'];
+            
+            user.stats.totalGamesPlayed++;
+            if (isCorrect) {
+                user.stats.totalCorrectAnswers++;
+                correctAnswersCount++;
+            } else {
+                user.stats.totalWrongAnswers++;
+            }
+            
+            if (isWin) {
+                user.stats.wins++;
+                user.streak = (user.streak || 0) + 1;
+                showAchievementNotification('🎉 ПОБЕДА! 🎉', `Вы завершили игру!`, '🏆');
+            } else if (isCorrect) {
+                user.streak = 0;
+            } else {
+                user.streak = 0;
+            }
+            
+            const today = new Date().toDateString();
+            if (!user.dailyProgress) user.dailyProgress = {};
+            if (!user.dailyProgress[today]) user.dailyProgress[today] = {};
+            
+            if (gameName === 'year') {
+                user.dailyProgress[today].year_correct = correctAnswersCount;
+            }
+            
+            checkPermanentTasks(user);
+            checkDailyTasks(user, today, correctAnswersCount);
+            
+            users[currentUser] = user;
+            localStorage.setItem('lovechord_users', JSON.stringify(users));
+            updateDailyTaskIndicator();
+        }
+        
+        function updateDailyTaskIndicator() {
+            const currentUser = localStorage.getItem('lovechord_current_user');
+            if (!currentUser) {
+                taskStatusSpan.textContent = 'Войти в профиль';
+                return;
+            }
+            
+            const users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+            const user = users[currentUser];
+            if (!user) {
+                taskStatusSpan.textContent = 'Войти в профиль';
+                return;
+            }
+            
+            const today = new Date().toDateString();
+            const currentCorrect = user.dailyProgress?.[today]?.year_correct || 0;
+            
+            let activeTask = null;
+            let activeTarget = null;
+            
+            if (user.dailyTasks) {
+                const targets = [3, 5, 7, 10, 13, 15];
+                for (const target of targets) {
+                    const taskId = `year_${target}`;
+                    const taskExists = user.dailyTasks.some(t => t.id === taskId);
+                    const taskCompleted = user.dailyTasksCompleted?.includes(taskId) || false;
+                    
+                    if (taskExists && !taskCompleted) {
+                        activeTarget = target;
+                        activeTask = taskId;
+                        break;
+                    }
+                }
+            }
+            
+            const indicator = document.getElementById('dailyTaskIndicator');
+            
+            if (!activeTask) {
+                taskStatusSpan.innerHTML = '✅ Задания выполнены!';
+                indicator.classList.add('completed');
+            } else {
+                taskStatusSpan.innerHTML = `📅 Угадай год ${activeTarget} раз: ${currentCorrect}/${activeTarget}`;
+                indicator.classList.remove('completed');
+            }
+        }
+        
+        function loadRecords() {
+            const savedPersonal = localStorage.getItem('sonchiks_year_personal_best');
+            if (savedPersonal) {
+                const data = JSON.parse(savedPersonal);
+                personalBest.english = data.english || 0;
+                personalBest.russian = data.russian || 0;
+                personalBest.kpop = data.kpop || 0;
+                personalBest.dateEnglish = data.dateEnglish || null;
+                personalBest.dateRussian = data.dateRussian || null;
+                personalBest.dateKpop = data.dateKpop || null;
+            }
+            
+            const savedGlobal = localStorage.getItem('sonchiks_year_global_best');
+            if (savedGlobal) {
+                const data = JSON.parse(savedGlobal);
+                globalBest.english = data.english || 0;
+                globalBest.russian = data.russian || 0;
+                globalBest.kpop = data.kpop || 0;
+                globalBest.dateEnglish = data.dateEnglish || null;
+                globalBest.dateRussian = data.dateRussian || null;
+                globalBest.dateKpop = data.dateKpop || null;
+            }
+            updateRecordsDisplay();
+        }
+        
+        function saveRecords() {
+            const personalData = {
+                english: personalBest.english,
+                russian: personalBest.russian,
+                kpop: personalBest.kpop,
+                dateEnglish: personalBest.dateEnglish,
+                dateRussian: personalBest.dateRussian,
+                dateKpop: personalBest.dateKpop
+            };
+            const globalData = {
+                english: globalBest.english,
+                russian: globalBest.russian,
+                kpop: globalBest.kpop,
+                dateEnglish: globalBest.dateEnglish,
+                dateRussian: globalBest.dateRussian,
+                dateKpop: globalBest.dateKpop
+            };
+            localStorage.setItem('sonchiks_year_personal_best', JSON.stringify(personalData));
+            localStorage.setItem('sonchiks_year_global_best', JSON.stringify(globalData));
+        }
+        
+        function formatTimeAgo(timestamp) {
+            const now = Date.now();
+            const diff = now - timestamp;
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+            
+            if (days > 0) return `${days} ${days === 1 ? 'день' : days < 5 ? 'дня' : 'дней'} назад`;
+            if (hours > 0) return `${hours} ${hours === 1 ? 'час' : hours < 5 ? 'часа' : 'часов'} назад`;
+            if (minutes > 0) return `${minutes} ${minutes === 1 ? 'минуту' : minutes < 5 ? 'минуты' : 'минут'} назад`;
+            return "только что";
+        }
+        
+        function updateRecordsDisplay() {
+            let personalScore = 0, globalScore = 0, personalDate = null, globalDate = null;
+            let categoryLabel = "";
+            
+            if (currentCategory === 'english') {
+                personalScore = personalBest.english;
+                globalScore = globalBest.english;
+                personalDate = personalBest.dateEnglish;
+                globalDate = globalBest.dateEnglish;
+                categoryLabel = "английские";
+            } else if (currentCategory === 'russian') {
+                personalScore = personalBest.russian;
+                globalScore = globalBest.russian;
+                personalDate = personalBest.dateRussian;
+                globalDate = globalBest.dateRussian;
+                categoryLabel = "русские";
+            } else if (currentCategory === 'kpop') {
+                personalScore = personalBest.kpop;
+                globalScore = globalBest.kpop;
+                personalDate = personalBest.dateKpop;
+                globalDate = globalBest.dateKpop;
+                categoryLabel = "к-поп";
+            }
+            
+            personalBestScoreSpan.textContent = personalScore;
+            globalBestScoreSpan.textContent = globalScore;
+            personalRecordLabel.textContent = categoryLabel;
+            globalRecordLabel.textContent = categoryLabel;
+            
+            if (personalDate) personalBestDateSpan.textContent = formatTimeAgo(personalDate);
+            else personalBestDateSpan.textContent = "—";
+            if (globalDate) globalBestDateSpan.textContent = formatTimeAgo(globalDate);
+            else globalBestDateSpan.textContent = "—";
+        }
+        
+        function checkAndUpdateRecords(scoreToCheck) {
+            let updated = false;
+            let recordMessage = "";
+            
+            if (currentCategory === 'english') {
+                if (scoreToCheck > personalBest.english) {
+                    personalBest.english = scoreToCheck;
+                    personalBest.dateEnglish = Date.now();
+                    updated = true;
+                    recordMessage = "🎉 НОВЫЙ ЛИЧНЫЙ РЕКОРД! 🎉";
+                    showAchievementNotification('ЛИЧНЫЙ РЕКОРД!', `Вы набрали ${scoreToCheck} очков в английских!`, '🏆');
+                }
+                if (scoreToCheck > globalBest.english) {
+                    globalBest.english = scoreToCheck;
+                    globalBest.dateEnglish = Date.now();
+                    updated = true;
+                    showAchievementNotification('МИРОВОЙ РЕКОРД!', `Непобедимый чемпион! ${scoreToCheck} очков в английских!`, '🌍');
+                }
+            } else if (currentCategory === 'russian') {
+                if (scoreToCheck > personalBest.russian) {
+                    personalBest.russian = scoreToCheck;
+                    personalBest.dateRussian = Date.now();
+                    updated = true;
+                    recordMessage = "🎉 НОВЫЙ ЛИЧНЫЙ РЕКОРД! 🎉";
+                    showAchievementNotification('ЛИЧНЫЙ РЕКОРД!', `Вы набрали ${scoreToCheck} очков в русских!`, '🏆');
+                }
+                if (scoreToCheck > globalBest.russian) {
+                    globalBest.russian = scoreToCheck;
+                    globalBest.dateRussian = Date.now();
+                    updated = true;
+                    showAchievementNotification('МИРОВОЙ РЕКОРД!', `Непобедимый чемпион! ${scoreToCheck} очков в русских!`, '🌍');
+                }
+            } else if (currentCategory === 'kpop') {
+                if (scoreToCheck > personalBest.kpop) {
+                    personalBest.kpop = scoreToCheck;
+                    personalBest.dateKpop = Date.now();
+                    updated = true;
+                    recordMessage = "🎉 НОВЫЙ ЛИЧНЫЙ РЕКОРД! 🎉";
+                    showAchievementNotification('ЛИЧНЫЙ РЕКОРД!', `Вы набрали ${scoreToCheck} очков в к-поп!`, '🏆');
+                }
+                if (scoreToCheck > globalBest.kpop) {
+                    globalBest.kpop = scoreToCheck;
+                    globalBest.dateKpop = Date.now();
+                    updated = true;
+                    showAchievementNotification('МИРОВОЙ РЕКОРД!', `Непобедимый чемпион! ${scoreToCheck} очков в к-поп!`, '🌍');
+                }
+            }
+            
+            if (updated) {
+                saveRecords();
+                updateRecordsDisplay();
+                if (recordMessage && !recordMessage.includes('ЛИЧНЫЙ')) {
+                    resultMessage.innerHTML += `<br><br>${recordMessage}`;
+                }
+            }
+        }
+        
+        function switchCategory(category) {
+            currentCategory = category;
+            correctAnswersCount = 0;
+            if (category === 'english') {
+                currentSongs = shuffleArray([...englishSongs]);
+                mainTitle.innerHTML = '📅 Угадай год выпуска (Английские) 🎵';
+            } else if (category === 'russian') {
+                currentSongs = shuffleArray([...russianSongs]);
+                mainTitle.innerHTML = '📅 Угадай год выпуска (Русские) 🎵';
+            } else if (category === 'kpop') {
+                currentSongs = shuffleArray([...kpopSongs]);
+                mainTitle.innerHTML = '📅 Угадай год выпуска (К-поп) 🎵';
+            }
+            currentIndex = 0;
+            currentScore = 0;
+            scoreSpan.textContent = currentScore;
+            gameActive = true;
+            canAnswer = true;
+            updateRecordsDisplay();
+            loadQuestion();
+        }
+        
+        function generateYearOptions(correctYear) {
+            const options = [correctYear];
+            while (options.length < 3) {
+                const randomYear = Math.floor(Math.random() * (2026 - 1960 + 1)) + 1960;
+                if (!options.includes(randomYear)) options.push(randomYear);
+            }
+            for (let i = options.length - 1; i > 0; i--) {
+                let j = Math.floor(Math.random() * (i + 1));
+                [options[i], options[j]] = [options[j], options[i]];
+            }
+            return options;
+        }
+        
+        async function fetchAlbumCover(artist, title) {
+            loadingText.textContent = "🔍 Ищем обложку...";
+            try {
+                const searchUrl = `https://ws.audioscrobbler.com/2.0/?method=track.getInfo&api_key=${LASTFM_API_KEY}&artist=${encodeURIComponent(artist)}&track=${encodeURIComponent(title)}&format=json`;
+                const response = await fetch(searchUrl);
+                const data = await response.json();
+                if (data && data.track && data.track.album && data.track.album.image) {
+                    const images = data.track.album.image;
+                    let coverUrl = null;
+                    for (let img of images) {
+                        if (img.size === "extralarge" && img["#text"]) {
+                            coverUrl = img["#text"];
+                            break;
+                        }
+                    }
+                    if (!coverUrl) coverUrl = images.find(img => img.size === "large")?.["#text"];
+                    if (!coverUrl) coverUrl = images.find(img => img["#text"])?.["#text"];
+                    if (coverUrl && coverUrl !== "") {
+                        songPhoto.src = coverUrl;
+                        songPhoto.onload = () => {
+                            songPhoto.style.display = "block";
+                            photoPlaceholder.style.display = "none";
+                            loadingText.style.display = "none";
+                        };
+                        songPhoto.onerror = () => {
+                            loadingText.textContent = "❌ Обложка не найдена";
+                            loadingText.style.color = "#ff8888";
+                        };
+                        return;
+                    }
+                }
+                loadingText.textContent = "📷 Обложка не найдена";
+                loadingText.style.color = "#aaa";
+            } catch (error) {
+                loadingText.textContent = "⚠️ Ошибка загрузки";
+                loadingText.style.color = "#ff8888";
+            }
+        }
+        
+        function resetGameState() {
+            if (currentCategory === 'english') currentSongs = shuffleArray([...englishSongs]);
+            else if (currentCategory === 'russian') currentSongs = shuffleArray([...russianSongs]);
+            else if (currentCategory === 'kpop') currentSongs = shuffleArray([...kpopSongs]);
+            currentIndex = 0;
+            currentScore = 0;
+            correctAnswersCount = 0;
+            scoreSpan.textContent = currentScore;
+            canAnswer = true;
+            gameActive = true;
+        }
+        
+        async function loadQuestion() {
+            if (!gameActive) return;
+            canAnswer = true;
+            resultMessage.innerHTML = "";
+            resultMessage.className = "result-message";
+            nextBtn.style.display = "none";
+            songPhoto.style.display = "none";
+            photoPlaceholder.style.display = "block";
+            loadingText.style.display = "block";
+            loadingText.textContent = "🔍 Загрузка обложки...";
+            optionsContainer.innerHTML = "";
+            const song = currentSongs[currentIndex];
+            songTitle.textContent = song.title;
+            songArtist.textContent = song.artist;
+            const yearOptions = generateYearOptions(song.year);
+            yearOptions.forEach(year => {
+                const btn = document.createElement('button');
+                btn.textContent = year;
+                btn.className = 'year-btn';
+                btn.onclick = () => checkAnswer(year, song.year, btn, song.title);
+                optionsContainer.appendChild(btn);
+            });
+            await fetchAlbumCover(song.artist, song.title);
+        }
+        
+        function checkAnswer(selectedYear, correctYear, buttonElement, songName) {
+            if (!canAnswer || !gameActive) return;
+            canAnswer = false;
+            const allButtons = document.querySelectorAll('.year-btn');
+            allButtons.forEach(btn => btn.classList.add('disabled'));
+            const isCorrect = selectedYear === correctYear;
+            
+            if (isCorrect) {
+                currentScore++;
+                scoreSpan.textContent = currentScore;
+                updateUserStats(true, false, 'year', currentCategory);
+                resultMessage.innerHTML = `✅ ПРАВИЛЬНО! Песня "${songName}" вышла в ${correctYear} году! +1 очко ✅`;
+                resultMessage.className = "result-message correct";
+                buttonElement.style.background = "#00aa44";
+                buttonElement.style.color = "white";
+                nextBtn.style.display = "block";
+            } else {
+                updateUserStats(false, false, 'year', currentCategory);
+                checkAndUpdateRecords(currentScore);
+                resultMessage.innerHTML = `❌ НЕПРАВИЛЬНО! Песня "${songName}" вышла в ${correctYear} году, а не в ${selectedYear} ❌<br><br>Игра начинается заново!`;
+                resultMessage.className = "result-message wrong";
+                buttonElement.style.background = "#aa0044";
+                buttonElement.style.color = "white";
+                allButtons.forEach(btn => {
+                    if (parseInt(btn.textContent) === correctYear) {
+                        btn.style.background = "#00aa44";
+                        btn.style.color = "white";
+                    }
+                });
+                gameActive = false;
+                resetGameState();
+                setTimeout(() => {
+                    gameActive = true;
+                    loadQuestion();
+                }, 2000);
+                return;
+            }
+        }
+        
+        function nextQuestion() {
+            currentIndex++;
+            if (currentIndex >= currentSongs.length) {
+                updateUserStats(true, true, 'year', currentCategory);
+                checkAndUpdateRecords(currentScore);
+                resultMessage.innerHTML = `🎉 ИГРА ОКОНЧЕНА! 🎉<br><br>Твой счёт: ${currentScore} из ${currentSongs.length}<br><br>🔄 Нажми "Начать заново", чтобы сыграть снова!`;
+                resultMessage.className = "result-message correct";
+                optionsContainer.innerHTML = "";
+                nextBtn.style.display = "none";
+                songTitle.textContent = "Игра окончена!";
+                songArtist.textContent = "Нажмите 'Начать заново'";
+                photoPlaceholder.style.display = "block";
+                photoPlaceholder.textContent = "🏆";
+                loadingText.style.display = "none";
+                gameActive = false;
+                return;
+            }
+            loadQuestion();
+        }
+        
+        function resetGame() {
+            if (gameActive && currentScore > 0) checkAndUpdateRecords(currentScore);
+            resetGameState();
+            gameActive = true;
+            loadQuestion();
+        }
+        
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                let j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+        
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('sonchiks_theme');
+            if (savedTheme === 'light') document.body.classList.add('light-theme');
+            else document.body.classList.remove('light-theme');
+        }
+        
+        function toggleTheme() {
+            if (document.body.classList.contains('light-theme')) {
+                document.body.classList.remove('light-theme');
+                localStorage.setItem('sonchiks_theme', 'dark');
+            } else {
+                document.body.classList.add('light-theme');
+                localStorage.setItem('sonchiks_theme', 'light');
+            }
+        }
+
+        function loadProfileIcon() {
+            const currentUser = localStorage.getItem('lovechord_current_user');
+            const users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+            
+            if (currentUser && users[currentUser]) {
+                const icon = document.getElementById('profileIcon');
+                if (users[currentUser].avatar) {
+                    icon.innerHTML = `<img src="${users[currentUser].avatar}" alt="avatar">`;
+                } else {
+                    icon.innerHTML = users[currentUser].username.charAt(0).toUpperCase();
+                    icon.style.fontSize = '24px';
+                    icon.style.fontWeight = 'bold';
+                }
+            }
+        }
+
+        // Экспорт функций в глобальную область
+        window.openSearchModal = openSearchModal;
+        window.closeSearchModal = closeSearchModal;
+        window.searchUsers = searchUsers;
+        window.viewProfileGlobal = viewProfileGlobal;
+        window.toggleNotifications = toggleNotificationsGlobal;
+        window.closeChat = closeChatGlobal;
+        window.sendMessage = sendMessageGlobal;
+        window.toggleTheme = toggleTheme;
+        
+        loadProfileIcon();
+        loadTheme();
+        loadRecords();
+        loadGlobalUserData();
+        updateDailyTaskIndicator();
+        currentSongs = shuffleArray([...englishSongs]);
+        gameActive = true;
+        loadQuestion();
+        
+        // Обновление чата каждую секунду
+        setInterval(() => { if (currentChatWithGlobal) loadChatMessagesGlobal(); }, 1000);
+    </script>
+</body>
+</html>

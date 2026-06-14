@@ -1,0 +1,1221 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>LoveChord - Музыкальная викторина</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap');
+        
+        :root {
+            --bg-body: #1e1e2f;
+            --bg-game-box: #2a2a3a;
+            --bg-card: #1e1e2f;
+            --text-primary: white;
+            --text-secondary: #aaa;
+            --btn-bg: #f5c4c4;
+            --btn-hover: #e8a0a0;
+            --btn-text: #333;
+            --border-color: #f5c4c4;
+            --accent: #ffcc00;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            text-align: center;
+            background: var(--bg-body);
+            color: var(--text-primary);
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background 0.3s, color 0.3s;
+        }
+        
+        body.light-theme {
+            --bg-body: #ffe4e1;
+            --bg-game-box: #ffd6d6;
+            --bg-card: #ffebeb;
+            --text-primary: #333;
+            --text-secondary: #666;
+            --btn-bg: #2a2a3a;
+            --btn-hover: #3a3a4a;
+            --btn-text: #f5c4c4;
+            --border-color: #2a2a3a;
+            --accent: #ff6b6b;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+        
+        @keyframes glow {
+            0% { box-shadow: 0 0 5px var(--btn-bg); }
+            50% { box-shadow: 0 0 20px var(--btn-bg); }
+            100% { box-shadow: 0 0 5px var(--btn-bg); }
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Размытые светящиеся шарики */
+        .light-particle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 999;
+            user-select: none;
+            background: radial-gradient(circle, rgba(255,200,220,0.8), rgba(255,160,180,0.4));
+            border-radius: 50%;
+            filter: blur(3px);
+            animation: floatLight 6s ease-in-out infinite;
+        }
+        
+        body.light-theme .light-particle {
+            background: radial-gradient(circle, rgba(255,180,200,0.7), rgba(255,140,160,0.3));
+        }
+        
+        @keyframes floatLight {
+            0% {
+                transform: translateY(-10vh) scale(0.5);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.5;
+            }
+            50% {
+                opacity: 0.7;
+            }
+            90% {
+                opacity: 0.3;
+            }
+            100% {
+                transform: translateY(100vh) scale(1.2);
+                opacity: 0;
+            }
+        }
+        
+        .LoveChord-container {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            text-align: center;
+            z-index: 1000;
+        }
+        
+        .LoveChord-btn {
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: none;
+            padding: 10px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.3s;
+            display: block;
+            text-align: center;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .LoveChord-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .LoveChord-btn:hover::before {
+            left: 100%;
+        }
+        
+        .LoveChord-btn:hover {
+            background: var(--btn-hover);
+            transform: scale(1.05);
+        }
+        
+        .LoveChord-main {
+            display: block;
+            font-size: 20px;
+            font-weight: 800;
+            font-family: 'Montserrat', sans-serif;
+            letter-spacing: 2px;
+            font-variant: small-caps;
+        }
+        
+        .about-songs {
+            display: block;
+            font-size: 9px;
+            text-decoration: none;
+            margin-top: 3px;
+            font-weight: normal;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .profile-icon {
+            position: fixed;
+            top: 20px;
+            right: 80px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: 2px solid var(--border-color);
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            z-index: 1000;
+            overflow: hidden;
+        }
+        
+        .profile-icon:hover {
+            transform: scale(1.1);
+            background: var(--btn-hover);
+            animation: glow 0.5s ease;
+        }
+        
+        .profile-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .search-icon {
+            position: fixed;
+            top: 20px;
+            right: 140px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: 2px solid var(--border-color);
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            z-index: 1000;
+        }
+        .search-icon:hover { transform: scale(1.1); background: var(--btn-hover); animation: glow 0.5s ease; }
+        
+        .notification-icon {
+            position: fixed;
+            top: 20px;
+            right: 200px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: 2px solid var(--border-color);
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            z-index: 1000;
+        }
+        .notification-icon:hover { transform: scale(1.1); background: var(--btn-hover); animation: glow 0.5s ease; }
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff4444;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .theme-toggle-bottom {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: none;
+            padding: 10px 18px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 16px;
+            font-weight: 600;
+            z-index: 1000;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .theme-toggle-bottom:hover {
+            background: var(--btn-hover);
+            transform: scale(1.05);
+        }
+        
+        .nav-menu {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 30px;
+            margin-top: 60px;
+            z-index: 1000;
+            position: relative;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+            padding-bottom: 10px;
+            cursor: grab;
+        }
+        
+        .nav-menu:active {
+            cursor: grabbing;
+        }
+        
+        .nav-menu::-webkit-scrollbar {
+            height: 5px;
+        }
+        
+        .nav-menu::-webkit-scrollbar-track {
+            background: var(--bg-game-box);
+            border-radius: 10px;
+        }
+        
+        .nav-menu::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 10px;
+        }
+        
+        .nav-menu::-webkit-scrollbar-thumb:hover {
+            background: var(--btn-hover);
+        }
+        
+        .nav-btn {
+            background: var(--bg-game-box);
+            border: 2px solid var(--border-color);
+            padding: 10px 20px;
+            font-size: 14px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.2s;
+            color: var(--border-color);
+            font-weight: 600;
+            font-family: 'Montserrat', sans-serif;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        
+        .nav-btn:hover:not(.active) {
+            background: var(--btn-bg);
+            color: var(--btn-text);
+        }
+        
+        .nav-btn.active {
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            cursor: default;
+            opacity: 0.7;
+        }
+        
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            position: relative;
+            z-index: 1000;
+            animation: slideIn 0.8s ease-out;
+        }
+        
+        .brand-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 72px;
+            letter-spacing: 5px;
+            text-shadow: 3px 3px 8px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+            font-variant: small-caps;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ffb7c5, #ff69b4, #ff1493);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 50px;
+            font-size: 16px;
+            font-family: 'Montserrat', sans-serif;
+            letter-spacing: 3px;
+            font-variant: small-caps;
+        }
+        
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .menu-btn {
+            background: linear-gradient(135deg, var(--bg-game-box), var(--bg-card));
+            border: 1px solid var(--border-color);
+            padding: 20px 30px;
+            font-size: 16px;
+            margin: 0;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s;
+            color: var(--text-primary);
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-family: 'Montserrat', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .menu-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s;
+        }
+        
+        .menu-btn:hover::before {
+            left: 100%;
+        }
+        
+        .menu-btn:hover {
+            transform: translateY(-5px);
+            border-color: var(--btn-bg);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        .menu-btn .emoji {
+            font-size: 24px;
+            transition: transform 0.3s;
+        }
+        
+        .menu-btn:hover .emoji {
+            transform: scale(1.1);
+        }
+        
+        .divider {
+            margin: 80px 0 0 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .divider-line {
+            width: 60%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--btn-bg), #ff69b4, var(--btn-bg), transparent);
+            border-radius: 3px;
+            animation: glow 3s infinite;
+        }
+        
+        .whats-new {
+            max-width: 700px;
+            margin: 50px auto 30px;
+            background: var(--bg-card);
+            border-radius: 30px;
+            padding: 30px 35px;
+            border: 1px solid var(--border-color);
+            text-align: left;
+            transition: all 0.3s;
+        }
+        
+        .whats-new:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+        
+        .whats-new-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 20px;
+            text-align: center;
+            font-variant: small-caps;
+            letter-spacing: 2px;
+        }
+        
+        .whats-new-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .whats-new-item {
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(var(--border-color), 0.2);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            transition: all 0.3s;
+        }
+        
+        .whats-new-item:hover {
+            transform: translateX(5px);
+        }
+        
+        .whats-new-item:last-child {
+            border-bottom: none;
+        }
+        
+        .whats-new-bullet {
+            font-size: 28px;
+            min-width: 45px;
+            text-align: center;
+        }
+        
+        .whats-new-text {
+            flex: 1;
+            font-size: 15px;
+            line-height: 1.5;
+            color: var(--text-primary);
+        }
+        
+        .whats-new-link {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        
+        .whats-new-link:hover {
+            color: var(--btn-hover);
+            text-decoration: underline;
+        }
+        
+        .promo-code-highlight {
+            background: linear-gradient(135deg, #ffcc00, #ffaa00);
+            color: #333;
+            padding: 4px 14px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-family: monospace;
+            font-size: 14px;
+            cursor: pointer;
+            display: inline-block;
+            margin-left: 8px;
+            transition: 0.3s;
+        }
+        
+        .promo-code-highlight:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, #ffdd33, #ffbb22);
+            box-shadow: 0 2px 10px rgba(255,204,0,0.3);
+        }
+        
+        .footer {
+            margin-top: 60px;
+            margin-bottom: 30px;
+            padding: 30px 20px;
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+            background: rgba(0,0,0,0.2);
+            border-radius: 20px;
+        }
+        
+        .footer-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 12px;
+            letter-spacing: 2px;
+            font-variant: small-caps;
+        }
+        
+        .footer-email {
+            font-size: 16px;
+            color: var(--text-primary);
+            background: rgba(255,255,255,0.05);
+            display: inline-block;
+            padding: 10px 25px;
+            border-radius: 50px;
+            transition: all 0.3s;
+        }
+        
+        .footer-email a {
+            color: var(--btn-bg);
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        
+        .footer-email a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+        
+        .footer-email:hover {
+            background: rgba(255,255,255,0.1);
+            transform: scale(1.02);
+        }
+        
+        .footer-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+        
+        .vpn-notice {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #ff6b6b, #c44c4c);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'Montserrat', sans-serif;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(5px);
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        
+        .vpn-notice:hover {
+            transform: translateX(-50%) scale(1.02);
+            background: linear-gradient(135deg, #ff8888, #dd6666);
+        }
+        
+        .vpn-notice .vpn-icon {
+            font-size: 20px;
+        }
+        
+        .vpn-notice .vpn-text {
+            letter-spacing: 0.5px;
+        }
+        
+        .vpn-notice .close-vpn {
+            background: rgba(0,0,0,0.3);
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        
+        .vpn-notice .close-vpn:hover {
+            background: rgba(0,0,0,0.5);
+        }
+        
+        .search-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--bg-game-box);
+            border: 2px solid var(--border-color);
+            border-radius: 20px;
+            padding: 30px;
+            z-index: 2000;
+            width: 90%;
+            max-width: 500px;
+        }
+        .search-modal.show { display: block; }
+        .search-input { width: 100%; padding: 12px; border-radius: 30px; border: 2px solid var(--border-color); background: var(--bg-body); color: var(--text-primary); font-family: 'Montserrat', sans-serif; font-size: 16px; margin-bottom: 20px; }
+        .search-results { max-height: 300px; overflow-y: auto; }
+        .search-result-item { padding: 10px; margin: 5px 0; background: var(--bg-card); border-radius: 15px; cursor: pointer; transition: 0.2s; }
+        .search-result-item:hover { background: var(--bg-game-box); transform: scale(1.02); }
+        .close-modal { background: var(--btn-bg); border: none; padding: 10px 20px; border-radius: 30px; cursor: pointer; margin-top: 15px; }
+        
+        .notification-panel {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            width: 300px;
+            background: var(--bg-game-box);
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            z-index: 2000;
+            display: none;
+        }
+        .notification-panel.show { display: block; }
+        .notification-item {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+        .notification-item:hover { background: var(--bg-card); }
+        .notification-actions { display: flex; gap: 10px; margin-top: 8px; }
+        .notif-accept, .notif-reject { padding: 5px 12px; border-radius: 20px; border: none; cursor: pointer; font-size: 12px; }
+        .notif-accept { background: #00aa44; color: white; }
+        .notif-reject { background: #aa0044; color: white; }
+        
+        .chat-modal {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 350px;
+            height: 450px;
+            background: var(--bg-game-box);
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            z-index: 2000;
+            flex-direction: column;
+        }
+        .chat-modal.show { display: flex; }
+        .chat-header {
+            padding: 12px;
+            background: var(--bg-card);
+            border-radius: 13px 13px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chat-messages {
+            flex: 1;
+            padding: 12px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .message {
+            max-width: 80%;
+            padding: 8px 12px;
+            border-radius: 15px;
+        }
+        .message.sent { background: var(--accent); color: #333; align-self: flex-end; }
+        .message.received { background: var(--bg-card); align-self: flex-start; }
+        .chat-input-area { display: flex; padding: 12px; gap: 8px; border-top: 1px solid var(--border-color); }
+        .chat-input { flex: 1; padding: 8px; border-radius: 20px; border: 1px solid var(--border-color); background: var(--bg-body); color: var(--text-primary); }
+        .chat-send { background: var(--btn-bg); border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div id="lightContainer"></div>
+
+    <div class="LoveChord-container">
+        <div class="LoveChord-btn" onclick="window.location.href='index.html'">
+            <span class="LoveChord-main">LoveChord</span>
+            <span class="about-songs">все о песнях*</span>
+        </div>
+    </div>
+
+    <div class="profile-icon" id="profileIcon" onclick="window.location.href='profile.html'">
+        👤
+    </div>
+
+    <div class="search-icon" onclick="openSearchModal()">🔍</div>
+    <div class="notification-icon" id="notificationIcon" onclick="toggleNotifications()">
+        🔔
+        <span id="notificationBadge" class="notification-badge" style="display: none;">0</span>
+    </div>
+
+    <div class="nav-menu">
+        <button class="nav-btn active" onclick="window.location.href='index.html'">🏠 Главная</button>
+        <button class="nav-btn" onclick="window.location.href='game.html'">🎤 Угадай автора музыки</button>
+        <button class="nav-btn" onclick="window.location.href='photo-game.html'">📸 Угадай автора по фото</button>
+        <button class="nav-btn" onclick="window.location.href='popular-game.html'">📊 Какая песня популярней</button>
+        <button class="nav-btn" onclick="window.location.href='favorite-game.html'">❤️ Выбери любимую песню</button>
+        <button class="nav-btn" onclick="window.location.href='year-game.html'">📅 Угадай год</button>
+        <button class="nav-btn" onclick="window.location.href='who-wrote-game.html'">✍️ Кто написал...</button>
+        <button class="nav-btn" onclick="window.location.href='emoji-game.html'">😊 Угадай по эмодзи</button>
+        <button class="nav-btn" onclick="window.location.href='lyrics-game.html'">📝 Угадай по тексту</button>
+    </div>
+
+    <div class="main-content">
+        <div class="brand-title">🎵 LoveChord 🎵</div>
+        <div class="subtitle">Музыкальная викторина</div>
+        
+        <div class="menu-grid">
+            <button class="menu-btn" onclick="window.location.href='game.html'">
+                <span class="emoji">🎤</span> Угадай автора музыки
+            </button>
+            <button class="menu-btn" onclick="window.location.href='photo-game.html'">
+                <span class="emoji">📸</span> Угадай автора по фото
+            </button>
+            <button class="menu-btn" onclick="window.location.href='popular-game.html'">
+                <span class="emoji">📊</span> Какая песня популярней
+            </button>
+            <button class="menu-btn" onclick="window.location.href='favorite-game.html'">
+                <span class="emoji">❤️</span> Выбери любимую песню
+            </button>
+            <button class="menu-btn" onclick="window.location.href='year-game.html'">
+                <span class="emoji">📅</span> Угадай год выпуска
+            </button>
+            <button class="menu-btn" onclick="window.location.href='who-wrote-game.html'">
+                <span class="emoji">✍️</span> Кто написал песню
+            </button>
+            <button class="menu-btn" onclick="window.location.href='emoji-game.html'">
+                <span class="emoji">😊</span> Угадай по эмодзи
+            </button>
+            <button class="menu-btn" onclick="window.location.href='lyrics-game.html'">
+                <span class="emoji">📝</span> Угадай песню по тексту
+            </button>
+        </div>
+    </div>
+
+    <div class="divider">
+        <div class="divider-line"></div>
+    </div>
+
+    <div class="whats-new">
+        <div class="whats-new-title">✨ ЧТО НОВОГО? ✨</div>
+        <ul class="whats-new-list">
+            <li class="whats-new-item">
+                <span class="whats-new-bullet">🎮</span>
+                <span class="whats-new-text">
+                    Новые мини-игры: 
+                    <span class="whats-new-link" onclick="window.location.href='who-wrote-game.html'">"✍️ Кто написал..."</span>, 
+                    <span class="whats-new-link" onclick="window.location.href='emoji-game.html'">"😊 Угадай по эмодзи"</span>, 
+                    <span class="whats-new-link" onclick="window.location.href='lyrics-game.html'">"📝 Угадай по тексту"</span>
+                </span>
+            </li>
+            <li class="whats-new-item">
+                <span class="whats-new-bullet">🛒</span>
+                <span class="whats-new-text">
+                    Новый товар в магазине: 
+                    <span class="whats-new-link" onclick="window.location.href='profile-dashboard.html?tab=shop'">"Пользовательский баннер"</span>
+                </span>
+            </li>
+            <li class="whats-new-item">
+                <span class="whats-new-bullet">🔍</span>
+                <span class="whats-new-text">
+                    Новая система 
+                    <span class="whats-new-link" onclick="openSearchModal()">поиска пользователей</span>
+                </span>
+            </li>
+            <li class="whats-new-item">
+                <span class="whats-new-bullet">👥</span>
+                <span class="whats-new-text">
+                    Вкладка 
+                    <span class="whats-new-link" onclick="location.href='profile-dashboard.html?tab=friends'">"Друзья"</span> в профиле
+                </span>
+            </li>
+            <li class="whats-new-item">
+                <span class="whats-new-bullet">🏆</span>
+                <span class="whats-new-text">
+                    Вкладка 
+                    <span class="whats-new-link" onclick="location.href='profile-dashboard.html?tab=achievements'">"Достижения"</span> в профиле
+                </span>
+            </li>
+            <li class="whats-new-item">
+                <span class="whats-new-bullet">🎁</span>
+                <span class="whats-new-text">
+                    Вкладка 
+                    <span class="whats-new-link" onclick="location.href='profile-dashboard.html?tab=promo'">"Промокоды"</span> в профиле
+                </span>
+            </li>
+            <li class="whats-new-item">
+                <span class="whats-new-bullet">💎</span>
+                <span class="whats-new-text">
+                    Новый промокод 
+                    <span class="promo-code-highlight" onclick="applyPromoCode()">Creator2009</span> дающий 1000 жетонов!
+                </span>
+            </li>
+        </ul>
+    </div>
+
+    <div class="footer">
+        <div class="footer-icon">📧</div>
+        <div class="footer-title">ОБРАТНАЯ СВЯЗЬ</div>
+        <div class="footer-email">
+            По всем вопросам пишите на почту создателя: 
+            <a href="mailto:savsav2102@gmail.com">savsav2102@gmail.com</a>
+        </div>
+    </div>
+
+    <div class="vpn-notice" id="vpnNotice">
+        <div class="vpn-icon">🛡️</div>
+        <div class="vpn-text">При использовании нашего сайта рекомендуется выключить ВПН, для корректной работы сайта</div>
+        <div class="close-vpn" onclick="event.stopPropagation(); closeVpnNotice()">✕</div>
+    </div>
+
+    <div id="searchModal" class="search-modal">
+        <h3>🔍 Поиск игроков</h3>
+        <input type="text" id="searchInput" class="search-input" placeholder="Введите никнейм..." onkeyup="searchUsers()">
+        <div id="searchResults" class="search-results"></div>
+        <button class="close-modal" onclick="closeSearchModal()">Закрыть</button>
+    </div>
+
+    <div id="notificationPanel" class="notification-panel">
+        <h4 style="padding: 12px;">Уведомления</h4>
+        <div id="notificationsList"></div>
+    </div>
+
+    <div id="chatModal" class="chat-modal">
+        <div class="chat-header">
+            <span id="chatFriendName">Чат</span>
+            <button onclick="closeChat()" style="background:none; border:none; color:var(--text-primary); cursor:pointer;">✕</button>
+        </div>
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-input-area">
+            <input type="text" id="chatInput" class="chat-input" placeholder="Сообщение...">
+            <button class="chat-send" onclick="sendMessage()">📤</button>
+        </div>
+    </div>
+
+    <button class="theme-toggle-bottom" onclick="toggleTheme()">🌓 Тема</button>
+
+    <script>
+        let currentUserGlobal = null;
+        let userDataGlobal = null;
+        let currentChatWithGlobal = null;
+
+        function applyPromoCode() {
+            localStorage.setItem('lovechord_promo_autofill', 'Creator2009');
+            location.href = 'profile-dashboard.html?tab=promo&code=Creator2009';
+        }
+
+        function showNotification(msg, isError) {
+            let n = document.createElement('div');
+            n.className = 'notification' + (isError ? ' error' : '');
+            n.textContent = msg;
+            document.body.appendChild(n);
+            setTimeout(() => n.remove(), 2500);
+        }
+
+        function closeVpnNotice() {
+            const vpnNotice = document.getElementById('vpnNotice');
+            if (vpnNotice) {
+                vpnNotice.style.display = 'none';
+            }
+        }
+
+        function loadGlobalUserData() {
+            currentUserGlobal = localStorage.getItem('lovechord_current_user');
+            let users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+            if (currentUserGlobal && users[currentUserGlobal]) {
+                userDataGlobal = users[currentUserGlobal];
+                if (!userDataGlobal.friends) userDataGlobal.friends = [];
+                if (!userDataGlobal.friendRequests) userDataGlobal.friendRequests = [];
+                if (!userDataGlobal.notifications) userDataGlobal.notifications = [];
+                if (!userDataGlobal.chats) userDataGlobal.chats = {};
+                updateNotificationBadgeGlobal();
+            }
+        }
+
+        function saveGlobalUserData() {
+            let users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+            users[currentUserGlobal] = userDataGlobal;
+            localStorage.setItem('lovechord_users', JSON.stringify(users));
+        }
+
+        function updateNotificationBadgeGlobal() {
+            let count = (userDataGlobal.friendRequests ? userDataGlobal.friendRequests.length : 0) + (userDataGlobal.notifications ? userDataGlobal.notifications.length : 0);
+            let badge = document.getElementById('notificationBadge');
+            if (badge) {
+                if (count > 0) { badge.textContent = count; badge.style.display = 'flex'; }
+                else badge.style.display = 'none';
+            }
+        }
+
+        function openSearchModal() {
+            let modal = document.getElementById('searchModal');
+            if (modal) modal.classList.add('show');
+            let input = document.getElementById('searchInput');
+            if (input) { input.value = ''; }
+            let results = document.getElementById('searchResults');
+            if (results) results.innerHTML = '';
+        }
+
+        function closeSearchModal() {
+            let modal = document.getElementById('searchModal');
+            if (modal) modal.classList.remove('show');
+        }
+
+        function searchUsers() {
+            let query = document.getElementById('searchInput').value.toLowerCase().trim();
+            let resultsDiv = document.getElementById('searchResults');
+            if (!query) { resultsDiv.innerHTML = ''; return; }
+            let users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+            let results = [];
+            for (let name in users) {
+                if (name.toLowerCase().includes(query) && name !== currentUserGlobal) results.push(name);
+            }
+            let html = '';
+            for (let res of results.slice(0, 10)) {
+                html += `<div class="search-result-item" onclick="viewProfileGlobal('${res}')">🔍 ${res}</div>`;
+            }
+            if (html === '') html = '<div>Ничего не найдено</div>';
+            resultsDiv.innerHTML = html;
+        }
+
+        function viewProfileGlobal(username) {
+            closeSearchModal();
+            window.location.href = 'profile-dashboard.html?view=' + encodeURIComponent(username);
+        }
+
+        function sendFriendRequestGlobal(toUser) {
+            if (toUser === currentUserGlobal) { showNotification('Нельзя добавить самого себя!', true); return; }
+            let users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+            if (!users[toUser]) { showNotification('Пользователь не найден!', true); return; }
+            if (userDataGlobal.friends && userDataGlobal.friends.includes(toUser)) { showNotification('Этот пользователь уже в друзьях!', true); return; }
+            
+            if (!users[toUser].friendRequests) users[toUser].friendRequests = [];
+            if (users[toUser].friendRequests.includes(currentUserGlobal)) { showNotification('Запрос уже отправлен!', true); return; }
+            
+            users[toUser].friendRequests.push(currentUserGlobal);
+            localStorage.setItem('lovechord_users', JSON.stringify(users));
+            showNotification('Запрос в друзья отправлен!', false);
+        }
+
+        function acceptFriendRequestGlobal(fromUser) {
+            let users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+            if (!userDataGlobal.friends) userDataGlobal.friends = [];
+            if (!userDataGlobal.friends.includes(fromUser)) userDataGlobal.friends.push(fromUser);
+            if (!users[fromUser].friends) users[fromUser].friends = [];
+            if (!users[fromUser].friends.includes(currentUserGlobal)) users[fromUser].friends.push(currentUserGlobal);
+            
+            let index = userDataGlobal.friendRequests.indexOf(fromUser);
+            if (index !== -1) userDataGlobal.friendRequests.splice(index, 1);
+            
+            if (!userDataGlobal.chats) userDataGlobal.chats = {};
+            if (!userDataGlobal.chats[fromUser]) userDataGlobal.chats[fromUser] = [];
+            
+            localStorage.setItem('lovechord_users', JSON.stringify(users));
+            saveGlobalUserData();
+            showNotification('Вы приняли запрос в друзья!', false);
+            updateNotificationBadgeGlobal();
+            if (document.getElementById('notificationsList')) toggleNotificationsGlobal();
+        }
+
+        function rejectFriendRequestGlobal(fromUser) {
+            let users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+            let index = userDataGlobal.friendRequests.indexOf(fromUser);
+            if (index !== -1) userDataGlobal.friendRequests.splice(index, 1);
+            saveGlobalUserData();
+            
+            if (users[fromUser]) {
+                if (!users[fromUser].notifications) users[fromUser].notifications = [];
+                users[fromUser].notifications.push({ type: 'rejected', from: currentUserGlobal });
+                localStorage.setItem('lovechord_users', JSON.stringify(users));
+            }
+            showNotification('Запрос отклонен', false);
+            updateNotificationBadgeGlobal();
+        }
+
+        function toggleNotificationsGlobal() {
+            let panel = document.getElementById('notificationPanel');
+            if (!panel) return;
+            if (panel.classList.contains('show')) panel.classList.remove('show');
+            else {
+                let list = document.getElementById('notificationsList');
+                if (list) {
+                    list.innerHTML = '';
+                    if (userDataGlobal.friendRequests && userDataGlobal.friendRequests.length > 0) {
+                        for (let req of userDataGlobal.friendRequests) {
+                            let div = document.createElement('div');
+                            div.className = 'notification-item';
+                            div.innerHTML = `<div><strong>${req}</strong> хочет добавить вас в друзья</div>
+                                <div class="notification-actions">
+                                    <button class="notif-accept" onclick="acceptFriendRequestGlobal('${req}')">Принять</button>
+                                    <button class="notif-reject" onclick="rejectFriendRequestGlobal('${req}')">Отклонить</button>
+                                </div>`;
+                            list.appendChild(div);
+                        }
+                    }
+                    if (userDataGlobal.notifications && userDataGlobal.notifications.length > 0) {
+                        for (let notif of userDataGlobal.notifications) {
+                            let div = document.createElement('div');
+                            div.className = 'notification-item';
+                            if (notif.type === 'rejected') {
+                                div.innerHTML = `<div><strong>${notif.from}</strong> отклонил ваш запрос в друзья</div>`;
+                            }
+                            list.appendChild(div);
+                        }
+                    }
+                    if (list.children.length === 0) {
+                        list.innerHTML = '<div style="padding:12px;">Нет уведомлений</div>';
+                    }
+                }
+                panel.classList.add('show');
+            }
+        }
+
+        function openChatWithGlobal(friendName) {
+            currentChatWithGlobal = friendName;
+            let modal = document.getElementById('chatModal');
+            if (modal) {
+                document.getElementById('chatFriendName').textContent = friendName;
+                modal.classList.add('show');
+                loadChatMessagesGlobal();
+            }
+        }
+
+        function closeChatGlobal() {
+            let modal = document.getElementById('chatModal');
+            if (modal) modal.classList.remove('show');
+            currentChatWithGlobal = null;
+        }
+
+        function sendMessageGlobal() {
+            let input = document.getElementById('chatInput');
+            let text = input.value.trim();
+            if (!text || !currentChatWithGlobal) return;
+            
+            if (!userDataGlobal.chats) userDataGlobal.chats = {};
+            if (!userDataGlobal.chats[currentChatWithGlobal]) userDataGlobal.chats[currentChatWithGlobal] = [];
+            userDataGlobal.chats[currentChatWithGlobal].push({ from: currentUserGlobal, text: text, time: Date.now() });
+            saveGlobalUserData();
+            
+            let users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+            if (users[currentChatWithGlobal]) {
+                if (!users[currentChatWithGlobal].chats) users[currentChatWithGlobal].chats = {};
+                if (!users[currentChatWithGlobal].chats[currentUserGlobal]) users[currentChatWithGlobal].chats[currentUserGlobal] = [];
+                users[currentChatWithGlobal].chats[currentUserGlobal].push({ from: currentUserGlobal, text: text, time: Date.now() });
+                localStorage.setItem('lovechord_users', JSON.stringify(users));
+            }
+            
+            input.value = '';
+            loadChatMessagesGlobal();
+        }
+
+        function loadChatMessagesGlobal() {
+            let container = document.getElementById('chatMessages');
+            if (!container || !currentChatWithGlobal) return;
+            let messages = (userDataGlobal.chats && userDataGlobal.chats[currentChatWithGlobal]) ? userDataGlobal.chats[currentChatWithGlobal] : [];
+            container.innerHTML = '';
+            for (let msg of messages) {
+                let div = document.createElement('div');
+                div.className = 'message ' + (msg.from === currentUserGlobal ? 'sent' : 'received');
+                div.textContent = msg.text;
+                container.appendChild(div);
+            }
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function createLightParticles() {
+            const container = document.getElementById('lightContainer');
+            if (!container) return;
+            
+            function createParticle() {
+                const particle = document.createElement('div');
+                particle.className = 'light-particle';
+                const size = Math.random() * 15 + 8;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDuration = Math.random() * 6 + 5 + 's';
+                particle.style.animationDelay = Math.random() * 4 + 's';
+                container.appendChild(particle);
+                
+                setTimeout(() => {
+                    if (particle.parentNode) particle.remove();
+                }, 10000);
+            }
+            
+            for (let i = 0; i < 25; i++) {
+                setTimeout(() => createParticle(), i * 200);
+            }
+            
+            setInterval(() => {
+                createParticle();
+                if (container.children.length > 60) {
+                    container.removeChild(container.children[0]);
+                }
+            }, 1500);
+        }
+        
+        function loadProfileIcon() {
+            const currentUser = localStorage.getItem('lovechord_current_user');
+            const users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+            
+            if (currentUser && users[currentUser]) {
+                const icon = document.getElementById('profileIcon');
+                if (users[currentUser].avatar) {
+                    icon.innerHTML = `<img src="${users[currentUser].avatar}" alt="avatar">`;
+                } else {
+                    icon.innerHTML = users[currentUser].username.charAt(0).toUpperCase();
+                    icon.style.fontSize = '24px';
+                    icon.style.fontWeight = 'bold';
+                }
+            }
+        }
+        
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('lovechord_theme');
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-theme');
+            } else {
+                document.body.classList.remove('light-theme');
+            }
+        }
+        
+        function toggleTheme() {
+            if (document.body.classList.contains('light-theme')) {
+                document.body.classList.remove('light-theme');
+                localStorage.setItem('lovechord_theme', 'dark');
+            } else {
+                document.body.classList.add('light-theme');
+                localStorage.setItem('lovechord_theme', 'light');
+            }
+        }
+
+        window.openSearchModal = openSearchModal;
+        window.closeSearchModal = closeSearchModal;
+        window.searchUsers = searchUsers;
+        window.viewProfileGlobal = viewProfileGlobal;
+        window.sendFriendRequestGlobal = sendFriendRequestGlobal;
+        window.acceptFriendRequestGlobal = acceptFriendRequestGlobal;
+        window.rejectFriendRequestGlobal = rejectFriendRequestGlobal;
+        window.toggleNotifications = toggleNotificationsGlobal;
+        window.openChatWith = openChatWithGlobal;
+        window.closeChat = closeChatGlobal;
+        window.sendMessage = sendMessageGlobal;
+        window.toggleTheme = toggleTheme;
+        window.closeVpnNotice = closeVpnNotice;
+        window.applyPromoCode = applyPromoCode;
+        
+        loadTheme();
+        loadProfileIcon();
+        loadGlobalUserData();
+        window.addEventListener('load', createLightParticles);
+        
+        setInterval(() => { if (currentChatWithGlobal) loadChatMessagesGlobal(); }, 1000);
+    </script>
+
+</body>
+</html>

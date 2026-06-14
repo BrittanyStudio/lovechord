@@ -1,0 +1,468 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Профиль - LoveChord</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap');
+        
+        :root {
+            --bg-body: #1e1e2f;
+            --bg-game-box: #2a2a3a;
+            --bg-card: #1e1e2f;
+            --text-primary: white;
+            --text-secondary: #aaa;
+            --btn-bg: #f5c4c4;
+            --btn-hover: #e8a0a0;
+            --btn-text: #333;
+            --border-color: #f5c4c4;
+            --accent: #ffcc00;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            text-align: center;
+            background: var(--bg-body);
+            color: var(--text-primary);
+            padding: 20px;
+            transition: background 0.3s, color 0.3s;
+        }
+        
+        body.light-theme {
+            --bg-body: #ffe4e1;
+            --bg-game-box: #ffd6d6;
+            --bg-card: #ffebeb;
+            --text-primary: #333;
+            --text-secondary: #666;
+            --btn-bg: #2a2a3a;
+            --btn-hover: #3a3a4a;
+            --btn-text: #f5c4c4;
+            --border-color: #2a2a3a;
+            --accent: #ff6b6b;
+        }
+        
+        .LoveChord-container {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            text-align: center;
+            z-index: 1000;
+        }
+        
+        .LoveChord-btn {
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: none;
+            padding: 10px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: block;
+            text-align: center;
+            text-decoration: none;
+        }
+        
+        .LoveChord-btn:hover {
+            background: var(--btn-hover);
+            transform: scale(1.02);
+        }
+        
+        .LoveChord-main {
+            display: block;
+            font-size: 20px;
+            font-weight: 800;
+            font-family: 'Montserrat', sans-serif;
+            letter-spacing: 2px;
+            font-variant: small-caps;
+        }
+        
+        .about-songs {
+            display: block;
+            font-size: 9px;
+            text-decoration: none;
+            margin-top: 3px;
+            font-weight: normal;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .profile-icon {
+            position: fixed;
+            top: 20px;
+            right: 80px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: 2px solid var(--border-color);
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            z-index: 1000;
+            overflow: hidden;
+        }
+        
+        .profile-icon:hover {
+            transform: scale(1.05);
+            background: var(--btn-hover);
+        }
+        
+        .profile-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 16px;
+            font-weight: 600;
+            z-index: 1000;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .theme-toggle:hover {
+            background: var(--btn-hover);
+            transform: scale(1.02);
+        }
+
+        /* Кнопка переключения темы внизу */
+        .theme-toggle-bottom {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 16px;
+            font-weight: 600;
+            z-index: 1000;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .theme-toggle-bottom:hover {
+            background: var(--btn-hover);
+            transform: scale(1.02);
+        }
+        
+        .nav-menu {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 30px;
+            margin-top: 60px;
+            z-index: 1000;
+            position: relative;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+            padding-bottom: 10px;
+            cursor: grab;
+        }
+        
+        .nav-menu:active {
+            cursor: grabbing;
+        }
+        
+        .nav-menu::-webkit-scrollbar {
+            height: 5px;
+        }
+        
+        .nav-menu::-webkit-scrollbar-track {
+            background: var(--bg-game-box);
+            border-radius: 10px;
+        }
+        
+        .nav-menu::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 10px;
+        }
+        
+        .nav-menu::-webkit-scrollbar-thumb:hover {
+            background: var(--btn-hover);
+        }
+        
+        .nav-btn {
+            background: var(--bg-game-box);
+            border: 2px solid var(--border-color);
+            padding: 10px 20px;
+            font-size: 14px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.2s;
+            color: var(--border-color);
+            font-weight: 600;
+            font-family: 'Montserrat', sans-serif;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        
+        .nav-btn:hover:not(.active) {
+            background: var(--btn-bg);
+            color: var(--btn-text);
+        }
+        
+        .nav-btn.active {
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            cursor: default;
+            opacity: 0.7;
+        }
+        
+        .auth-container {
+            max-width: 400px;
+            margin: 100px auto;
+            background: var(--bg-game-box);
+            border-radius: 20px;
+            padding: 40px;
+            border: 2px solid var(--border-color);
+        }
+        
+        .auth-container h2 {
+            color: var(--border-color);
+            margin-bottom: 30px;
+        }
+        
+        .auth-container input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 30px;
+            border: 2px solid var(--border-color);
+            background: var(--bg-body);
+            color: var(--text-primary);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        
+        .auth-container input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .auth-btn {
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: none;
+            padding: 12px 30px;
+            margin: 15px 10px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 700;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+        }
+        
+        .auth-btn:hover {
+            background: var(--btn-hover);
+            transform: scale(1.02);
+        }
+        
+        .error-message {
+            color: #ff5555;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        
+        .success-message {
+            color: #00ffaa;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        
+        .switch-btn {
+            background: none;
+            border: none;
+            color: var(--accent);
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 20px;
+            text-decoration: underline;
+        }
+        
+        .switch-btn:hover {
+            color: var(--btn-hover);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="LoveChord-container">
+        <div class="LoveChord-btn" onclick="window.location.href='index.html'">
+            <span class="LoveChord-main">LoveChord</span>
+            <span class="about-songs">все о песнях*</span>
+        </div>
+    </div>
+
+    <div class="profile-icon" id="profileIcon" onclick="window.location.href='profile.html'">
+        👤
+
+    </div>
+
+
+    <div class="nav-menu">
+        <button class="nav-btn" onclick="window.location.href='game.html'">🎤 Угадай автора музыки</button>
+        <button class="nav-btn" onclick="window.location.href='photo-game.html'">📸 Угадай автора по фото</button>
+        <button class="nav-btn" onclick="window.location.href='popular-game.html'">📊 Какая песня популярней</button>
+        <button class="nav-btn" onclick="window.location.href='favorite-game.html'">❤️ Выбери любимую песню</button>
+        <button class="nav-btn" onclick="window.location.href='year-game.html'">📅 Угадай год</button>
+        <button class="nav-btn" onclick="window.location.href='who-wrote-game.html'">✍️ Кто написал...</button>
+        <button class="nav-btn" onclick="window.location.href='emoji-game.html'">😊 Угадай по эмодзи</button>
+        <button class="nav-btn" onclick="window.location.href='lyrics-game.html'">📝 Угадай по тексту</button>
+    </div>
+
+    <div id="authContainer" class="auth-container">
+        <h2 id="authTitle">Добро пожаловать!</h2>
+        <div id="authForm">
+            <input type="text" id="username" placeholder="Юзернейм (только латиница)" autocomplete="off">
+            <input type="password" id="password" placeholder="Пароль">
+            <div id="authMessage" class="error-message"></div>
+            <button class="auth-btn" id="loginBtn">Войти</button>
+            <button class="auth-btn" id="registerBtn">Создать аккаунт</button>
+        </div>
+    </div>
+
+    <script>
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('lovechord_theme');
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-theme');
+            } else {
+                document.body.classList.remove('light-theme');
+            }
+        }
+        
+        function toggleTheme() {
+            if (document.body.classList.contains('light-theme')) {
+                document.body.classList.remove('light-theme');
+                localStorage.setItem('lovechord_theme', 'dark');
+            } else {
+                document.body.classList.add('light-theme');
+                localStorage.setItem('lovechord_theme', 'light');
+            }
+        }
+        
+        function loadProfileIcon() {
+            const currentUser = localStorage.getItem('lovechord_current_user');
+            const users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+            
+            if (currentUser && users[currentUser]) {
+                const icon = document.getElementById('profileIcon');
+                if (users[currentUser].avatar) {
+                    icon.innerHTML = `<img src="${users[currentUser].avatar}" alt="avatar">`;
+                } else {
+                    icon.innerHTML = users[currentUser].username.charAt(0).toUpperCase();
+                    icon.style.fontSize = '24px';
+                    icon.style.fontWeight = 'bold';
+                }
+            }
+        }
+        
+        function checkAuthAndRedirect() {
+            const currentUser = localStorage.getItem('lovechord_current_user');
+            if (currentUser) {
+                window.location.href = 'profile-dashboard.html';
+            }
+        }
+        
+        document.getElementById('loginBtn').onclick = () => {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('authMessage');
+            
+            if (!username || !password) {
+                messageDiv.textContent = 'Заполните все поля!';
+                return;
+            }
+            
+            const users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+            
+            if (users[username] && users[username].password === password) {
+                localStorage.setItem('lovechord_current_user', username);
+                messageDiv.className = 'success-message';
+                messageDiv.textContent = 'Успешный вход! Перенаправление...';
+                setTimeout(() => {
+                    window.location.href = 'profile-dashboard.html';
+                }, 1000);
+            } else {
+                messageDiv.className = 'error-message';
+                messageDiv.textContent = 'Неверный юзернейм или пароль!';
+            }
+        };
+        
+        document.getElementById('registerBtn').onclick = () => {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('authMessage');
+            
+            if (!username || !password) {
+                messageDiv.textContent = 'Заполните все поля!';
+                return;
+            }
+            
+            if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+                messageDiv.textContent = 'Юзернейм может содержать только латиницу, цифры и _';
+                return;
+            }
+            
+            if (password.length < 4) {
+                messageDiv.textContent = 'Пароль должен быть не менее 4 символов!';
+                return;
+            }
+            
+            const users = JSON.parse(localStorage.getItem('lovechord_users') || '{}');
+            
+            if (users[username]) {
+                messageDiv.textContent = 'Пользователь с таким именем уже существует!';
+                return;
+            }
+            
+            users[username] = {
+                username: username,
+                password: password,
+                avatar: null,
+                banner: '#2a2a3a',
+                createdAt: Date.now(),
+                lastUsernameChange: null,
+                stats: {
+                    totalGamesPlayed: 0,
+                    totalCorrectAnswers: 0,
+                    gamesWon: 0
+                }
+            };
+            
+            localStorage.setItem('lovechord_users', JSON.stringify(users));
+            localStorage.setItem('lovechord_current_user', username);
+            
+            messageDiv.className = 'success-message';
+            messageDiv.textContent = 'Аккаунт создан! Перенаправление...';
+            setTimeout(() => {
+                window.location.href = 'profile-dashboard.html';
+            }, 1000);
+        };
+        
+        checkAuthAndRedirect();
+        loadTheme();
+        loadProfileIcon();
+    </script>
+    <button class="theme-toggle-bottom" onclick="toggleTheme()">🌓 Тема</button>
+</body>
+</html>
